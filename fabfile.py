@@ -99,5 +99,5 @@ def deploy():
     env.msg = "Build site"
     clean()
     preview()
-    local("ghp-import -m '{msg}' -b {github_pages_branch} {deploy_path}".format(**env))
+    local("ghp-import {deploy_path} -m \"{msg}\" -b {github_pages_branch}".format(**env))
     local("git push origin {github_pages_branch}".format(**env))
