@@ -12,9 +12,6 @@ env.deploy_path = 'output'
 DEPLOY_PATH = env.deploy_path
 env.msg = 'Update Blog'  # commit message
 
-# Github Pages configuration
-env.github_pages_branch = "master"
-
 # Remote server configuration
 production = 'root@localhost:22'
 dest_path = '/var/www'
