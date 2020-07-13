@@ -10,7 +10,11 @@ import sys
 sys.path.append(os.curdir)
 from pelicanconf import *
 
-SITEURL = ''
+SITEURL = 'https://aadityachapagain.github.io'
+DOMAIN = SITEURL
+FEED_DOMAIN = SITEURL
+HTTPS = True
+
 RELATIVE_URLS = False
 
 FEED_ALL_ATOM = 'feeds/all.atom.xml'

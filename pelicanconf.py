@@ -35,9 +35,6 @@ PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary']
 STATIC_PATHS = ['images', 'extras']
 
 SITEURL = 'https://aadityachapagain.github.io'
-DOMAIN = SITEURL
-FEED_DOMAIN = SITEURL
-HTTPS = True
 
 
 SITETITLE = 'Aaditya Chapagain'  # Replace with your name
