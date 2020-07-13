@@ -30,7 +30,7 @@ DEFAULT_PAGINATION = 5
 
 # Pelican plugins
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary']
+PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts',]
 
 STATIC_PATHS = ['images', 'extras']
 
