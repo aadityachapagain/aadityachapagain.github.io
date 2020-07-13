@@ -32,10 +32,9 @@ DEFAULT_PAGINATION = 5
 PLUGIN_PATHS = ['pelican-plugins']
 PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts',]
 
-STATIC_PATHS = ['images', 'extras']
+STATIC_PATHS = ['images', 'extras', 'extra']
 
-SITEURL = 'https://aadityachapagain.github.io'
-
+SITEURL = 'https://aadityachapagain.com'
 
 SITETITLE = 'Aaditya Chapagain'  # Replace with your name
 SITESUBTITLE = 'notiones a solis ortu usque ad occasum'
