@@ -72,9 +72,7 @@ STATIC_PATHS = ['images', 'extra']
 SITELOGO = 'images/profile.jpg'
 FAVICON = 'images/favicon.ico'
 
-LINKS = [
-    ('example', 'www.example.com')
-]
+LINKS = []
 
 # Main Menu Items
 MAIN_MENU = True
