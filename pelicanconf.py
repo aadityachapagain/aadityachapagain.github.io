@@ -34,7 +34,7 @@ PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'nei
 
 STATIC_PATHS = ['images', 'extras', 'extra']
 
-SITEURL = 'https://aadityachapagain.com'
+SITEURL = 'https://aadityachapagain.github.io'
 
 SITETITLE = 'Aaditya Chapagain'  # Replace with your name
 SITESUBTITLE = 'notiones a solis ortu usque ad occasum'
