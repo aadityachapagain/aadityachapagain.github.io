@@ -76,17 +76,17 @@ def cf_upload():
               '-K {cloudfiles_api_key} '
               'upload -c {cloudfiles_container} .'.format(**env))
 
-@hosts(production)
-def publish():
-    """Publish to production via rsync"""
+# @hosts(production)
+def publish(commit_message):
+    """Automatic deploy  to GitHub Pages"""
+    env.msg = commit_message
+    env.GH_TOKEN = os.getenv('TRAVIS_TOKEN')
+    env.TRAVIS_REPO_SLUG = os.getenv('TRAVIS_REPO_SLUG')
+    clean()
     local('pelican -s publishconf.py')
-    project.rsync_project(
-        remote_dir=dest_path,
-        exclude=".DS_Store",
-        local_dir=DEPLOY_PATH.rstrip('/') + '/',
-        delete=True,
-        extra_opts='-c',
-    )
+    with hide('running', 'stdout', 'stderr'):
+        local("ghp-import -m '{msg}' -b {github_pages_branch} {deploy_path}".format(**env))
+        local("git push -fq https://{GH_TOKEN}@github.com/{TRAVIS_REPO_SLUG}.git {github_pages_branch}".format(**env))
 
 def gh_pages():
     """Publish to GitHub Pages"""

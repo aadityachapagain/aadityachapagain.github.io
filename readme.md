@@ -1,4 +1,5 @@
-# Personal Blog 
+# Personal Blog [![Build Status](https://travis-ci.org/aadityachapagain/aadityachapagain.github.io.svg?branch=source)](https://travis-ci.org/aadityachapagain/aadityachapagain.github.io)
+
 
 This repository hosts the code for my personal [blog](https://aadityachapagain.com).
 
