@@ -15,4 +15,4 @@ install:
   - git clone https://github.com/getpelican/pelican-plugins
 
 script:
-  - fab publish:"Build site"
+  - fab publish
