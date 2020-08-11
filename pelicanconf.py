@@ -31,7 +31,7 @@ DEFAULT_PAGINATION = 5
 
 # Pelican plugins
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts','render_math']
+PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'related_posts','render_math']
 
 STATIC_PATHS = ['images', 'extras', 'extra']
 extras = ['CNAME', 'favicon.ico','robots.txt']
@@ -97,16 +97,6 @@ MONTH_ARCHIVE_SAVE_AS = '{date:%Y}/{date:%m}/index.html'
 # Disable authors (common for all themes)
 DIRECT_TEMPLATES = ['index', 'archives', 'categories', 'tags']
 AUTHOR_SAVE_AS = ''
-
-MARKDOWN = {
-    'extension_configs': {
-        'markdown.extensions.codehilite': {'css_class': 'highlight'},
-        'markdown.extensions.extra': {},
-        'markdown.extensions.meta': {},
-        'markdown.extensions.toc': {},
-    },
-    'output_format': 'html5',
-}
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = 'feeds/all.atom.xml'
