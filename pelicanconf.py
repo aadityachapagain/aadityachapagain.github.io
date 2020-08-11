@@ -8,6 +8,7 @@ THEME ='themes/Flex'
 AUTHOR = 'Aaditya Chapagain'
 SITENAME = 'Aaditya Chapagain'
 
+DOMAIN = 'http://localhost:8000'
 PATH = 'content'
 
 TIMEZONE = 'Asia/Kathmandu'
@@ -33,8 +34,15 @@ PLUGIN_PATHS = ['pelican-plugins']
 PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts',]
 
 STATIC_PATHS = ['images', 'extras', 'extra']
+extras = ['CNAME', 'favicon.ico','robots.txt']
+EXTRA_PATH_METADATA = {'extra/%s' % file: {'path': file} for file in extras}
 
-SITEURL = 'https://aadityachapagain.com'
+DEFAULT_DATE = 'fs'
+DEFAULT_DATE_FORMAT = '%B %d, %Y'
+DEFAULT_PAGINATION = 5
+
+PAGE_EXCLUDES = ['404.html']
+SITEURL = 'http://localhost:8000'
 
 SITETITLE = 'Aaditya Chapagain'  # Replace with your name
 SITESUBTITLE = 'notiones a solis ortu usque ad occasum'
@@ -70,7 +78,7 @@ LINKS = []
 
 # Main Menu Items
 MAIN_MENU = True
-MENUITEMS = (('Archives', '/archives'),('Categories', '/categories'),('Tags', '/tags'))
+MENUITEMS = (('All Posts', '/archives'),('Categories', '/categories'),('Tags', '/tags'))
 
 # Code highlighting the theme
 PYGMENTS_STYLE = 'emacs'
@@ -85,6 +93,20 @@ PAGE_SAVE_AS = PAGE_URL + 'index.html'
 ARCHIVES_SAVE_AS = 'archives.html'
 YEAR_ARCHIVE_SAVE_AS = '{date:%Y}/index.html'
 MONTH_ARCHIVE_SAVE_AS = '{date:%Y}/{date:%m}/index.html'
+
+# Disable authors (common for all themes)
+DIRECT_TEMPLATES = ['index', 'archives', 'categories', 'tags']
+AUTHOR_SAVE_AS = ''
+
+MARKDOWN = {
+    'extension_configs': {
+        'markdown.extensions.codehilite': {'css_class': 'highlight'},
+        'markdown.extensions.extra': {},
+        'markdown.extensions.meta': {},
+        'markdown.extensions.toc': {},
+    },
+    'output_format': 'html5',
+}
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = 'feeds/all.atom.xml'

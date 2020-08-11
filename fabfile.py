@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import socketserver
+import git
 
 from pelican.server import ComplexHTTPRequestHandler
 
@@ -27,6 +28,33 @@ env.github_pages_branch = "master"
 # Port for `serve`
 SERVER = '127.0.0.1'
 PORT = 8000
+
+TEMPLATE = """
+Title: {title}
+Date: {year}-{month}-{day} {hour}:{minute}
+Modified: {year}-{month}-{day} {hour}:{minute}
+Category:
+Tags:
+Slug: {slug}
+Summary:
+Status: draft
+"""
+
+
+def newpost(title):
+    """Generate template for new post"""
+    today = datetime.today()
+    slug = title.lower().strip().replace(' ', '-')
+    file_location = "content/articles/{}.md".format(slug)
+    t = TEMPLATE.strip().format(title=title,
+                                year=today.year,
+                                month=today.month,
+                                day=today.day,
+                                hour=today.hour,
+                                minute=today.minute,
+                                slug=slug)
+    with open(file_location, 'w') as output_article:
+        output_article.write(t)
 
 def clean():
     """Remove generated files"""
@@ -96,7 +124,7 @@ def gh_pages():
 
 def deploy():
     """Push to GitHub pages"""
-    env.msg = "Build site"
+    env.msg = git.Repo().active_branch.commit.message
     clean()
     preview()
     local("ghp-import {deploy_path} -m \"{msg}\" -b {github_pages_branch}".format(**env))
