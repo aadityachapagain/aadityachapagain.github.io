@@ -63,8 +63,6 @@ SOCIAL = (
     ('facebook','https://www.facebook.com/aaditya.chapagain')
 )
 
-STATIC_PATHS = ['images', 'extra']
-
 SITELOGO = 'images/profile.jpg'
 FAVICON = 'images/favicon.ico'
 
