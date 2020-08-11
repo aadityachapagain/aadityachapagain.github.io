@@ -31,7 +31,7 @@ DEFAULT_PAGINATION = 5
 
 # Pelican plugins
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts',]
+PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'neighbors', 'related_posts','render_math']
 
 STATIC_PATHS = ['images', 'extras', 'extra']
 extras = ['CNAME', 'favicon.ico','robots.txt']
@@ -71,8 +71,8 @@ SOCIAL = (
     ('facebook','https://www.facebook.com/aaditya.chapagain')
 )
 
-SITELOGO = 'images/profile.jpg'
-FAVICON = 'images/favicon.ico'
+SITELOGO = '/images/profile.jpg'
+FAVICON = '/images/favicon.ico'
 
 LINKS = []
 

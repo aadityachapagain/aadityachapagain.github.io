@@ -1,4 +1,4 @@
-Title: speech Signal Processing using python
+Title: Speech Signal Processing using python
 Date: 2020-08-11 8:00
 Modified: 2020-08-11 8:00
 Category: Blog
@@ -32,7 +32,7 @@ plt.plot(Time, signal)
 ```
 
 The raw signal has the following from in the time domain:
-[![raw signal image of speech](/images/spectral_image_speech.png{.img-center})](https://ibb.co/nPvnTGc)
+[![raw signal image of speech](/images/spectral_image_speech.png){.img-center}](https://ibb.co/nPvnTGc)
 
 ## Pre-Emphasis
 
@@ -43,6 +43,8 @@ The first step is to apply a pre-emphesis filter on signal to amplify the high f
 
 The pre-emphesis filter can be applied to a signal x using the first order filter in the following equation:
 $$ y(t) = x(t) - \alpha x(t-1) $$
+
+![pre-emphsis filter](https://latex.codecogs.com/gif.latex?y%28t%29%20%3D%20x%28t%29%20-%20%5Calpha%20x%28t-1%29)
 
 which can be easily implemented using the following line, where typical values for the filter coefficeint ($ \alpha $) are 0.95 to 0.97, 
 ```pre_empasis = 0.97```
@@ -57,7 +59,7 @@ Pre-emphasis has a modest effect in modern systems, mainly because most of the m
 
 The signal after pre-emphasis has the following effect in orignal signal.
 
-[![before and after pre-emphesis](\images\before_after_preemphesis.png{.img-center})](https://ibb.co/Jqn0x33)
+[![before and after pre-emphesis](\images\before_after_preemphesis.png){.img-center}](https://ibb.co/Jqn0x33)
 
 ## Framing
 
@@ -174,7 +176,7 @@ plt.title("Mel compression Spectrogram")
 plt.show()
 ```
 
-[![melspectrogram of speech signal ](\images\mfcc_spectorgram.png{.img-center})](https://ibb.co/xSyfhsV)
+[![melspectrogram of speech signal ](\images\mfcc_spectorgram.png){.img-center}](https://ibb.co/xSyfhsV)
 
 ## Mel-frequency cepstral Coecfficents (MFCCs)
 
@@ -208,7 +210,7 @@ plt.title("MFCC Spectrogram")
 plt.show()
 ```
 
-[![MFCC spectrogram of speech signal ](content\images\mel_spectrogram.png{.img-center})](https://ibb.co/S7c5pnL)
+[![MFCC spectrogram of speech signal ](content\images\mel_spectrogram.png){.img-center}](https://ibb.co/S7c5pnL)
 
 ## Mean Normalization
 
