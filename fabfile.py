@@ -107,7 +107,7 @@ def cf_upload():
 # @hosts(production)
 def publish(commit_message):
     """Automatic deploy  to GitHub Pages"""
-    env.msg = git.Repo().active_branch.commit.message
+    env.msg = commit_message
     env.GH_TOKEN = os.getenv('TRAVIS_TOKEN')
     env.TRAVIS_REPO_SLUG = os.getenv('TRAVIS_REPO_SLUG')
     clean()
