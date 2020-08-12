@@ -11,7 +11,7 @@ install:
   - cp readme.md output\README.md
   - git config --global user.email "chapagain.aaditya@gmail.com"
   - git config --global user.name "Aaditya Chapagain"
-  - git clone https://github.com/alexandrevicenzi/Flex.git themes/Flex
+  - git clone https://github.com/aadityachapagain/Flex.git themes/Flex
   - git clone https://github.com/getpelican/pelican-plugins
 
 script:
