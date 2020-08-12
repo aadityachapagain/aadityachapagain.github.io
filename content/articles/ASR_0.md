@@ -4,7 +4,7 @@ Modified: 2020-08-11 8:00
 Category: Blog
 Slug: asr-mfcc-filterbanks
 Summary: Signal Processing and Speech Recognition using python
-Tags: pelican, signal processing, speech recognition, ASR, machine learning, Deep Learning.
+Tags: signal processing, speech recognition, ASR, machine learning, Deep Learning.
 Authors: Aaditya Chapagain
 Status: published
 
@@ -44,9 +44,7 @@ The first step is to apply a pre-emphesis filter on signal to amplify the high f
 The pre-emphesis filter can be applied to a signal x using the first order filter in the following equation:
 $$ y(t) = x(t) - \alpha x(t-1) $$
 
-![pre-emphsis filter](https://latex.codecogs.com/gif.latex?y%28t%29%20%3D%20x%28t%29%20-%20%5Calpha%20x%28t-1%29)
-
-which can be easily implemented using the following line, where typical values for the filter coefficeint ($ \alpha $) are 0.95 to 0.97, 
+which can be easily implemented using the following line, where typical values for the filter coefficeint ( $\alpha$ ) are 0.95 to 0.97, 
 ```pre_empasis = 0.97```
 
 ```python
@@ -90,7 +88,7 @@ frames = pad_signal[indices.astype(np.int32, copy=False)]
 
 After slicing the signal into frames, we apply a window function such as the Hamming window to each frame. A Hamming window has the following form:
 $$ w[n] = 0.54 − 0.46 cos ( \frac{2πn}{N − 1} ) $$
-where, $ 0 \leq n \leq N - 1, N $ is the window length.
+where,  0 $\leq$ n $\leq$ N-1,N is the window length.
 
 There are several reasons why we need to apply a window function to the frames, notably to counteract the assumption made by the FFT that the data is infinite and to reduce spectral leakage.
 
@@ -114,7 +112,7 @@ pow_frames = ((1.0 / NFFT) * ((mag_frames) ** 2))  # Power Spectrum
 ```
 ## Filter Banks
 
-The final step to computing filter banks is applying triangular filters, typically 40 filters, nfilt = 40 on a Mel-scale to the power spectrum to extract frequency bands. The Mel-Scale aims to mimic the non-linear human ear perception of sound, by being more discriminative at lower frequenceis and less discriminative at higher frequencies. We can convert between Hertz ($ f $) and Mel ( $ m $) using the following equations:
+The final step to computing filter banks is applying triangular filters, typically 40 filters, nfilt = 40 on a Mel-scale to the power spectrum to extract frequency bands. The Mel-Scale aims to mimic the non-linear human ear perception of sound, by being more discriminative at lower frequenceis and less discriminative at higher frequencies. We can convert between Hertz ($f$) and Mel ( $m$) using the following equations:
 $$ \Large m = 2595 \log_{10} (1 + \frac{f}{700}) \approx  1125 \ln (1 + \frac{f}{700} )  $$
 
 $$ \Large f = 700 ( 10^{ \frac{m}{2595} } -1)$$
@@ -210,7 +208,7 @@ plt.title("MFCC Spectrogram")
 plt.show()
 ```
 
-[![MFCC spectrogram of speech signal ](content\images\mel_spectrogram.png){.img-center}](https://ibb.co/S7c5pnL)
+[![MFCC spectrogram of speech signal ](\images\mel_spectrogram.png){.img-center}](https://ibb.co/S7c5pnL)
 
 ## Mean Normalization
 
