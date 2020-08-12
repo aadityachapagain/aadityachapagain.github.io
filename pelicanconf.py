@@ -13,7 +13,7 @@ PATH = 'content'
 
 TIMEZONE = 'Asia/Kathmandu'
 
-DEFAULT_LANG = 'English'
+DEFAULT_LANG = 'en'
 
 THEME_COLOR_ENABLE_USER_OVERRIDE = True
 
@@ -31,7 +31,7 @@ DEFAULT_PAGINATION = 5
 
 # Pelican plugins
 PLUGIN_PATHS = ['pelican-plugins']
-PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'related_posts','render_math']
+PLUGINS = ['assets', 'sitemap', 'post_stats', 'feed_summary', 'share_post', 'related_posts','render_math',]
 
 STATIC_PATHS = ['images', 'extras', 'extra']
 extras = ['CNAME', 'favicon.ico','robots.txt']
@@ -75,6 +75,15 @@ SITELOGO = '/images/profile.jpg'
 FAVICON = '/images/favicon.ico'
 
 LINKS = []
+
+MARKDOWN = {
+    'extension_configs': {
+        'markdown.extensions.codehilite': {'css_class': 'highlight'},
+        'markdown.extensions.extra': {},
+        'markdown.extensions.meta': {},
+    },
+    'output_format': 'html5',
+}
 
 # Main Menu Items
 MAIN_MENU = True

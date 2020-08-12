@@ -5,8 +5,28 @@ import shutil
 import sys
 import socketserver
 import git
+import datetime
 
-from pelican.server import ComplexHTTPRequestHandler
+from pelican.server import ComplexHTTPRequestHandler, RootedHTTPServer
+from pelican.settings import DEFAULT_CONFIG, get_settings_from_file
+
+SETTINGS_FILE_BASE = 'pelicanconf.py'
+SETTINGS = {}
+SETTINGS.update(DEFAULT_CONFIG)
+LOCAL_SETTINGS = get_settings_from_file(SETTINGS_FILE_BASE)
+SETTINGS.update(LOCAL_SETTINGS)
+
+CONFIG = {
+    'settings_base': SETTINGS_FILE_BASE,
+    'settings_publish': 'publishconf.py',
+    # Output path. Can be absolute or relative to tasks.py. Default: 'output'
+    'deploy_path': SETTINGS['OUTPUT_PATH'],
+    # Github Pages configuration
+    'github_pages_branch': 'gh-pages',
+    'commit_message': "'Publish site on {}'".format(datetime.date.today().isoformat()),
+    # Port for `serve`
+    'port': 8000,
+}
 
 # Local path configuration (can be absolute or relative to fabfile)
 env.deploy_path = 'output'
@@ -76,12 +96,13 @@ def regenerate():
 
 def serve():
     """Serve site at http://localhost:8000/"""
-    os.chdir(env.deploy_path)
-
-    class AddressReuseTCPServer(socketserver.TCPServer):
+    class AddressReuseTCPServer(RootedHTTPServer):
         allow_reuse_address = True
 
-    server = AddressReuseTCPServer(('', PORT), ComplexHTTPRequestHandler)
+    server = AddressReuseTCPServer(
+        CONFIG['deploy_path'],
+        ('', CONFIG['port']),
+        ComplexHTTPRequestHandler)
 
     sys.stderr.write('Serving on port {0} ...\n'.format(PORT))
     server.serve_forever()
