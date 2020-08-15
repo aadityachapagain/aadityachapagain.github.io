@@ -117,3 +117,4 @@ AUTHOR_FEED_RSS = None
 
 # HOME_HIDE_TAGS = True
 FEED_USE_SUMMARY = True
+DISQUS_SITENAME = "aadityachapagain"
