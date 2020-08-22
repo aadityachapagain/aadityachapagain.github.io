@@ -1,9 +1,9 @@
-Title: Create Conversational Reddit Datasets
+Title:  Build Conversational Reddit Dataset using Google DataFlow and Big Query
 Date: 2020-08-22 12:00
 Modified: 2020-8-22 12:00
 Category: Blog
 Slug: build-reddit-datasets
-Summary: Build Conversational Reddit Dataset using google DataFlow and Big Query
+Summary: Build Conversational Reddit Dataset using Google DataFlow and Big Query
 Tags: Datasets, Machine Learning, Reddit Datasets, Conversational Datasets, Training Pipeline, Preprocessing Pipeline, BigQuery, BigData, Google DataFlow
 Authors: Aaditya Chapagain
 Status: published
@@ -25,7 +25,7 @@ As a result, We decided to bulid our own BlenderBot variant having parameter bet
 1. Pre Training seq2seq Transformer model with similar hyperparamters used by facebook.
 2. Finetune our Model with BST Datasets.( Blended Skill and Talk Datasets).
 
-For Pre-Training, We needed reddit datasets. You can download reddit datasets from [Pushshift.io](https://files.pushshift.io/reddit/comments/).After opening this website you can see its huge and I my waste entire week trying to read and preprocess these files using python (**FYI**: *I still regret doing that, I was young and stupid* :expressionless: ) ZZZzzz.
+For Pre-Training, We needed reddit datasets. You can download reddit datasets from [Pushshift.io](https://files.pushshift.io/reddit/comments/).After opening this website you can see its huge and I my waste entire week trying to read and preprocess these files using python (**FYI**: *I still regret doing that, I was young and stupid* ) ZZZzzz.
 
 Below I will show you How I am able to read and reprocess this hude datasets using Google dataflow and Big Query.
 
