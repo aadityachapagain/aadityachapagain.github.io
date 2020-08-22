@@ -18,19 +18,19 @@ They have open-sourced 3 different variant of BlenderBot model based on Number o
 
 The generated dialogue by `BlenderBot_3B` was better than `BlenderBot_90M` but we were limited by resources. 
 
-With `Nvidia Tesla P100` dialog generation given contex histories takes around 3 - 10 secs. The bigger the context histories the slower it will become.
+With `Nvidia Tesla P100` dialog generation given context histories takes around 3 - 10 secs. The bigger the context histories the slower it will become.
 
 Since 10 secs is to much for our application. So, we try using `90M` Variant of BlenderBot. But comparing to `3B` it was not that good though dialogue generation was very fast.
 
-As a result, We decided to bulid our own BlenderBot variant having parameter between 90M and 3B from scratch. So, To reproduce their results with our cusotom model, we had to redo everything, What facebook did to train the model.
-1. Pre Training seq2seq Transformer model with similar hyperparamters used by facebook.
+As a result, We decided to build our own BlenderBot variant having parameter between 90M and 3B from scratch. So, To reproduce their results with our Custom model, we had to redo everything, What facebook did to train the model.
+1. Pre Training seq2seq Transformer model with similar hyperparameters used by facebook.
 2. Finetune our Model with BST Datasets.( Blended Skill and Talk Datasets).
 
 For Pre-Training, We needed reddit datasets. You can download reddit datasets from [Pushshift.io](https://files.pushshift.io/reddit/comments/).After opening this website you can see its huge and I my waste entire week trying to read and preprocess these files using python (**FYI**: *I still regret doing that, I was young and stupid* ) ZZZzzz.
 
-Below I will show you How I am able to read and reprocess this hude datasets using Google dataflow and Big Query.
+Below I will show you How I am able to read and preprocess this huge datasets using Google dataflow and Big Query.
 
-## Prerequities 
+## Prerequisties 
 
 1. Google cloud project.
 2. Enable Big Query API and DataFlow API.
@@ -39,7 +39,7 @@ Below I will show you How I am able to read and reprocess this hude datasets usi
 
 ## Getting Started
 
-Reddit datasets were created using Apache Beam pipeline scripts, run on Google Dataflow. This parallelises the data processing pipeline across many worker machines. Apache Beam requires python >= 3.6, so you will need to set up a python => 3.6 virtual environment:
+Reddit datasets were created using Apache Beam pipeline scripts, run on Google Dataflow. This parallelizes the data processing pipeline across many worker machines. Apache Beam requires python >= 3.6, so you will need to set up a python => 3.6 virtual environment:
 
 The Dataflow scripts write conversational datasets to Google cloud storage, so you will need to create a bucket to save the dataset to.
 
@@ -133,6 +133,6 @@ Once the above is running, you can continue to monitor it in the terminal, or qu
 The dataset will be saved in the `$DATADIR` directory, as sharded train and test sets- `gs://your-bucket/reddit/YYYYMMDD/train-*-of-01000.json` and `gs://your-bucket/reddit/YYYYMMDD/test-*-of-00100.json`.
 
 
-You can download whole script from [here](https://github.com/aadityachapagain/Conversational-Reddit-datasets).
+You can download script from [here](https://github.com/aadityachapagain/Conversational-Reddit-datasets).
 
-My `create_data.py` file was adapted version for reddit conversational datasets of this example from [GoogleCloudPlatform Repo](https://github.com/GoogleCloudPlatform/cloudml-samples/blob/master/molecules/preprocess.py) you might wanna look into this also. As it covers more broader concept and topics on Dataflow in ML piplines.
+My `create_data.py` file was adapted version for reddit conversational datasets of this example from [GoogleCloudPlatform Repo](https://github.com/GoogleCloudPlatform/cloudml-samples/blob/master/molecules/preprocess.py) you might wanna look into this also. As it covers more broader concept and topics on Dataflow in ML pipelines.
