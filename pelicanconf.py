@@ -46,7 +46,7 @@ PAGE_EXCLUDES = ['404.html']
 SITEURL = 'http://localhost:8000'
 
 SITETITLE = 'Aaditya Chapagain'  # Replace with your name
-SITESUBTITLE = 'notiones a solis ortu usque ad occasum'
+SITESUBTITLE = 'notiones a solis ortu usque ad occasum <br /> "Ideas from sunrise to Sunsets"'
 
 
 # Sitemap Settings
