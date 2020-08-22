@@ -11,6 +11,7 @@ Status: published
 So, I was building chatbot Agent using BlenderBot which is available in [Parlai framework](https://parl.ai) .ParlAI is a python framework for sharing, training and testing dialogue models, from open-domain chitchat to VQA( Visual Question Answering). BlenderBot is current State of the Art chatbot model built and open-sourced by [Facebook AI](https://ai.facebook.com).
 
 They have open-sourced 3 different variant of BlenderBot model based on Number of Parameters model have.
+
 1. `BlenderBot_10B` having 9.4 Billion parameters.
 2. `BlenderBot_3B` having 2.9 Billion parameters.
 3. `BlenderBot_90M` having 90 Million parameters.
