@@ -14,6 +14,7 @@ Recently I was also working on large Machine learning Projects and it was very h
 Wandb is API created by [Weights & Biases](https://www.wandb.com/) to collect, manage and visualize all your Machine learning experiments all at one place. Ohh, wait you must be wandering that **tensorboard** can also do these things right ?
 
 Well, there are lots of things which makes **wandb**  a straight winner.
+ 
 1. Visually aesthetics UI.
 2. More manageable and customizable visualization and experiment tracking.
 3. Super easy to use API.
@@ -28,7 +29,7 @@ Lets Dive into wandb API.
 
 # Installation
 
-Installing `wandb` is very easy, just run blow command in terminal and you are good to go.
+Installing `wandb` is very easy, just run below command in terminal and you are good to go.
 
 ```bash
 pip install wandb
