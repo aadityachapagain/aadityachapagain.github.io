@@ -9,7 +9,7 @@ Authors: Aaditya Chapagain
 Status: published
 
 Have you ever worked on large Machine learning projects or research where you have to manage many experimentations ? often during large projects or experiments you have to log every nits and bits of your Machine Learning training. Some of us might already be there.
-Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization,  experiments. There were lots of them and It would take lots of time to prepare presentaion's  of my experiments results to my peers and that's when I learned about wandb.
+Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization,  experiments. There were lots of them and It would take lots of time to prepare presentation's  of my experiments results to my peers and that's when I learned about wandb.
 
 Wandb is API created by [Weights & Biases](https://www.wandb.com/) to collect, manage and visualize all your Machine learning experiments all at one place. Ohh, wait you must be wandering that **tensorboard** can also do these things right ?
 
@@ -20,7 +20,7 @@ Well, there are lots of things which makes **wandb**  a straight winner.
 3. Super easy to use API.
 4. Analyze system usage metrics alongside runs.
 5. Collaborate with team members
-6. Run parmeter sweeps
+6. Run parameter sweeps
 7. Keep records of experiments available forever
    
 I think the last point in above list is super cool, which is not feasible to do with tensorboard i.e You have to write huge amount of code by yourself to log these system wide metrics into tensorboard, but with wandb you can do this with just one line of code. and 
@@ -54,7 +54,7 @@ export WANDB_API_KEY=$YOUR_API_KEY
 wandb login
 ```
 
-To Programetically login you can use following code:
+To Programatically login you can use following code:
 
 ```python 
 WANDB_API_KEYS = "<your api keys here>"
@@ -133,7 +133,7 @@ _ = model.fit(x_train, y_train,
           callbacks=[WandbCallback()])
 
 ```
-If you are working on images and need a way to log your correctly classifed and misclassifed sample images, you can also do so using wandb. Below you will see the examples of it.
+If you are working on images and need a way to log your correctly classified and misclassified sample images, you can also do so using wandb. Below you will see the examples of it.
 
 ```python
 
@@ -209,6 +209,6 @@ wandb.init(
 
 # Summary
 
-We discuss how to itegrate wandb in any deeplearning framework using python for inspecting the efficiency of training jobs. We also looked into other aspects of wandb that makes it so much unique than other training logging software like tensorboard.
+We discuss how to integrate wandb in any deeplearning framework using python for inspecting the efficiency of training jobs. We also looked into other aspects of wandb that makes it so much unique than other training logging software like tensorboard.
 
 To learn more about wandb, check out their website: [https://www.wandb.com/](https://www.wandb.com/).
