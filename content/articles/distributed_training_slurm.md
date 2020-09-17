@@ -8,13 +8,13 @@ Tags: Datasets, Machine Learning, Visualization, training, Deep Learning, ML too
 Authors: Aaditya Chapagain
 Status: published
 
-Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training. Thats the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for Hight Performance Computing with Slurm . You can find Mininal working example on slurm from google codelabs here [https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0](https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0). 
+Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training, that's the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for High Performance Computing with Slurm . You can find Minimal working example on slurm from google codelabs here [https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0](https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0). 
 
 Through this blog, I will try to explain what is HPC? , Why HPC ?, how can we train large Deep Learning models with slurm.
 
 # What is HPC ?
 
-High Performace Computing  (HPC) is the use of supercomputers and parallel processing techniques for solving complex mathematical and computational problems. HPC technology primarily focuses on developing parallel processing algorithms and systems by incorporating both administration and parallel computational techniques. HPC is typically used for solving advanced problems that require a lot time .
+High Performance Computing  (HPC) is the use of supercomputers and parallel processing techniques for solving complex mathematical and computational problems. HPC technology primarily focuses on developing parallel processing algorithms and systems by incorporating both administration and parallel computational techniques. HPC is typically used for solving advanced problems that require a lot time .
 
 # Why HPC ?
 
@@ -44,7 +44,7 @@ In GCP, a cluster is realized as a **deployment**. A deployment is an instantiat
 
 This brings us to the cluster's nodes. Each node in a cluster is actually a **Virtual Machine**.When a deployment is created, three new virtual machines appear in "VM instances" page, under "Compute  Engine". Those VMs are login instances, Controller instances, and compute image instance.
 
-Compute Instance is a bit trickey part. One thing to notice is that deployment does not create compute instance,but exactly one compute image instance even if you request more compute nodes in your cluster. So, if a user requests 10 compute nodes for the cluster, those 10 virtual machines will not be immediately instantiated with the cluster deployment. Here's what is happening. These compute instances are created in the later step when you run a job and rquest the number of nodes for the job. Then the compute nodes will be allocated, and they will appear in the "VM Instances" page. Shortly after the job is completed, these virtual machines will be deallocated and wll disappear from the list. This way a user gets new compute VMs everytime. The fact that deployment create compute image instance rather than compute nodes directly is that, you might not be using compute node all the time and creating compute nodes unnecessarily might affect your billing, so , slurm will create new compute nodes and use compute image instance as a templete to dynamically create new instance during running jobs, so that you will be billed for exact time period your compute node will run.
+Compute Instance is a bit trickey part. One thing to notice is that deployment does not create compute instance,but exactly one compute image instance even if you request more compute nodes in your cluster. So, if a user requests 10 compute nodes for the cluster, those 10 virtual machines will not be immediately instantiated with the cluster deployment. Here's what is happening. These compute instances are created in the later step when you run a job and request the number of nodes for the job. Then the compute nodes will be allocated, and they will appear in the "VM Instances" page. Shortly after the job is completed, these virtual machines will be deallocated and will disappear from the list. This way a user gets new compute VMs everytime. The fact that deployment create compute image instance rather than compute nodes directly is that, you might not be using compute node all the time and creating compute nodes unnecessarily might affect your billing, so , slurm will create new compute nodes and use compute image instance as a templete to dynamically create new instance during running jobs, so that you will be billed for exact time period your compute node will run.
 
 Below you can see visual representation of the described process:
 
@@ -78,7 +78,7 @@ $ git clone https://github.com/SchedMD/slurm-gcp.git
 ```bash
 $ cd slurm-gcp
 ```
-3. Configure the Slurm Deployment YAML file. Provide information that suits your needs. There are plenty more paramters available, they can be found in SchedMD's GitHub repository. Below is the script that was sufficient for my needs.
+3. Configure the Slurm Deployment YAML file. Provide information that suits your needs. There are plenty more parameters available, they can be found in SchedMD's GitHub repository. Below is the script that was sufficient for my needs.
 
 ```yaml
 
@@ -181,7 +181,7 @@ source ~/.bashrc
 
 ```
 
-4. Installing CUDA toolkits and Nvdia-drivers
+4. Installing CUDA toolkits and Nvidia-drivers
 
 * Download the latest Nvidia CUDA [repository package](https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/) cuda-repo-rhel7-*.rpm.
 ```bash
@@ -227,7 +227,7 @@ export LD_LIBRARY_PATH=$HOME/opt/cuda/lib64:$LD_LIBRARY_PATH
 
 # Installing Nvidia-Apex library inside your slurm cluster ( Optional )
 
-If you don't know about Apex library, you can visit Nvidia-Apex [github page](https://github.com/NVIDIA/apex) to know more about Apex library. It is a set of utilites to help training model in mixed precision mode. It provide more numercial stable layer norm operations during training model in mixed precision mode, So that you can have both faster and stable training.
+If you don't know about Apex library, you can visit Nvidia-Apex [github page](https://github.com/NVIDIA/apex) to know more about Apex library. It is a set of utilites to help training model in mixed precision mode. It provide more numerical stable layer norm operations during training model in mixed precision mode, So that you can have both faster and stable training.
 
 For `Nvidia-apex` to sucessfully compile, You need to upgrade your gcc --version to 7.3.0 .
 
@@ -254,11 +254,11 @@ Its takes around 4 - 6 minutes to compile and install apex.
 
 # Distributed Training with pytorch and slurm
 
-I will not give details on how to setup codebase in pytorch for distributed training, Its a huge topic and might need another blog post for it only. Meanwhile,  You can learn more about distributed training with pytorch [here](https://pytorch.org/tutorials/intermediate/dist_tuto.html). After you done setting up distributed trining codebase in pytorch. You can start training using sbatch scripts.
+I will not give details on how to setup codebase in pytorch for distributed training, Its a huge topic and might need another blog post for it only. Meanwhile,  You can learn more about distributed training with pytorch [here](https://pytorch.org/tutorials/intermediate/dist_tuto.html). After you done setting up distributed training codebase in pytorch. You can start training using sbatch scripts.
 
 ## Running the training Job Using SBATCH Script
 
-After we have done the cluster setup, preparing deep leanring envs and building of the model, the last step is to finally run a job, i.e. to start the training. That is easily done by running a sbatch script, which is basically a customized shell script. It effectively has two parts. The first part of the script is specific for the Slurm, it specifies the parameters for the Slurm job scheduler using the SBATCH command. The second part consists of bash (or some other shell) commands that you would normally run in terminal.
+After we have done the cluster setup, preparing deep learning envs and building of the model, the last step is to finally run a job, i.e. to start the training. That is easily done by running sbatch script, which is basically a customized shell script. It effectively has two parts. The first part of the script is specific for the Slurm, it specifies the parameters for the Slurm job scheduler using the SBATCH command. The second part consists of bash (or some other shell) commands that you would normally run in terminal.
 
 Below you will see demo SBATCH script (You need to modify sbatch script according to your needs).
 
@@ -308,7 +308,7 @@ gpu* up infinite 6 idle~ slurm-job-compute-0-[2-7]
 
 # Summary
 
-In this blog post we learned how to setup slurm cluster in GCP which is super easy, setup own deeplearning environment from installing python, pytorch to compiling apex from source and finally run training using sbatch script and keeping track of job state every.
+In this blog post we learned how to setup slurm cluster in GCP  ( which is super easy ), setup own deeplearning environment from installing python, pytorch to compiling apex from source and finally run training using sbatch script and keeping track of job state using `sinfo`, `squeue` and `scontrol`.
 
 # REFERENCES
 
