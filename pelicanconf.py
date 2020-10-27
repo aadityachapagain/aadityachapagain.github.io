@@ -87,6 +87,7 @@ FAVICON = "/images/favicon.ico"
 
 LINKS = [
     ("Resume", "https://aadityachapagain.com/AboutMe/"),
+    ("Sapiens", "https://aadityachapagain.com/sapiens"),
 ]
 
 MARKDOWN = {
