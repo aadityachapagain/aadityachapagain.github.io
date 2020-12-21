@@ -6,7 +6,7 @@ blinker==1.4
 bs4==0.0.1
 bulrush==0.3.2
 cffi==1.14.0
-cryptography==2.9.2
+cryptography==3.2
 cssmin==0.2.0
 docutils==0.13.1
 ecdsa==0.13.3
