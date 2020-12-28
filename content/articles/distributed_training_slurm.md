@@ -8,7 +8,7 @@ Tags: Datasets, Machine Learning, Visualization, training, Deep Learning, ML too
 Authors: Aaditya Chapagain
 Status: published
 
-Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training, that's the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for High Performance Computing with Slurm . You can find Minimal working example on slurm from google codelabs here [https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0](https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0). 
+Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training, that's the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for High Performance Computing with Slurm . You can find Minimal working example on slurm from google codelabs here [https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine](https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine). 
 
 Through this blog, I will try to explain what is HPC? , Why HPC ?, how can we train large Deep Learning models with slurm.
 
@@ -27,7 +27,7 @@ With HPC, we can divide any job so that every node processes different partition
 To make computing with  slurm easier in GCP, Google and SchedMD ( Slurm's Creators ) joined forces and as a result, we can run a Slurm cluster on Google Cloud Platform. We don't have to worry about the parallel computing techniques since slurm takes care of that and GCP takes care of setting up a cluster and providing resources. 
 Basic architectural diagram of a stand-alone Slurm Cluster in Google Cloud Platform.
 
-![slurm architechture](https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/img/a739730a41acff0a.png)
+[![Slum Architecture in GCP](/images/slurm-archi.svg){.img-center}](https://ibb.co/SPhjRyM)
 
 As we can see in above pictures, Slurm cluster contains three types of nodes: **login**, **controller** and **Compute** node.
 
@@ -312,7 +312,7 @@ In this blog post we learned how to setup slurm cluster in GCP  ( which is super
 
 # REFERENCES
 
-1. [https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0](https://codelabs.developers.google.com/codelabs/hpc-slurm-on-gcp/#0)
+1. [https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine](https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine)
 2. [https://cloud.google.com/deployment-manager/docs/deployments](https://cloud.google.com/deployment-manager/docs/deployments)
 3. [https://pytorch.org/tutorials/intermediate/dist_tuto.html](https://pytorch.org/tutorials/intermediate/dist_tuto.html)
 4. [https://github.com/NVIDIA/apex](https://github.com/NVIDIA/apex)
