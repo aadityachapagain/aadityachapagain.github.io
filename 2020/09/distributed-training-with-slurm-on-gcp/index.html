@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/stylesheet/style.min.css">
+
+    <link id="dark-theme-style" rel="stylesheet" type="text/css"
+        disabled="disabled"
+    href="https://aadityachapagain.com/theme/stylesheet/dark-theme.min.css">
+
+    <link id="pygments-dark-theme" rel="stylesheet" type="text/css"
+            disabled="disabled"
+          href="https://aadityachapagain.com/theme/pygments/monokai.min.css">
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+          href="https://aadityachapagain.com/theme/pygments/emacs.min.css">
+
+
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/solid.css">
+
+
+    <link href="https://aadityachapagain.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Aaditya Chapagain Atom">
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-175516093-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Aaditya Chapagain" />
+<meta name="description" content="Faster Training of Large Deep Learning models is much easier than you think with the help of Slurm." />
+<meta name="keywords" content="Datasets, Machine Learning, Visualization, training, Deep Learning, ML tools, tensorboard, python, slurm, distributed training, High performance computing, HPC, parallel processing, tensorflow, Pytorch, DL, Language model">
+
+
+<meta property="og:site_name" content="Aaditya Chapagain"/>
+<meta property="og:title" content="Distributed Training of Deep Learning model with Slurm on GCP"/>
+<meta property="og:description" content="Faster Training of Large Deep Learning models is much easier than you think with the help of Slurm."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://aadityachapagain.com/2020/09/distributed-training-with-slurm-on-gcp/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2020-09-15 12:00:00+05:45"/>
+<meta property="article:modified_time" content="2020-09-15 12:00:00+05:45"/>
+<meta property="article:author" content="https://aadityachapagain.com/author/aaditya-chapagain.html">
+<meta property="article:section" content="Blog"/>
+<meta property="article:tag" content="Datasets"/>
+<meta property="article:tag" content="Machine Learning"/>
+<meta property="article:tag" content="Visualization"/>
+<meta property="article:tag" content="training"/>
+<meta property="article:tag" content="Deep Learning"/>
+<meta property="article:tag" content="ML tools"/>
+<meta property="article:tag" content="tensorboard"/>
+<meta property="article:tag" content="python"/>
+<meta property="article:tag" content="slurm"/>
+<meta property="article:tag" content="distributed training"/>
+<meta property="article:tag" content="High performance computing"/>
+<meta property="article:tag" content="HPC"/>
+<meta property="article:tag" content="parallel processing"/>
+<meta property="article:tag" content="tensorflow"/>
+<meta property="article:tag" content="Pytorch"/>
+<meta property="article:tag" content="DL"/>
+<meta property="article:tag" content="Language model"/>
+<meta property="og:image" content="/images/profile.jpg">
+
+  <title>Aaditya Chapagain &ndash; Distributed Training of Deep Learning model with Slurm on GCP</title>
+
+</head>
+<body class="light-theme">
+  <aside>
+    <div>
+      <a href="https://aadityachapagain.com">
+        <img src="/images/profile.jpg" alt="Aaditya Chapagain" title="Aaditya Chapagain">
+      </a>
+
+      <h1>
+        <a href="https://aadityachapagain.com">Aaditya Chapagain</a>
+      </h1>
+
+<p>notiones a solis ortu usque ad occasum <br /> "Ideas from sunrise to Sunsets"</p>
+
+      <nav>
+        <ul class="list">
+
+
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/about/#about">
+                  About
+                </a>
+              </li>
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/contact/#contact">
+                  Contact
+                </a>
+              </li>
+
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/AboutMe/" >Resume</a>
+            </li>
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/sapiens" >Sapiens</a>
+            </li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+          <li>
+            <a  class="sc-github" href="https://github.com/aadityachapagain" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-linkedin" href="https://www.linkedin.com/in/aaditya-chapagain-b5170a104/" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-twitter" href="https://twitter.com/chapagainA" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-facebook" href="https://www.facebook.com/aaditya.chapagain" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+          </li>
+      </ul>
+    </div>
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://aadityachapagain.com">Home</a>
+
+      <a href="/archives">All Posts</a>
+      <a href="/categories">Categories</a>
+      <a href="/tags">Tags</a>
+
+      <a href="https://aadityachapagain.com/feeds/all.atom.xml">Atom</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="distributed-training-with-slurm-on-gcp">Distributed Training of Deep Learning model with Slurm on GCP</h1>
+    <p>
+      Posted on September 15, 2020 in <a href="https://aadityachapagain.com/category/blog.html">Blog</a>
+
+        &#8226; 8 min read
+    </p>
+  </header>
+
+
+  <div>
+    <p>Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training, that's the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for High Performance Computing with Slurm . You can find Minimal working example on slurm from google codelabs here <a href="https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine">https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine</a>. </p>
+<p>Through this blog, I will try to explain what is HPC? , Why HPC ?, how can we train large Deep Learning models with slurm.</p>
+<h1>What is HPC ?</h1>
+<p>High Performance Computing  (HPC) is the use of supercomputers and parallel processing techniques for solving complex mathematical and computational problems. HPC technology primarily focuses on developing parallel processing algorithms and systems by incorporating both administration and parallel computational techniques. HPC is typically used for solving advanced problems that require a lot time .</p>
+<h1>Why HPC ?</h1>
+<p>When you have loads of data and its processing takes really long time, then the approch <strong>divide et impera</strong> comes at hand.</p>
+<p>With HPC, we can divide any job so that every node processes different partitions of the data in parallel, speeding up the execution time.</p>
+<h1>Slurm Workload Manager on GCP</h1>
+<p>To make computing with  slurm easier in GCP, Google and SchedMD ( Slurm's Creators ) joined forces and as a result, we can run a Slurm cluster on Google Cloud Platform. We don't have to worry about the parallel computing techniques since slurm takes care of that and GCP takes care of setting up a cluster and providing resources. 
+Basic architectural diagram of a stand-alone Slurm Cluster in Google Cloud Platform.</p>
+<p><a href="https://ibb.co/SPhjRyM"><img alt="Slum Architecture in GCP" class="img-center" src="/images/slurm-archi.svg"></a></p>
+<p>As we can see in above pictures, Slurm cluster contains three types of nodes: <strong>login</strong>, <strong>controller</strong> and <strong>Compute</strong> node.</p>
+<ul>
+<li><strong>Login Node</strong> serves as an interface for the user: user should communicate with the cluster exclusively through the login node (starting the job, requiring resources, ...)</li>
+<li><strong>Controller Node</strong> manages resources and job scheduling for the user.</li>
+<li><strong>Compute Node</strong> executes the job.</li>
+</ul>
+<h1>Setting Up a Slurm Cluster on GCP</h1>
+<p>Before describing the setup, let us explain in short how does GCP implement a slurm cluster. </p>
+<p>In GCP, a cluster is realized as a <strong>deployment</strong>. A deployment is an instantiation of a set of resources  that are defined in a configuration. A deployment  can contain a number of resources, across a variety of Google Cloud Platform services. When you create a deployment, Deployment Manager creates all of the described resources in the respective Google Cloud Platform APIs.</p>
+<p>This brings us to the cluster's nodes. Each node in a cluster is actually a <strong>Virtual Machine</strong>.When a deployment is created, three new virtual machines appear in "VM instances" page, under "Compute  Engine". Those VMs are login instances, Controller instances, and compute image instance.</p>
+<p>Compute Instance is a bit trickey part. One thing to notice is that deployment does not create compute instance,but exactly one compute image instance even if you request more compute nodes in your cluster. So, if a user requests 10 compute nodes for the cluster, those 10 virtual machines will not be immediately instantiated with the cluster deployment. Here's what is happening. These compute instances are created in the later step when you run a job and request the number of nodes for the job. Then the compute nodes will be allocated, and they will appear in the "VM Instances" page. Shortly after the job is completed, these virtual machines will be deallocated and will disappear from the list. This way a user gets new compute VMs everytime. The fact that deployment create compute image instance rather than compute nodes directly is that, you might not be using compute node all the time and creating compute nodes unnecessarily might affect your billing, so , slurm will create new compute nodes and use compute image instance as a templete to dynamically create new instance during running jobs, so that you will be billed for exact time period your compute node will run.</p>
+<p>Below you can see visual representation of the described process:</p>
+<p><a href="https://ibb.co/mFrGDy3"><img alt="Slum Architecture in GCP" class="img-center" src="/images/slurm_hpc.png"></a></p>
+<p>Finally, let's head to the cluster setup. In this blog post, we will setup Slurm cluster for training Deep Learning Model with several nodes.Customize the information so that they will suit your needs:</p>
+<ol>
+<li>Launch Google Cloud Shell</li>
+<li>Check that you already authenticated and that the project is already set to your <strong>PROJECT_ID</strong>: </li>
+</ol>
+<div class="highlight"><pre><span></span><code>$ gcloud auth list
+
+Credentialed accounts:
+&lt;your email&gt;
+
+$ gcloud config list project
+<span class="o">[</span>core<span class="o">]</span>
+<span class="nv">project</span> <span class="o">=</span> &lt;PROJECT_ID&gt;
+</code></pre></div>
+
+
+<ol>
+<li>Clone git repository that contains the Slurm Google Cloud Platform deployment-manager files: </li>
+</ol>
+<div class="highlight"><pre><span></span><code>$ git clone https://github.com/SchedMD/slurm-gcp.git
+</code></pre></div>
+
+
+<ol>
+<li>Switch to the Slurm deployment configuration directory: </li>
+</ol>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> slurm-gcp
+</code></pre></div>
+
+
+<ol>
+<li>Configure the Slurm Deployment YAML file. Provide information that suits your needs. There are plenty more parameters available, they can be found in SchedMD's GitHub repository. Below is the script that was sufficient for my needs.</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># [START cluster_yaml]</span>
+<span class="nt">imports</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">slurm.jinja</span>
+
+<span class="nt">resources</span><span class="p">:</span>
+<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">slurm-cluster</span>
+<span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">slurm.jinja</span>
+<span class="nt">properties</span><span class="p">:</span>
+    <span class="nt">cluster_name            </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">slurm-job</span>
+
+    <span class="nt">zone                    </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us-central1-b</span>
+    <span class="nt">controller_machine_type </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">n1-standard-2</span>
+    <span class="nt">controller_disk_type      </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pd-standard</span>
+    <span class="nt">controller_disk_size_gb   </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+    <span class="nt">external_controller_ip    </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+    <span class="nt">login_machine_type        </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">n1-standard-2</span>
+    <span class="nt">login_disk_type           </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pd-standard</span>
+    <span class="nt">login_disk_size_gb        </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+    <span class="nt">external_login_ips        </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+
+    <span class="nt">compute_image_machine_type  </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">n1-standard-2</span>
+    <span class="nt">compute_image_disk_type   </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pd-standard</span>
+    <span class="nt">compute_image_disk_size_gb</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
+    <span class="nt">external_compute_ips      </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
+
+    <span class="nt">partitions </span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name           </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gpu</span>
+        <span class="l l-Scalar l-Scalar-Plain">machine_type</span>   <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">n1-standard-16</span>
+        <span class="l l-Scalar l-Scalar-Plain">max_node_count</span> <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+        <span class="l l-Scalar l-Scalar-Plain">zone</span>           <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">us-central1-b</span>
+        <span class="l l-Scalar l-Scalar-Plain"># cpu_platform</span>           <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Intel Skylake</span>
+        <span class="l l-Scalar l-Scalar-Plain">preemptible_bursting</span>   <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
+        <span class="l l-Scalar l-Scalar-Plain">compute_disk_type</span>      <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">pd-standard</span>
+        <span class="l l-Scalar l-Scalar-Plain">compute_disk_size_gb</span>   <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
+        <span class="l l-Scalar l-Scalar-Plain">gpu_type</span>               <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">nvidia-tesla-v100</span>
+        <span class="l l-Scalar l-Scalar-Plain">gpu_count</span>              <span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="c1">#  [END cluster_yaml]</span>
+</code></pre></div>
+
+
+<ol>
+<li>In the Cloud shell Session, execute the following command from the slurm-gcp folder:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>&gt; gcloud deployment-manager deployments create slurm-deployment  --config  slurm-cluster.yaml
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="err">This command creates a deployment  named slurm-deployment. The operation can take few minutes to complete.</span>
+</code></pre></div>
+
+
+<ol>
+<li>Verify the deployment ( Navigation menu --&gt;  Deployment Manager)</li>
+<li>Verify the cluster's instances ( Navigation menu --&gt; Compute Engine --&gt; VM Instances)  There should be login , controller, and compute image instances. Compute image instance will live for small amount of time for setting up compute images, after that it will be off. and Compute Instances show up only when you allocate them for the sbatch job. they disappear shortly the job is completed.</li>
+<li>
+<p>Log in to login instance .</p>
+<p>While logging in to the login instances if <em>Slurm is currently being installed/configured in the background.</em> Don't install any packages  during that time, as that might disrupt the installation process of slurm. Wait for around 10 for slurm to be installed fully and you can log in to login instances and do whatever you want.</p>
+</li>
+</ol>
+<h1>Setting up Deep Learning Environment inside slurm cluster</h1>
+<ol>
+<li>SSH to login instance in your slurm cluster.</li>
+<li>After sucessfully installing slurm on cluster,  ( /home , /apps ) directory of login instances will be shared with all other instances  like controller and compute instances. So that all deep learning  and python binaries must be installed inside <code>/home</code> or <code>/apps</code> directory.</li>
+<li>Installing python inside /home:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> ~
+
+sudo yum -y update<span class="p">;</span> sudo yum groupinstall <span class="s2">&quot;Development Tools&quot;</span>
+
+sudo yum -y install openssl-devel bzip2-devel libffi-devel
+
+mkdir tmp<span class="p">;</span><span class="nb">cd</span> tmp<span class="p">;</span> wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+
+tar zxvf Python-3.8.3.tgz<span class="p">;</span> <span class="nb">cd</span> Python-3.8.3
+
+./configure --enable-optimizations --prefix<span class="o">=</span><span class="nv">$HOME</span>/opt/python-3.8
+
+make
+
+make altinstall
+
+vi ~/.bashrc
+<span class="o">(</span>add line: <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$HOME</span>/opt/python-3.8/bin:<span class="nv">$PATH</span><span class="o">)</span> at the end of .bashrc 
+
+<span class="nb">source</span> ~/.bashrc
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="o">&gt;</span> <span class="n">which</span> <span class="n">python3</span><span class="p">.</span><span class="mi">8</span>
+<span class="p">(</span><span class="k">output</span> <span class="n">should</span> <span class="n">be</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">username</span><span class="o">&gt;/</span><span class="n">opt</span><span class="o">/</span><span class="n">python</span><span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">8</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">python3</span><span class="p">)</span>
+
+<span class="o">#</span> <span class="n">Now</span> <span class="n">Lets</span> <span class="n">install</span> <span class="n">pytorch</span>
+
+<span class="o">&gt;</span> <span class="n">curl</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">bootstrap</span><span class="p">.</span><span class="n">pypa</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="k">get</span><span class="o">-</span><span class="n">pip</span><span class="p">.</span><span class="n">py</span> <span class="o">-</span><span class="n">o</span> <span class="k">get</span><span class="o">-</span><span class="n">pip</span><span class="p">.</span><span class="n">py</span>
+
+<span class="o">&gt;</span>  <span class="n">python3</span><span class="p">.</span><span class="mi">8</span> <span class="k">get</span><span class="o">-</span><span class="n">pip</span><span class="p">.</span><span class="n">py</span>
+
+<span class="o">&gt;</span> <span class="n">python3</span><span class="p">.</span><span class="mi">8</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">torch</span><span class="o">==</span><span class="mi">1</span><span class="p">.</span><span class="mi">5</span><span class="p">.</span><span class="mi">0</span>
+</code></pre></div>
+
+
+<ol>
+<li>
+<p>Installing CUDA toolkits and Nvidia-drivers</p>
+</li>
+<li>
+<p>Download the latest Nvidia CUDA <a href="https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/">repository package</a> cuda-repo-rhel7-*.rpm.</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>&gt; <span class="nb">cd</span> ~
+&gt; wget https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.2.89-1.x86_64.rpm
+</code></pre></div>
+
+
+<ul>
+<li>Install the CUDA repository package. This will enable CUDA repository on your CentOS 7 Linux system:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>&gt; sudo rpm -i cuda-repo-*.rpm
+</code></pre></div>
+
+
+<ul>
+<li>Install cuda package from nvidia repository. Pytorch 1.5 works with cuda 10.2, so lets install cuda 10.2. Below command will install cuda and nvidia-drivers inside  <code>/usr/local/cuda-10.2</code> directory.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>&gt; sudo yum install cuda-10-2
+</code></pre></div>
+
+
+<ul>
+<li>By Now we know that only  <code>/home</code> and <code>/apps</code> directory were shared across all other instances. So lets copy cuda directory from <code>/usr/local/</code> to <code>~/opt/cuda</code> </li>
+</ul>
+<div class="highlight"><pre><span></span><code>&gt; mkdir ~/opt/cuda 
+&gt; cp -r /usr/local/cuda-10.2/* ~/opt/cuda/
+</code></pre></div>
+
+
+<ul>
+<li>Export cuda path to Nvidia CUDA binary executables. Open the ~/.bashrc using your preferred text editor and add the following two lines</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$HOME</span>/opt/cuda/bin:<span class="nv">$PATH</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/opt/cuda/lib64:<span class="nv">$LD_LIBRARY_PATH</span>
+</code></pre></div>
+
+
+<ul>
+<li>Now Re-login or execute your updated ~/.bashrc file:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>&gt; <span class="nb">source</span> ~/.bashrc
+</code></pre></div>
+
+
+<ul>
+<li>Now  Confirm the CUDA installation:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>&gt; nvcc --version
+&gt; nvidia-smi <span class="c1">#( doesn&#39;t work as we dont have gpu in login instances )</span>
+</code></pre></div>
+
+
+<blockquote>
+<p>By Now your slurm system is ready and can run any training script using <code>sbatch</code> scheduling. Below I will discuss on how to compile nvidia-apex library. It takes me 2 days just to make nvidia-apex work on slurm cluster.If you follow my above steps exaclty, I am sure you will be able to install nvidia apex library inside your slurm cluster without any problems.</p>
+</blockquote>
+<h1>Installing Nvidia-Apex library inside your slurm cluster ( Optional )</h1>
+<p>If you don't know about Apex library, you can visit Nvidia-Apex <a href="https://github.com/NVIDIA/apex">github page</a> to know more about Apex library. It is a set of utilites to help training model in mixed precision mode. It provide more numerical stable layer norm operations during training model in mixed precision mode, So that you can have both faster and stable training.</p>
+<p>For <code>Nvidia-apex</code> to sucessfully compile, You need to upgrade your gcc --version to 7.3.0 .</p>
+<div class="highlight"><pre><span></span><code>&gt; sudo yum install centos-release-scl
+&gt; sudo yum install devtoolset-7-gcc*
+&gt; scl <span class="nb">enable</span> devtoolset-7 bash
+&gt; which gcc
+&gt; gcc --version
+<span class="o">(</span>above bash script must output gcc version as <span class="m">7</span>.3.0<span class="o">)</span>
+</code></pre></div>
+
+
+<p>Now We will compile and install Apex-library inside python3.8</p>
+<div class="highlight"><pre><span></span><code>&gt; git clone https://github.com/NVIDIA/apex
+&gt; <span class="nb">cd</span> apex
+&gt; <span class="nb">export</span> <span class="nv">TORCH_CUDA_ARCH_LIST</span><span class="o">=</span><span class="s2">&quot;6.0;7.0&quot;</span>
+&gt; <span class="nv">CUDA_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/opt/cuda python3.8 -m pip install -v --no-cache-dir --global-option<span class="o">=</span><span class="s2">&quot;--cpp_ext&quot;</span> --global-option<span class="o">=</span><span class="s2">&quot;--cuda_ext&quot;</span> ./
+</code></pre></div>
+
+
+<p>Its takes around 4 - 6 minutes to compile and install apex.</p>
+<h1>Distributed Training with pytorch and slurm</h1>
+<p>I will not give details on how to setup codebase in pytorch for distributed training, Its a huge topic and might need another blog post for it only. Meanwhile,  You can learn more about distributed training with pytorch <a href="https://pytorch.org/tutorials/intermediate/dist_tuto.html">here</a>. After you done setting up distributed training codebase in pytorch. You can start training using sbatch scripts.</p>
+<h2>Running the training Job Using SBATCH Script</h2>
+<p>After we have done the cluster setup, preparing deep learning envs and building of the model, the last step is to finally run a job, i.e. to start the training. That is easily done by running sbatch script, which is basically a customized shell script. It effectively has two parts. The first part of the script is specific for the Slurm, it specifies the parameters for the Slurm job scheduler using the SBATCH command. The second part consists of bash (or some other shell) commands that you would normally run in terminal.</p>
+<p>Below you will see demo SBATCH script (You need to modify sbatch script according to your needs).</p>
+<blockquote>
+<p>inside run_training.sh file.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/sh</span>
+ <span class="c1">#SBATCH --job-name=distributed_training</span>
+  <span class="c1">#SBATCH --output=slurm_logs/slrm_stdout.%j</span>
+  <span class="c1">#SBATCH --error=slurm_logs/slrm_stderr.%j</span>
+  <span class="c1">#SBATCH --partition=gpu</span>
+  <span class="c1">## make sure we don&#39;t clobber log files if jobs get restarted</span>
+  <span class="c1">#SBATCH --open-mode=append</span>
+  <span class="c1">#SBATCH --nodes=2</span>
+  <span class="c1">#SBATCH --time=24:00:00</span>
+  <span class="c1">## make sure we are told about preempts, and jobs running out of time, 60s beforehand</span>
+  <span class="c1">#SBATCH --signal=USR1@60</span>
+  <span class="c1">#SBATCH --cpus-per-task=5</span>
+  <span class="c1">## srun forks ntasks_per_node times on each node</span>
+  <span class="c1">#SBATCH --ntasks-per-node=1</span>
+  <span class="c1">#SBATCH --mem=200G</span>
+  <span class="c1">#SBATCH --gpus-per-node=1</span>
+
+python3.8 train.py &lt;Your training args here&gt;
+</code></pre></div>
+
+
+<p>Execute the sbatch script using the sbatch command line:</p>
+<div class="highlight"><pre><span></span><code>&gt; sbatch run_training.sh
+</code></pre></div>
+
+
+<p>Running sbatch will return a Job ID for the scheduled job, for example: </p>
+<div class="highlight"><pre><span></span><code><span class="err">Submitted batch job 37</span>
+</code></pre></div>
+
+
+<p>To keep track of the job’s state, run squeue and to keep track of the cluster’s state, run sinfo:</p>
+<div class="highlight"><pre><span></span><code>&gt; squeue
+
+JOBID PARTITION NAME USER ST TIME NODES NODELIST<span class="o">(</span>REASON<span class="o">)</span>
+<span class="m">3</span> gpu hostname &lt;username&gt; CF <span class="m">0</span>:11 <span class="m">4</span> slurm-job-compute-0-<span class="o">[</span><span class="m">0</span>-1<span class="o">]</span>
+
+&gt; sinfo
+
+PARTITION AVAIL TIMELIMIT NODES STATE NODELIST
+gpu* up infinite <span class="m">4</span> mix# slurm-job-compute-0-<span class="o">[</span><span class="m">0</span>-1<span class="o">]</span>
+gpu* up infinite <span class="m">6</span> idle~ slurm-job-compute-0-<span class="o">[</span><span class="m">2</span>-7<span class="o">]</span>
+</code></pre></div>
+
+
+<h1>Summary</h1>
+<p>In this blog post we learned how to setup slurm cluster in GCP  ( which is super easy ), setup own deeplearning environment from installing python, pytorch to compiling apex from source and finally run training using sbatch script and keeping track of job state using <code>sinfo</code>, <code>squeue</code> and <code>scontrol</code>.</p>
+<h1>REFERENCES</h1>
+<ol>
+<li><a href="https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine">https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine</a></li>
+<li><a href="https://cloud.google.com/deployment-manager/docs/deployments">https://cloud.google.com/deployment-manager/docs/deployments</a></li>
+<li><a href="https://pytorch.org/tutorials/intermediate/dist_tuto.html">https://pytorch.org/tutorials/intermediate/dist_tuto.html</a></li>
+<li><a href="https://github.com/NVIDIA/apex">https://github.com/NVIDIA/apex</a></li>
+</ol>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://aadityachapagain.com/tag/datasets.html">Datasets</a>
+      <a href="https://aadityachapagain.com/tag/machine-learning.html">Machine Learning</a>
+      <a href="https://aadityachapagain.com/tag/visualization.html">Visualization</a>
+      <a href="https://aadityachapagain.com/tag/training.html">training</a>
+      <a href="https://aadityachapagain.com/tag/deep-learning.html">Deep Learning</a>
+      <a href="https://aadityachapagain.com/tag/ml-tools.html">ML tools</a>
+      <a href="https://aadityachapagain.com/tag/tensorboard.html">tensorboard</a>
+      <a href="https://aadityachapagain.com/tag/python.html">python</a>
+      <a href="https://aadityachapagain.com/tag/slurm.html">slurm</a>
+      <a href="https://aadityachapagain.com/tag/distributed-training.html">distributed training</a>
+      <a href="https://aadityachapagain.com/tag/high-performance-computing.html">High performance computing</a>
+      <a href="https://aadityachapagain.com/tag/hpc.html">HPC</a>
+      <a href="https://aadityachapagain.com/tag/parallel-processing.html">parallel processing</a>
+      <a href="https://aadityachapagain.com/tag/tensorflow.html">tensorflow</a>
+      <a href="https://aadityachapagain.com/tag/pytorch.html">Pytorch</a>
+      <a href="https://aadityachapagain.com/tag/dl.html">DL</a>
+      <a href="https://aadityachapagain.com/tag/language-model.html">Language model</a>
+    </p>
+  </div>
+
+
+
+  <div class="related-posts">
+    <h4>You might enjoy</h4>
+    <ul class="related-posts">
+      <li><a href="https://aadityachapagain.com/2020/09/wandb-your-machine-learning-project/">Wandb Your machine learning project.</a></li>
+      <li><a href="https://aadityachapagain.com/2020/08/build-reddit-datasets/">Build Conversational Reddit Dataset using Google DataFlow and Big Query</a></li>
+      <li><a href="https://aadityachapagain.com/2020/08/asr-mfcc-filterbanks/">Speech Signal Processing using python</a></li>
+    </ul>
+  </div>
+
+
+<!-- Disqus -->
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aadityachapagain';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>
+    Please enable JavaScript to view comments.
+</noscript>
+<!-- End Disqus -->
+</article>
+
+    <footer>
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
+  This work by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://aadityachapagain.com">Aaditya Chapagain</a> is licensed under <a rel="license" href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" /><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" /></a>
+</p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+  <span class="footer-separator">|</span>
+  Switch to the <a href="javascript:void(0)" onclick="theme.switch(`dark`)">dark</a> | <a href="javascript:void(0)" onclick="theme.switch(`light`)">light</a> | <a href="javascript:void(0)" onclick="theme.switch(`browser`)">browser</a> theme
+  <script id="dark-theme-script"
+          src="https://aadityachapagain.com/theme/dark-theme/dark-theme.min.js"
+          data-enable-auto-detect-theme="false"
+          data-default-theme="light"
+          type="text/javascript">
+  </script>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Aaditya Chapagain ",
+  "url" : "https://aadityachapagain.com",
+  "image": "/images/profile.jpg",
+  "description": ""
+}
+</script>
+
+
+</body>
+</html>

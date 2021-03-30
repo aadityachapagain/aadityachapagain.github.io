@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/stylesheet/style.min.css">
+
+    <link id="dark-theme-style" rel="stylesheet" type="text/css"
+        disabled="disabled"
+    href="https://aadityachapagain.com/theme/stylesheet/dark-theme.min.css">
+
+    <link id="pygments-dark-theme" rel="stylesheet" type="text/css"
+            disabled="disabled"
+          href="https://aadityachapagain.com/theme/pygments/monokai.min.css">
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+          href="https://aadityachapagain.com/theme/pygments/emacs.min.css">
+
+
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/solid.css">
+
+
+    <link href="https://aadityachapagain.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Aaditya Chapagain Atom">
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-175516093-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Aaditya Chapagain" />
+<meta name="description" content="Build Conversational Reddit Dataset using Google DataFlow and Big Query" />
+<meta name="keywords" content="Datasets, Machine Learning, Reddit Datasets, Conversational Datasets, Training Pipeline, Preprocessing Pipeline, BigQuery, BigData, Google DataFlow">
+
+
+<meta property="og:site_name" content="Aaditya Chapagain"/>
+<meta property="og:title" content="Build Conversational Reddit Dataset using Google DataFlow and Big Query"/>
+<meta property="og:description" content="Build Conversational Reddit Dataset using Google DataFlow and Big Query"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://aadityachapagain.com/2020/08/build-reddit-datasets/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2020-08-22 12:00:00+05:45"/>
+<meta property="article:modified_time" content="2020-08-22 12:00:00+05:45"/>
+<meta property="article:author" content="https://aadityachapagain.com/author/aaditya-chapagain.html">
+<meta property="article:section" content="Blog"/>
+<meta property="article:tag" content="Datasets"/>
+<meta property="article:tag" content="Machine Learning"/>
+<meta property="article:tag" content="Reddit Datasets"/>
+<meta property="article:tag" content="Conversational Datasets"/>
+<meta property="article:tag" content="Training Pipeline"/>
+<meta property="article:tag" content="Preprocessing Pipeline"/>
+<meta property="article:tag" content="BigQuery"/>
+<meta property="article:tag" content="BigData"/>
+<meta property="article:tag" content="Google DataFlow"/>
+<meta property="og:image" content="/images/profile.jpg">
+
+  <title>Aaditya Chapagain &ndash; Build Conversational Reddit Dataset using Google DataFlow and Big Query</title>
+
+</head>
+<body class="light-theme">
+  <aside>
+    <div>
+      <a href="https://aadityachapagain.com">
+        <img src="/images/profile.jpg" alt="Aaditya Chapagain" title="Aaditya Chapagain">
+      </a>
+
+      <h1>
+        <a href="https://aadityachapagain.com">Aaditya Chapagain</a>
+      </h1>
+
+<p>notiones a solis ortu usque ad occasum <br /> "Ideas from sunrise to Sunsets"</p>
+
+      <nav>
+        <ul class="list">
+
+
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/about/#about">
+                  About
+                </a>
+              </li>
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/contact/#contact">
+                  Contact
+                </a>
+              </li>
+
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/AboutMe/" >Resume</a>
+            </li>
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/sapiens" >Sapiens</a>
+            </li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+          <li>
+            <a  class="sc-github" href="https://github.com/aadityachapagain" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-linkedin" href="https://www.linkedin.com/in/aaditya-chapagain-b5170a104/" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-twitter" href="https://twitter.com/chapagainA" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-facebook" href="https://www.facebook.com/aaditya.chapagain" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+          </li>
+      </ul>
+    </div>
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://aadityachapagain.com">Home</a>
+
+      <a href="/archives">All Posts</a>
+      <a href="/categories">Categories</a>
+      <a href="/tags">Tags</a>
+
+      <a href="https://aadityachapagain.com/feeds/all.atom.xml">Atom</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="build-reddit-datasets">Build Conversational Reddit Dataset using Google DataFlow and Big Query</h1>
+    <p>
+      Posted on August 22, 2020 in <a href="https://aadityachapagain.com/category/blog.html">Blog</a>
+
+        &#8226; 3 min read
+    </p>
+  </header>
+
+
+  <div>
+    <p>So, I was building chatbot Agent using BlenderBot which is available in <a href="https://parl.ai">Parlai framework</a> .ParlAI is a python framework for sharing, training and testing dialogue models, from open-domain chitchat to VQA( Visual Question Answering). BlenderBot is current State of the Art chatbot model built and open-sourced by <a href="https://ai.facebook.com">Facebook AI</a>.</p>
+<p>They have open-sourced 3 different variant of BlenderBot model based on Number of Parameters model have.</p>
+<ol>
+<li><code>BlenderBot_10B</code> having 9.4 Billion parameters.</li>
+<li><code>BlenderBot_3B</code> having 2.9 Billion parameters.</li>
+<li><code>BlenderBot_90M</code> having 90 Million parameters.</li>
+</ol>
+<p>The generated dialogue by <code>BlenderBot_3B</code> was better than <code>BlenderBot_90M</code> but we were limited by resources. </p>
+<p>With <code>Nvidia Tesla P100</code> dialog generation given context histories takes around 3 - 10 secs. The bigger the context histories the slower it will become.</p>
+<p>Since 10 secs is to much for our application. So, we try using <code>90M</code> Variant of BlenderBot. But comparing to <code>3B</code> it was not that good though dialogue generation was very fast.</p>
+<p>As a result, We decided to build our own BlenderBot variant having parameter between 90M and 3B from scratch. So, To reproduce their results with our Custom model, we had to redo everything, What facebook did to train the model.
+1. Pre Training seq2seq Transformer model with similar hyperparameters used by facebook.
+2. Finetune our Model with BST Datasets.( Blended Skill and Talk Datasets).</p>
+<p>For Pre-Training, We needed reddit datasets. You can download reddit datasets from <a href="https://files.pushshift.io/reddit/comments/">Pushshift.io</a>.After opening this website you can see its huge and I my waste entire week trying to read and preprocess these files using python (<strong>FYI</strong>: <em>I still regret doing that, I was young and stupid</em> ) ZZZzzz.</p>
+<p>Below I will show you How I am able to read and preprocess this huge datasets using Google dataflow and Big Query.</p>
+<h2>Prerequisties</h2>
+<ol>
+<li>Google cloud project.</li>
+<li>Enable Big Query API and DataFlow API.</li>
+<li>Create new Bucket or use existing Bucket for storing datasets.</li>
+<li>Google Application Credentials key file.</li>
+</ol>
+<h2>Getting Started</h2>
+<p>Reddit datasets were created using Apache Beam pipeline scripts, run on Google Dataflow. This parallelizes the data processing pipeline across many worker machines. Apache Beam requires python &gt;= 3.6, so you will need to set up a python =&gt; 3.6 virtual environment:</p>
+<p>The Dataflow scripts write conversational datasets to Google cloud storage, so you will need to create a bucket to save the dataset to.</p>
+<p>Dataflow will run workers on multiple Compute Engine instances, so make sure you have a sufficient quota of n1-standard-1 machines. The READMEs for individual datasets give an idea of how many workers are required, and how long each dataflow job should take.</p>
+<p>And you will need to set up authentication by creating a service account with access to Dataflow and Cloud Storage, and set GOOGLE_APPLICATION_CREDENTIALS:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">={{</span>json file key location<span class="o">}}</span>
+</code></pre></div>
+
+
+<h2>Create the BigQuery Input Table</h2>
+<p>Reddit comment data were already stored as a public BigQuery dataset, partitioned into months: <a href="https://console.cloud.google.com/bigquery?p=fh-bigquery&amp;d=reddit_comments&amp;page=dataset&amp;pli=1">fh-bigquery:reddit_comments.YYYY_MM</a>. The first step in creating the dataset is to create a single table that contains all the comment data to include.</p>
+<p>First, <a href="https://cloud.google.com/bigquery/docs/bq-command-line-tool">install the bq command-line tool</a>.</p>
+<p>Ensure you have a BigQuery dataset to write the table to:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">DATASET</span><span class="o">=</span><span class="s2">&quot;data&quot;</span>
+bq mk --dataset <span class="si">${</span><span class="nv">DATASET</span><span class="p">?</span><span class="si">}</span>
+</code></pre></div>
+
+
+<p>Write a new table by querying the public reddit data:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">TABLE</span><span class="o">=</span>reddit
+</code></pre></div>
+
+
+<div class="highlight"><pre><span></span><code><span class="c1"># For all data up to 2019.</span>
+<span class="nv">TABLE_REGEX</span><span class="o">=</span><span class="s2">&quot;^201[5678]_[01][0-9]</span>$<span class="s2">&quot;</span>
+
+<span class="nv">QUERY</span><span class="o">=</span><span class="s2">&quot;SELECT * \</span>
+<span class="s2">  FROM TABLE_QUERY(\</span>
+<span class="s2">  [fh-bigquery:reddit_comments], \</span>
+<span class="s2">  \&quot;REGEXP_MATCH(table_id, &#39;</span><span class="si">${</span><span class="nv">TABLE_REGEX</span><span class="p">?</span><span class="si">}</span><span class="s2">&#39;)\&quot; )&quot;</span>
+
+<span class="c1"># Run the query.</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">QUERY</span><span class="p">?</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">|</span> bq query <span class="se">\</span>
+  --n <span class="m">0</span> <span class="se">\</span>
+  --batch --allow_large_results <span class="se">\</span>
+  --destination_table <span class="si">${</span><span class="nv">DATASET</span><span class="p">?</span><span class="si">}</span>.<span class="si">${</span><span class="nv">TABLE</span><span class="p">?</span><span class="si">}</span> <span class="se">\</span>
+  --use_legacy_sql<span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+
+
+<h2>Run The Dataflow Script</h2>
+<p>First download requirements.txt file from <a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets/blob/master/requirements.txt">here</a> to your project root directory.</p>
+<p>create virtual Environment.</p>
+<div class="highlight"><pre><span></span><code>python3 -m virtualenv venv
+. venv/bin/activate
+pip install -r requirements.txt
+</code></pre></div>
+
+
+<p>Download create_data.py file from <a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets/blob/master/reddit/create_data.py">here</a> to your project root directory.</p>
+<p><code>create_data.py</code> is a <a href="https://cloud.google.com/dataflow/">Google Dataflow</a> script that reads the input BigQuery table and saves the dataset to Google Cloud Storage.</p>
+<p>Now you can run the Dataflow script:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">PROJECT</span><span class="o">=</span><span class="s2">&quot;&lt;your-google-cloud-project&gt;&quot;</span>
+<span class="nv">BUCKET</span><span class="o">=</span><span class="s2">&quot;&lt;your-bucket&gt;&quot;</span>
+<span class="nv">INSTANCE_REGION</span><span class="o">=</span><span class="s2">&quot;&lt;your-dataflow-instances-region&gt;&quot;</span>
+
+<span class="nv">DATADIR</span><span class="o">=</span><span class="s2">&quot;gs://</span><span class="si">${</span><span class="nv">BUCKET</span><span class="p">?</span><span class="si">}</span><span class="s2">/reddit/</span><span class="k">$(</span>date +<span class="s2">&quot;%Y%m%d&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># The below uses values of $DATASET and $TABLE set</span>
+<span class="c1"># in the previous section.</span>
+
+python reddit/create_data.py <span class="se">\</span>
+  --output_dir <span class="si">${</span><span class="nv">DATADIR</span><span class="p">?</span><span class="si">}</span> <span class="se">\</span>
+  --reddit_table <span class="si">${</span><span class="nv">PROJECT</span><span class="p">?</span><span class="si">}</span>:<span class="si">${</span><span class="nv">DATASET</span><span class="p">?</span><span class="si">}</span>.<span class="si">${</span><span class="nv">TABLE</span><span class="p">?</span><span class="si">}</span> <span class="se">\</span>
+  --runner DataflowRunner <span class="se">\</span>
+  --temp_location <span class="si">${</span><span class="nv">DATADIR</span><span class="p">?</span><span class="si">}</span>/temp <span class="se">\</span>
+  --staging_location <span class="si">${</span><span class="nv">DATADIR</span><span class="p">?</span><span class="si">}</span>/staging <span class="se">\</span>
+  --project <span class="si">${</span><span class="nv">PROJECT</span><span class="p">?</span><span class="si">}</span> <span class="se">\</span>
+  --dataset_format JSON <span class="se">\</span>
+  --region <span class="si">${</span><span class="nv">INSTANCE_REGION</span><span class="si">}</span>
+  --save_main_session
+</code></pre></div>
+
+
+<p>Once the above is running, you can continue to monitor it in the terminal, or quit the process and follow the running job on the <a href="https://console.cloud.google.com/dataflow">dataflow admin page</a>.</p>
+<p>The dataset will be saved in the <code>$DATADIR</code> directory, as sharded train and test sets- <code>gs://your-bucket/reddit/YYYYMMDD/train-*-of-01000.json</code> and <code>gs://your-bucket/reddit/YYYYMMDD/test-*-of-00100.json</code>.</p>
+<p>You can download script from <a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets">here</a>.</p>
+<p>My <code>create_data.py</code> file was adapted version for reddit conversational datasets of this example from <a href="https://github.com/GoogleCloudPlatform/cloudml-samples/blob/master/molecules/preprocess.py">GoogleCloudPlatform Repo</a> you might wanna look into this also. As it covers more broader concept and topics on Dataflow in ML pipelines.</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://aadityachapagain.com/tag/datasets.html">Datasets</a>
+      <a href="https://aadityachapagain.com/tag/machine-learning.html">Machine Learning</a>
+      <a href="https://aadityachapagain.com/tag/reddit-datasets.html">Reddit Datasets</a>
+      <a href="https://aadityachapagain.com/tag/conversational-datasets.html">Conversational Datasets</a>
+      <a href="https://aadityachapagain.com/tag/training-pipeline.html">Training Pipeline</a>
+      <a href="https://aadityachapagain.com/tag/preprocessing-pipeline.html">Preprocessing Pipeline</a>
+      <a href="https://aadityachapagain.com/tag/bigquery.html">BigQuery</a>
+      <a href="https://aadityachapagain.com/tag/bigdata.html">BigData</a>
+      <a href="https://aadityachapagain.com/tag/google-dataflow.html">Google DataFlow</a>
+    </p>
+  </div>
+
+
+
+  <div class="related-posts">
+    <h4>You might enjoy</h4>
+    <ul class="related-posts">
+      <li><a href="https://aadityachapagain.com/2020/09/distributed-training-with-slurm-on-gcp/">Distributed Training of Deep Learning model with Slurm on GCP</a></li>
+      <li><a href="https://aadityachapagain.com/2020/09/wandb-your-machine-learning-project/">Wandb Your machine learning project.</a></li>
+      <li><a href="https://aadityachapagain.com/2020/08/asr-mfcc-filterbanks/">Speech Signal Processing using python</a></li>
+    </ul>
+  </div>
+
+
+<!-- Disqus -->
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aadityachapagain';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>
+    Please enable JavaScript to view comments.
+</noscript>
+<!-- End Disqus -->
+</article>
+
+    <footer>
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
+  This work by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://aadityachapagain.com">Aaditya Chapagain</a> is licensed under <a rel="license" href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" /><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" /></a>
+</p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+  <span class="footer-separator">|</span>
+  Switch to the <a href="javascript:void(0)" onclick="theme.switch(`dark`)">dark</a> | <a href="javascript:void(0)" onclick="theme.switch(`light`)">light</a> | <a href="javascript:void(0)" onclick="theme.switch(`browser`)">browser</a> theme
+  <script id="dark-theme-script"
+          src="https://aadityachapagain.com/theme/dark-theme/dark-theme.min.js"
+          data-enable-auto-detect-theme="false"
+          data-default-theme="light"
+          type="text/javascript">
+  </script>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Aaditya Chapagain ",
+  "url" : "https://aadityachapagain.com",
+  "image": "/images/profile.jpg",
+  "description": ""
+}
+</script>
+
+
+</body>
+</html>
