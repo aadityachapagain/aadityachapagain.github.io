@@ -12,7 +12,7 @@ cssmin
 docutils
 ecdsa
 enum34
-fabric
+fabric2
 feedgenerator
 ghp-import
 gitdb

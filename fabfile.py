@@ -1,9 +1,8 @@
-from fabric.api import *
-import fabric.contrib.project as project
+from fabric2 import connection
+
 import os
 import shutil
 import sys
-import socketserver
 import git
 import datetime
 
@@ -22,28 +21,29 @@ CONFIG = {
     # Output path. Can be absolute or relative to tasks.py. Default: 'output'
     'deploy_path': SETTINGS['OUTPUT_PATH'],
     # Github Pages configuration
-    'github_pages_branch': 'gh-pages',
+    'github_pages_branch': 'master',
     'commit_message': "'Publish site on {}'".format(datetime.date.today().isoformat()),
     # Port for `serve`
     'port': 8000,
+    'msg': "update blog !",
+    'deploy_path' : 'output',
+    'production' : 'root@localhost:22',
+    'dest_path' : '/var/www',
 }
+cnx = connection.Connection('0.0.0.0', port=8000) # inline_ssh_env=True
+cnx.config.update(CONFIG)
 
 # Local path configuration (can be absolute or relative to fabfile)
-env.deploy_path = 'output'
-DEPLOY_PATH = env.deploy_path
-env.msg = 'Update Blog'  # commit message
+deploy_path = 'output'
+DEPLOY_PATH = deploy_path
+msg = 'Update Blog'  # commit message
 
 # Remote server configuration
 production = 'root@localhost:22'
 dest_path = '/var/www'
 
-# Rackspace Cloud Files configuration settings
-env.cloudfiles_username = 'my_rackspace_username'
-env.cloudfiles_api_key = 'my_rackspace_api_key'
-env.cloudfiles_container = 'my_cloudfiles_container'
-
 # Github Pages configuration
-env.github_pages_branch = "master"
+github_pages_branch = "master"
 
 # Port for `serve`
 SERVER = '127.0.0.1'
@@ -84,15 +84,15 @@ def clean():
 
 def build():
     """Build local version of site"""
-    local('pelican -s pelicanconf.py')
+    cnx.local('pelican -s pelicanconf.py')
 
 def rebuild():
     """`build` with the delete switch"""
-    local('pelican -d -s pelicanconf.py')
+    cnx.local('pelican -d -s pelicanconf.py')
 
 def regenerate():
     """Automatically regenerate site upon file modification"""
-    local('pelican -r -s pelicanconf.py')
+    cnx.local('pelican -r -s pelicanconf.py')
 
 def serve():
     """Serve site at http://localhost:8000/"""
@@ -114,39 +114,39 @@ def reserve():
 
 def preview():
     """Build production version of site"""
-    local('pelican -s publishconf.py')
+    cnx.local('pelican -s publishconf.py')
 
 def cf_upload():
     """Publish to Rackspace Cloud Files"""
     rebuild()
-    with lcd(DEPLOY_PATH):
-        local('swift -v -A https://auth.api.rackspacecloud.com/v1.0 '
+    with cnx.cd(DEPLOY_PATH):
+        cnx.local('swift -v -A https://auth.api.rackspacecloud.com/v1.0 '
               '-U {cloudfiles_username} '
               '-K {cloudfiles_api_key} '
-              'upload -c {cloudfiles_container} .'.format(**env))
+              'upload -c {cloudfiles_container} .'.format(**cnx.config))
 
 # @hosts(production)
 def publish(commit_message):
     """Automatic deploy  to GitHub Pages"""
-    env.msg = commit_message
-    env.GH_TOKEN = os.getenv('TRAVIS_TOKEN')
-    env.TRAVIS_REPO_SLUG = os.getenv('TRAVIS_REPO_SLUG')
+    
+    cnx.config.update({'GH_TOKEN': os.getenv('TRAVIS_TOKEN')})
+    cnx.config.update({'TRAVIS_REPO_SLUG': os.getenv('TRAVIS_REPO_SLUG')})
     clean()
-    local('pelican -s publishconf.py')
-    with hide('running', 'stdout', 'stderr'):
-        local("ghp-import -m '{msg}' -b {github_pages_branch} {deploy_path}".format(**env))
-        local("git push -fq https://{GH_TOKEN}@github.com/{TRAVIS_REPO_SLUG}.git {github_pages_branch}".format(**env))
+    cnx.local('pelican -s publishconf.py')
+    
+    cnx.local("ghp-import -m '{msg}' -b {github_pages_branch} {deploy_path}".format(**cnx.config), hide = True)
+    cnx.local("git push -fq https://{GH_TOKEN}@github.com/{TRAVIS_REPO_SLUG}.git {github_pages_branch}".format(**cnx.config))
 
 def gh_pages():
     """Publish to GitHub Pages"""
     rebuild()
-    local("ghp-import -b {github_pages_branch} {deploy_path} -p".format(**env))
+    cnx.local("ghp-import -b {github_pages_branch} {deploy_path} -p".format(**cnx.config))
 
 
 def deploy():
     """Push to GitHub pages"""
-    env.msg = git.Repo().active_branch.commit.message
+    cnx.config.update({"msg": git.Repo().active_branch.commit.message})
     clean()
     preview()
-    local("ghp-import {deploy_path} -m \"{msg}\" -b {github_pages_branch}".format(**env))
-    local("git push origin {github_pages_branch}".format(**env))
+    cnx.local("ghp-import {deploy_path} -m \"{msg}\" -b {github_pages_branch}".format(**cnx.config))
+    cnx.local("git push origin {github_pages_branch}".format(**cnx.config))
