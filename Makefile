@@ -73,6 +73,7 @@ publish:
 
 github: publish
 	ghp-import -m "Generate Pelican site" -b $(GITHUB_PAGES_BRANCH) "$(OUTPUTDIR)"
+	cp readme.md output/README.md
 	git push origin $(GITHUB_PAGES_BRANCH) --force
 
 

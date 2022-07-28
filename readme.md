@@ -1,4 +1,4 @@
-# Personal Blog [![Build Status](https://travis-ci.com/aadityachapagain/aadityachapagain.github.io.svg?branch=source)](https://travis-ci.com/aadityachapagain/aadityachapagain.github.io)
+# Personal Blog [![Deploy](https://github.com/aadityachapagain/aadityachapagain.github.io/actions/workflows/pelican.yml/badge.svg)](https://github.com/aadityachapagain/aadityachapagain.github.io/actions/workflows/pelican.yml)
 
 
 This repository hosts the code for my personal [blog](https://aadityachapagain.com).
