@@ -25,7 +25,7 @@ Markdown
 MarkupSafe
 packaging
 paramiko
-pathlib2.post1
+pathlib2
 pelican
 pelican-katex
 ply
@@ -41,7 +41,7 @@ rich
 six
 smartypants
 smmap
-soupsieve.post1
+soupsieve
 typogrify
 Unidecode
 webassets
