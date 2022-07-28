@@ -55,7 +55,7 @@ SITEURL = "http://localhost:8000"
 
 SITETITLE = "Aaditya Chapagain"  # Replace with your name
 SITESUBTITLE = (
-    'notiones a solis ortu usque ad occasum <br /> "Ideas from sunrise to Sunsets"'
+    'Full-Time Machine Learning Engineer\nPart-Time Researcher'
 )
 
 
@@ -127,7 +127,7 @@ AUTHOR_SAVE_AS = ""
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = "feeds/all.atom.xml"
-CATEGORY_FEED_ATOM = "feeds/%s.atom.xml"
+CATEGORY_FEED_ATOM = "feeds/{slug}.atom.xml"
 TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None

@@ -1,7 +1,7 @@
 Title: About
 Date: 2020-07-12 08:00
 Modified: 2020-07-12 08:00
-
+Slug: about
 
 Hello! I'm Aaditya Chapagain. About myself, I love Esports (especially dota 2), traveling and reading. I have a great interest in Artificial Intelligence and am pursuing my career in the same. 
 
