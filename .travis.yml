@@ -4,7 +4,7 @@ branches:
   only:
     - source
 python:
-  - 3.10
+  - 3.10.4
 install:
   - gem install sass
   - pip install -r requirements.txt
