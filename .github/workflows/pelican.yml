@@ -27,7 +27,7 @@ jobs:
     - name: setup Pelican deployment
       run: |
         sudo apt install make cmake
-        gem install sass
+        # gem install sass
         pip install -r requirements.txt
         cp readme.md output\README.md
         git config --global user.email "chapagain.aaditya@gmail.com"
