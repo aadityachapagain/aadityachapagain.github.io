@@ -20,7 +20,16 @@ jobs:
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-    - uses: rehanhaider/pelican-to-github-pages@v1.0.3
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        GH_PAGES_BRANCH: "main"
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10.4' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+    - name: setup Pelican deployment
+      run: |
+        sudo apt install make cmake
+        gem install sass
+        pip install -r requirements.txt
+        cp readme.md output\README.md
+        git config --global user.email "chapagain.aaditya@gmail.com"
+        git config --global user.name "Aaditya Chapagain"
+        make github
