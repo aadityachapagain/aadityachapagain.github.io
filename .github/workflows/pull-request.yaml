@@ -3,7 +3,7 @@ name: Deploy my nextjs source code as website
 on:
   push:
     branches:
-      - "nextjs"
+      - "source"
 
 jobs:
   build:
