@@ -8,7 +8,7 @@ module.exports = {
   assetPrefix: assetPrefix,
   basePath: basePath,
   images: {
-    loader: "imgix loader",
+    loader: "imgix",
     loaderFile: "./lib/imgixLoader.ts"
 
   },
