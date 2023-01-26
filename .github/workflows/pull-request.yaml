@@ -19,6 +19,15 @@ jobs:
         with:
           node-version: 18.13.0
 
+      - name: setup environment variables
+        run: |
+          # do bunch of exports and store it to .env.production file
+          echo "CREATING PRODUCTION GRADE ENV FILE"
+          export REDIS_URL=${{ secrets.REDIS_URL }}
+          export AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
+          export AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
+          envsubst < .env.example > .env.production
+          
       - name: Build
         run: |
           npm install
