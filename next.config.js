@@ -9,7 +9,7 @@ let basePath = '/'
 if (isGithubActions) {
 
   assetPrefix = `${staticRemotePath}/`
-  basePath = `https://aadityachapagain.com/`
+  basePath = `/`
 }
 
 module.exports = {
