@@ -30,10 +30,10 @@ function HomePage() {
           <div className='flex flex-col md:flex-row  gap-8 content-center items-center '>
             {/* profile image layout here */}
             <div className=' shrink md:w-2/5 p-1 '>
-              <div className='rounded-full shadow-xl shadow-gray-600 border  bg-white '>
-                <div className='rounded-full shadow-lg shadow-stone-400 border-none p-5'>
+              <div className='rounded-full shadow shadow-gray-200 border  bg-white '>
+                <div className='rounded-full shadow-sm shadow-stone-400 border-none p-5'>
                   <Image
-                    className='rounded-full borderb '
+                    className='rounded-full border '
                     alt='Profile Image'
                     src="/profile_image.jpg"
                     width={400}
@@ -53,7 +53,7 @@ function HomePage() {
               </p>
               <div className='py-3 flex flex-row mt-3 text-sm font-semibold '>
                 <button
-                  className='border-emerald-500 border-2 rounded-full py-2 px-7  hover:bg-emerald-500 hover:text-white '
+                  className='border-emerald-500 border-2 rounded-full py-2 px-7 shadow-md hover:bg-emerald-500 hover:text-white '
                   onClick={(e) => {
                     e.preventDefault();
                     // router.push('/contact')
@@ -61,7 +61,7 @@ function HomePage() {
                   }}
                 >Download CV</button>
                   <button
-                  className='ml-2 border-zinc-200 border-2 rounded-full py-2 px-9  hover:bg-zinc-200 '
+                  className='ml-2 border-zinc-200 border-2 rounded-full py-2 px-9 shadow-md hover:bg-zinc-200 '
                   onClick={(e) => {
                     e.preventDefault();
                     router.push('/contact')
