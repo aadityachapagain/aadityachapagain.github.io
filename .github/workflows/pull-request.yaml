@@ -5,16 +5,19 @@ on:
     branches:
       - "source"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 19
-          cache: npm
+          node-version: 18.13.0
 
       - name: Build
         run: |
@@ -29,7 +32,7 @@ jobs:
           echo "aadityachapagain.com" > out/CNAME
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.4.0
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: main
           folder: out
