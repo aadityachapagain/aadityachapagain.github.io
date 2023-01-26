@@ -1,16 +1,16 @@
 // next.config.js
 
 const isGithubActions = process.env.GITHUB_ACTIONS || false
+const staticRemotePath = "aadiimages.imgix.net"
 
 let assetPrefix = ''
 let basePath = '/'
 
-// if (isGithubActions) {
-//   const repo = process.env.GITHUB_REPOSITORY.replace(/.*?\//, '')
+if (isGithubActions) {
 
-//   assetPrefix = `/${repo}/`
-//   basePath = `/${repo}`
-// }
+  assetPrefix = `${staticRemotePath}/`
+  basePath = `https://aadityachapagain.com/`
+}
 
 module.exports = {
   assetPrefix: assetPrefix,
