@@ -1,6 +1,6 @@
 ---
 title: "At the Sign of the Prancing Pony"
-excerpt: "The Hobbits reach the The Prancing Pony inn at Bree, where Frodo uses
+summary: "The Hobbits reach the The Prancing Pony inn at Bree, where Frodo uses
 a false name, Underhill."
 date: "2021-03-03"
 ---

@@ -30,8 +30,8 @@ export default function PostPage({
           <article>
             <header>
               <h1 className="text-4xl font-bold">{post.title}</h1>
-              {post.excerpt ? (
-                <p className="mt-2 text-xl">{post.excerpt}</p>
+              {post.summary ? (
+                <p className="mt-2 text-xl">{post.summary}</p>
               ) : null}
               <time className="flex mt-2 text-gray-400">
                 {distanceToNow(new Date(post.date))}
@@ -59,6 +59,7 @@ type Params = {
 
 export async function getStaticProps({ params }: Params) {
   const post = getPostBySlug(params.slug, [
+    'tags',
     'slug',
     'title',
     'excerpt',

@@ -19,7 +19,7 @@ export default function NotePage({
             >
               {post.title}
             </Link>
-            <p>{post.excerpt}</p>
+            <p>{post.summary}</p>
             <div className="text-gray-400">
               <time>{distanceToNow(new Date(post.date))}</time>
             </div>
@@ -33,7 +33,7 @@ export default function NotePage({
 }
 
 export async function getStaticProps() {
-  const allPosts = getAllPosts(['slug', 'title', 'excerpt', 'date'])
+  const allPosts = getAllPosts(['slug', 'title', 'excerpt', 'date', 'tags'])
 
   return {
     props: { allPosts },

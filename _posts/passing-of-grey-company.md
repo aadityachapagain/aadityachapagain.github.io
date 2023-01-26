@@ -1,6 +1,6 @@
 ---
 title: "The Passing of the Grey Company"
-excerpt: "Aragorn, Legolas, and Gimli are accompanied by the Grey Company as
+summary: "Aragorn, Legolas, and Gimli are accompanied by the Grey Company as
 they pass through the Paths of the Dead between Rohan and Gondor."
 date: "2021-01-22"
 ---

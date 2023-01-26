@@ -1,6 +1,6 @@
 ---
 title: "The Riders of Rohan"
-excerpt: "Aragorn, Legolas, and Gimli follow the trail of the Orcs and find
+summary: "Aragorn, Legolas, and Gimli follow the trail of the Orcs and find
 several clues as to what happened with Merry and Pippin."
 date: "2021-02-01"
 ---
