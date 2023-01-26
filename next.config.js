@@ -8,12 +8,9 @@ module.exports = {
   assetPrefix: assetPrefix,
   basePath: basePath,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: staticRemotePath,
-      },
-    ],
+    loader: "imgix loader",
+    loaderFile: "./lib/imgixLoader.ts"
+
   },
   reactStrictMode: true,
   swcMinify: true,
