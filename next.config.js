@@ -8,7 +8,13 @@ module.exports = {
   assetPrefix: assetPrefix,
   basePath: basePath,
   images: {
-    loader: 'imgix',
-    path: 'https://aadiimages.imgix.net/',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: staticRemotePath,
+      },
+    ],
   },
+  reactStrictMode: true,
+  swcMinify: true,
 }
