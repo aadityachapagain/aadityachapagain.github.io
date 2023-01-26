@@ -3,13 +3,13 @@
 const isGithubActions = process.env.GITHUB_ACTIONS || false
 const staticRemotePath = "aadiimages.imgix.net"
 
-let assetPrefix = ''
-let basePath = '/'
+let assetPrefix = '/'
+let basePath = ''
 
 if (isGithubActions) {
 
   assetPrefix = `${staticRemotePath}/`
-  basePath = `/`
+  basePath = ``
 }
 
 module.exports = {
