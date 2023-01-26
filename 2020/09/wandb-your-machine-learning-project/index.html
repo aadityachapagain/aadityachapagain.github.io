@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/stylesheet/style.min.css">
+
+    <link id="dark-theme-style" rel="stylesheet" type="text/css"
+        disabled="disabled"
+    href="https://aadityachapagain.com/theme/stylesheet/dark-theme.min.css">
+
+    <link id="pygments-dark-theme" rel="stylesheet" type="text/css"
+            disabled="disabled"
+          href="https://aadityachapagain.com/theme/pygments/monokai.min.css">
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+          href="https://aadityachapagain.com/theme/pygments/emacs.min.css">
+
+
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/solid.css">
+
+
+    <link href="https://aadityachapagain.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Aaditya Chapagain Atom">
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<!-- <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'G-GH6ZY4Z9FF', 'auto');
+  ga('send', 'pageview');
+</script> -->
+<!-- End Google Analytics -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GH6ZY4Z9FF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GH6ZY4Z9FF');
+</script>
+
+<meta name="author" content="Aaditya Chapagain" />
+<meta name="description" content="Wandb Tool for visualizing and tracking your machine learning experiments better than tensorboard." />
+<meta name="keywords" content="Datasets, Machine Learning, Visualization, training, Deep Learning, ML tools, tensorboard, python">
+
+
+<meta property="og:site_name" content="Aaditya Chapagain"/>
+<meta property="og:title" content="Wandb Your machine learning project."/>
+<meta property="og:description" content="Wandb Tool for visualizing and tracking your machine learning experiments better than tensorboard."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://aadityachapagain.com/2020/09/wandb-your-machine-learning-project/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2020-09-02 12:00:00+05:45"/>
+<meta property="article:modified_time" content="2020-09-02 12:00:00+05:45"/>
+<meta property="article:author" content="https://aadityachapagain.com/author/aaditya-chapagain.html">
+<meta property="article:section" content="Blog"/>
+<meta property="article:tag" content="Datasets"/>
+<meta property="article:tag" content="Machine Learning"/>
+<meta property="article:tag" content="Visualization"/>
+<meta property="article:tag" content="training"/>
+<meta property="article:tag" content="Deep Learning"/>
+<meta property="article:tag" content="ML tools"/>
+<meta property="article:tag" content="tensorboard"/>
+<meta property="article:tag" content="python"/>
+<meta property="og:image" content="/images/profile.jpg">
+
+  <title>Aaditya Chapagain &ndash; Wandb Your machine learning project.</title>
+
+</head>
+<body class="light-theme">
+  <aside>
+    <div>
+      <a href="https://aadityachapagain.com">
+        <img src="/images/profile.jpg" alt="Aaditya Chapagain" title="Aaditya Chapagain">
+      </a>
+
+      <h1>
+        <a href="https://aadityachapagain.com">Aaditya Chapagain</a>
+      </h1>
+
+<p>Full-Time Machine Learning Engineer
+Part-Time Researcher</p>
+
+      <nav>
+        <ul class="list">
+
+
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/about/#about">
+                  About
+                </a>
+              </li>
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/contact/#contact">
+                  Contact
+                </a>
+              </li>
+
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/AboutMe/" >Resume</a>
+            </li>
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/sapiens" >Sapiens</a>
+            </li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+          <li>
+            <a  class="sc-github" href="https://github.com/aadityachapagain" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-linkedin" href="https://www.linkedin.com/in/aaditya-chapagain-b5170a104/" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-twitter" href="https://twitter.com/chapagainA" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-facebook" href="https://www.facebook.com/aaditya.chapagain" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+          </li>
+      </ul>
+    </div>
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://aadityachapagain.com">Home</a>
+
+      <a href="/archives">All Posts</a>
+      <a href="/categories">Categories</a>
+      <a href="/tags">Tags</a>
+
+      <a href="https://aadityachapagain.com/feeds/all.atom.xml">Atom</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="wandb-your-machine-learning-project">Wandb Your machine learning project.</h1>
+    <p>
+      Posted on September 02, 2020 in <a href="https://aadityachapagain.com/category/blog.html">Blog</a>
+
+        &#8226; 5 min read
+    </p>
+  </header>
+
+
+  <div>
+    <p>Have you ever worked on large Machine learning projects or research where you have to manage many experimentations ? often during large projects or experiments you have to log every nits and bits of your Machine Learning training. Some of us might already be there.
+Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization,  experiments. There were lots of them and It would take lots of time to prepare presentation's  of my experiments results to my peers and that's when I learned about wandb.</p>
+<p>Wandb is API created by <a href="https://www.wandb.com/">Weights &amp; Biases</a> to collect, manage and visualize all your Machine learning experiments all at one place. Ohh, wait you must be wandering that <strong>tensorboard</strong> can also do these things right ?</p>
+<p>Well, there are lots of things which makes <strong>wandb</strong>  a straight winner.</p>
+<ol>
+<li>Visually aesthetics UI.</li>
+<li>More manageable and customizable visualization and experiment tracking.</li>
+<li>Super easy to use API.</li>
+<li>Analyze system usage metrics alongside runs.</li>
+<li>Collaborate with team members</li>
+<li>Run parameter sweeps</li>
+<li>Keep records of experiments available forever</li>
+</ol>
+<p>I think the last point in above list is super cool, which is not feasible to do with tensorboard i.e You have to write huge amount of code by yourself to log these system wide metrics into tensorboard, but with wandb you can do this with just one line of code. and </p>
+<p>Lets Dive into wandb API.</p>
+<h1>Installation</h1>
+<p>Installing <code>wandb</code> is very easy, just run below command in terminal and you are good to go.</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>wandb
+
+pip<span class="w"> </span>install<span class="w"> </span>wandb<span class="w"> </span>--upgrade
+</code></pre></div>
+
+<p>One thing I noticed during installing wandb is that, if we run only <code>pip install wandb</code> it will sometimes only install wrapper class of wandb. So, upgrading wandb library after installing it , worked for me.</p>
+<h1>Integration with your python code</h1>
+<p>You can use <code>wandb</code> with any deeplearning framework, either it is pytorch or Tensorflow.But, first you need to have account on <a href="https://www.wandb.com/">Weights &amp; Biases</a>. After you create account on <a href="https://www.wandb.com/">Weights &amp; Biases</a> , you can get your wandb api keys from <a href="https://app.wandb.ai/settings">setting</a>. After you get your keys, you just need to write couple of code to integrate your deeplearning system with wandb logger.</p>
+<h2>Login</h2>
+<p>First you need to login into your wandb using wandb API KEYS. you can login programetically or from terminal, but login using terminal is advised.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># This is secret and shouldn&#39;t be checked into version control</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">WANDB_API_KEY</span><span class="o">=</span><span class="nv">$YOUR_API_KEY</span>
+
+wandb<span class="w"> </span>login
+</code></pre></div>
+
+<p>To Programatically login you can use following code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">WANDB_API_KEYS</span> <span class="o">=</span> <span class="s2">&quot;&lt;your api keys here&gt;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">wandb</span>
+
+<span class="n">wandb</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">WANDB_API_KEYS</span><span class="p">)</span> <span class="c1"># if you don&#39;t have $WANDB_API_KEYS in your env variable (Not Advised)</span>
+
+<span class="n">wandb</span><span class="o">.</span><span class="n">login</span><span class="p">()</span> <span class="c1"># if $WANDB_API_KEYS is already been set.</span>
+</code></pre></div>
+
+<h2>Initializing wandb ( wandb.init )</h2>
+<p>Below you will see simple wandb integration examples with keras.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># initialize wandb with your project name and optionally with configutations.</span>
+<span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;demo-keras-integration&#39;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;first_run&#39;</span>
+           <span class="n">config</span><span class="o">=</span><span class="p">{</span>
+              <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+              <span class="s2">&quot;epochs&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+              <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+              <span class="s2">&quot;loss_function&quot;</span><span class="p">:</span> <span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;architecture&quot;</span><span class="p">:</span> <span class="s2">&quot;CNN&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="s2">&quot;CIFAR-10&quot;</span><span class="p">,</span>
+           <span class="p">},</span> <span class="n">anonymous</span><span class="o">=</span><span class="s1">&#39;never&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">wandb</span><span class="o">.</span><span class="n">config</span>
+
+<span class="c1"># Initialize model like you usually do.</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+
+<span class="c1"># compile model like you usually do.</span>
+<span class="c1"># notice use of config.</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span> 
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">loss_function</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+</code></pre></div>
+
+<p><code>project</code> is name of  your project and your project might have different run, so <code>name</code> parameter will distinguish one run from other. 
+If you run above code and get back to your wandb dashboard it will new project called <code>demo-keras-integration</code> and with <code>first_run</code> in it.</p>
+<p><a href="https://ibb.co/hDjwC6s"><img alt="wandb Init" class="img-center" src="/images/wandb_init.png"></a></p>
+<p>Above init configuration will create new run everytime you call <code>wandb.init</code> But sometimes that not what you want, If your training is preemptible and might takes days or months to complete then you can resume from previous logged metrics by providing <code>resume = True</code> parameter to <code>wandb.init</code> and you will also need to set unique id, to distinguish one run from another. Below code will resume your logs with current run in your wandb dashboard even after you run <code>init</code> multiple times.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;demo-keras-integration&#39;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;first_run&#39;</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="s1">&#39;my_first_run&#39;</span>
+           <span class="n">config</span><span class="o">=</span><span class="p">{</span>
+              <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+              <span class="s2">&quot;epochs&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+              <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+              <span class="s2">&quot;loss_function&quot;</span><span class="p">:</span> <span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;architecture&quot;</span><span class="p">:</span> <span class="s2">&quot;CNN&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="s2">&quot;CIFAR-10&quot;</span><span class="p">,</span>
+           <span class="p">},</span> <span class="n">anonymous</span><span class="o">=</span><span class="s1">&#39;never&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2>Train with Wandb callback</h2>
+<p>wandb made easy to log your model metrics into your project space by providing various callback function to log your metrics directly into wandb dashboard, without writing extra code.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">wandb.keras</span> <span class="kn">import</span> <span class="n">WandbCallback</span>
+
+<span class="c1"># train with our favorite model.fit</span>
+<span class="c1"># notice WandbCallback used as a regular callback</span>
+<span class="c1"># notice the use of config</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+          <span class="n">epochs</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span> 
+          <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
+          <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">WandbCallback</span><span class="p">()])</span>
+</code></pre></div>
+
+<p>If you are working on images and need a way to log your correctly classified and misclassified sample images, you can also do so using wandb. Below you will see the examples of it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># in order to get prediction on small subset of images.</span>
+<span class="n">val_images</span><span class="p">,</span> <span class="n">val_labels</span> <span class="o">=</span> <span class="n">x_test</span><span class="p">[:</span><span class="mi">32</span><span class="p">],</span> <span class="n">y_test</span><span class="p">[:</span><span class="mi">32</span><span class="p">]</span>
+
+<span class="c1"># train with our favorite model.fit</span>
+<span class="c1"># notice WandbCallback used as a regular callback</span>
+<span class="c1"># notice that we are passing in some arguments as well</span>
+<span class="c1"># notice the use of config</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+          <span class="n">epochs</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span> 
+          <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
+          <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">WandbCallback</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> 
+                                   <span class="n">training_data</span><span class="o">=</span><span class="p">(</span><span class="n">val_images</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">),</span> 
+                                   <span class="n">labels</span><span class="o">=</span><span class="n">CLASS_NAMES</span><span class="p">)])</span>
+</code></pre></div>
+
+<p><a href="https://ibb.co/ZcbvNP9"><img alt="logging images with wandb" class="img-center" src="/images/wand_log_images.PNG"></a></p>
+<h2>Log Custom metrics with wandb.log</h2>
+<p>You can always log custom metrics and extra information using wandb.log .</p>
+<div class="highlight"><pre><span></span><code><span class="n">loss</span><span class="p">,</span> <span class="n">accuracy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Test Error Rate: &#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">accuracy</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># notice the use of wandb.log. </span>
+<span class="c1"># We can easiy pass in values as key-value pairs.</span>
+<span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">({</span><span class="s1">&#39;Test Error Rate&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">accuracy</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)})</span>
+</code></pre></div>
+
+<h1>wandb Dashboard</h1>
+<p><a href="https://ibb.co/tBZDJzW"><img alt="Wandb dashboard" class="img-center" src="/images/wandb_dashboard.PNG"></a></p>
+<p>You can see all your logged metrics in your wandb project dashboard. Wandb Groups information into different sections like Overview, Charts ,logs, system, model and files.</p>
+<h2>Overview</h2>
+<p><a href="https://ibb.co/RvNFHTW"><img alt="Wandb dashboard" class="img-center" src="/images/wandb_overview.png"></a></p>
+<p>The information in the <code>overview</code> section is pretty intuitive and self-explanatory. However, the Git Repository field and the Git State field are worthy of special mention. You can run the checkout command in the Git State field to pin down the exact code for reproducing the experiment. Under the hood, wandb tracks all the changes you made to the original repo, and save the "diff" files in a local directory. In this way, you can easily switch between different versions of the code without manually pushing the change to the remote repo.</p>
+<h2>Logs</h2>
+<p>The <code>logs</code> section shows the console output during the experiment. This is useful for debugging the performance of the model.</p>
+<p><a href="https://ibb.co/hmKFC7H"><img alt="Wandb dashboard" class="img-center" src="/images/wandb_logs.png"></a></p>
+<h2>Systems</h2>
+<p>To me, the system section is where wandb really shines and separates itself from other options such as TensorBoard. It is a centralized place to track system utilization during the experiment. There are in total of 8 graphs displayed in this section. These graphs give you insight into the training bottleneck and possible ways to uplift it. For example, below are the diagrams of the experiment:</p>
+<p><a href="https://ibb.co/VNGQbyQ"><img alt="Wandb dashboard" class="img-center" src="/images/wandb_system.png"></a></p>
+<h2>Tensorboard</h2>
+<p>wandb also provide options for people who love tensorboard. You can directly sync wandb with tensorboard by just setting <code>sync_tensorboard = True</code> in your <code>wandb.init</code>. So, that every information that is logged into tensorboard will also be logged into wandb.</p>
+<div class="highlight"><pre><span></span><code><span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&lt;your run name&gt;&#39;</span><span class="p">,</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="s1">&#39;your project name&#39;</span><span class="p">,</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="s1">&#39;&lt;your config&gt;&#39;</span><span class="p">,</span>
+    <span class="n">sync_tensorboard</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<h1>Summary</h1>
+<p>We discuss how to integrate wandb in any deeplearning framework using python for inspecting the efficiency of training jobs. We also looked into other aspects of wandb that makes it so much unique than other training logging software like tensorboard.</p>
+<p>To learn more about wandb, check out their website: <a href="https://www.wandb.com/">https://www.wandb.com/</a>.</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://aadityachapagain.com/tag/datasets.html">Datasets</a>
+      <a href="https://aadityachapagain.com/tag/machine-learning.html">Machine Learning</a>
+      <a href="https://aadityachapagain.com/tag/visualization.html">Visualization</a>
+      <a href="https://aadityachapagain.com/tag/training.html">training</a>
+      <a href="https://aadityachapagain.com/tag/deep-learning.html">Deep Learning</a>
+      <a href="https://aadityachapagain.com/tag/ml-tools.html">ML tools</a>
+      <a href="https://aadityachapagain.com/tag/tensorboard.html">tensorboard</a>
+      <a href="https://aadityachapagain.com/tag/python.html">python</a>
+    </p>
+  </div>
+
+
+
+  <div class="related-posts">
+    <h4>You might enjoy</h4>
+    <ul class="related-posts">
+      <li><a href="https://aadityachapagain.com/2020/09/distributed-training-with-slurm-on-gcp/">Distributed Training of Deep Learning model with Slurm on GCP</a></li>
+      <li><a href="https://aadityachapagain.com/2020/08/build-reddit-datasets/">Build Conversational Reddit Dataset using Google DataFlow and Big Query</a></li>
+      <li><a href="https://aadityachapagain.com/2020/08/asr-mfcc-filterbanks/">Speech Signal Processing using python</a></li>
+    </ul>
+  </div>
+
+
+<!-- Disqus -->
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aadityachapagain';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>
+    Please enable JavaScript to view comments.
+</noscript>
+<!-- End Disqus -->
+</article>
+
+    <footer>
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
+  This work by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://aadityachapagain.com">Aaditya Chapagain</a> is licensed under <a rel="license" href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" /><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" /></a>
+</p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+  <span class="footer-separator">|</span>
+  Switch to the <a href="javascript:void(0)" onclick="theme.switch(`dark`)">dark</a> | <a href="javascript:void(0)" onclick="theme.switch(`light`)">light</a> | <a href="javascript:void(0)" onclick="theme.switch(`browser`)">browser</a> theme
+  <script id="dark-theme-script"
+          src="https://aadityachapagain.com/theme/dark-theme/dark-theme.min.js"
+          data-enable-auto-detect-theme="false"
+          data-default-theme="light"
+          type="text/javascript">
+  </script>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Aaditya Chapagain ",
+  "url" : "https://aadityachapagain.com",
+  "image": "/images/profile.jpg",
+  "description": ""
+}
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/stylesheet/style.min.css">
+
+    <link id="dark-theme-style" rel="stylesheet" type="text/css"
+        disabled="disabled"
+    href="https://aadityachapagain.com/theme/stylesheet/dark-theme.min.css">
+
+    <link id="pygments-dark-theme" rel="stylesheet" type="text/css"
+            disabled="disabled"
+          href="https://aadityachapagain.com/theme/pygments/monokai.min.css">
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+          href="https://aadityachapagain.com/theme/pygments/emacs.min.css">
+
+
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="https://aadityachapagain.com/theme/font-awesome/css/solid.css">
+
+
+    <link href="https://aadityachapagain.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Aaditya Chapagain Atom">
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<!-- <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'G-GH6ZY4Z9FF', 'auto');
+  ga('send', 'pageview');
+</script> -->
+<!-- End Google Analytics -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GH6ZY4Z9FF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GH6ZY4Z9FF');
+</script>
+
+<meta name="author" content="Aaditya Chapagain" />
+<meta name="description" content="Testing Framework in Go is extremely simple and minimal" />
+<meta name="keywords" content="Go, Golang, Test, Testing, software development, Programming language">
+
+
+<meta property="og:site_name" content="Aaditya Chapagain"/>
+<meta property="og:title" content="Testing Go Program: In Nutshell"/>
+<meta property="og:description" content="Testing Framework in Go is extremely simple and minimal"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://aadityachapagain.com/2020/08/Testing-in-Go/"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2020-08-11 08:00:00+05:45"/>
+<meta property="article:modified_time" content="2020-08-11 08:00:00+05:45"/>
+<meta property="article:author" content="https://aadityachapagain.com/author/aaditya-chapagain.html">
+<meta property="article:section" content="Blog"/>
+<meta property="article:tag" content="Go"/>
+<meta property="article:tag" content="Golang"/>
+<meta property="article:tag" content="Test"/>
+<meta property="article:tag" content="Testing"/>
+<meta property="article:tag" content="software development"/>
+<meta property="article:tag" content="Programming language"/>
+<meta property="og:image" content="/images/profile.jpg">
+
+  <title>Aaditya Chapagain &ndash; Testing Go Program: In Nutshell</title>
+
+</head>
+<body class="light-theme">
+  <aside>
+    <div>
+      <a href="https://aadityachapagain.com">
+        <img src="/images/profile.jpg" alt="Aaditya Chapagain" title="Aaditya Chapagain">
+      </a>
+
+      <h1>
+        <a href="https://aadityachapagain.com">Aaditya Chapagain</a>
+      </h1>
+
+<p>Full-Time Machine Learning Engineer
+Part-Time Researcher</p>
+
+      <nav>
+        <ul class="list">
+
+
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/about/#about">
+                  About
+                </a>
+              </li>
+              <li>
+                <a target="_self"
+                   href="https://aadityachapagain.com/contact/#contact">
+                  Contact
+                </a>
+              </li>
+
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/AboutMe/" >Resume</a>
+            </li>
+            <li>
+              <a target="_self" href="https://aadityachapagain.com/sapiens" >Sapiens</a>
+            </li>
+        </ul>
+      </nav>
+
+      <ul class="social">
+          <li>
+            <a  class="sc-github" href="https://github.com/aadityachapagain" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-linkedin" href="https://www.linkedin.com/in/aaditya-chapagain-b5170a104/" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-twitter" href="https://twitter.com/chapagainA" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-facebook" href="https://www.facebook.com/aaditya.chapagain" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+          </li>
+      </ul>
+    </div>
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://aadityachapagain.com">Home</a>
+
+      <a href="/archives">All Posts</a>
+      <a href="/categories">Categories</a>
+      <a href="/tags">Tags</a>
+
+      <a href="https://aadityachapagain.com/feeds/all.atom.xml">Atom</a>
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="Testing-in-Go">Testing Go Program: In Nutshell</h1>
+    <p>
+      Posted on August 11, 2020 in <a href="https://aadityachapagain.com/category/blog.html">Blog</a>
+
+        &#8226; 4 min read
+    </p>
+  </header>
+
+
+  <div>
+    <p>Testing, by which we implicitly mean <em>automated testing</em>, is the practice of writing small programs that check that the code under test ( the production code ) behaved as expected for certain input pools, which is usually either carefully chosen to exercise certain features or randomized to ensure broad coverage.</p>
+<p>Go's approach to testing seems rather low-tech in comparison to some big language like java, c++. It relies on one command, <code>go test</code>, and a set of conventions for writing test functions that go test can run. The comparatively lightweight mechanism is effective for pure testing, and it extends naturally to benchmarks and systematic example for documentation. The best thing about writing test code in Go is , that test code is no different from code if we intend to implement API we are testing.We focus on short functions that focus on one part of the task.We have to be careful about boundary conditions. think about data structures, and reason about what results a computation should produce from suitable inputs. But is the same as writing ordinary Go code.</p>
+<h1>The GO test Tool</h1>
+<p>Testing in Go starts with <code>go test</code> subcommand i.e. test driver for Go packages that are organized according to certain conventions. <code>go test</code> command specifically looks and execute files that ends with <strong>_test.go</strong> which are not part of the package when built by <code>go build</code>.</p>
+<p>The Go test files contains three kinds of special functions :</p>
+<ul>
+<li>
+<p>A <em>test function</em>: Function which name starts with <code>Test</code>. This function exercises some program logic for correct behaviour; subcommand <code>go test</code> calls the test function and reports the result which is either <code>PASS</code> or <code>FAIL</code>.</p>
+</li>
+<li>
+<p>A <em>benchmark function</em>: It has the name beginning with <code>Benchmark</code> and measures the performance of some operations; subcommand <code>go test</code> reports the mean execution time of the operation.</p>
+</li>
+<li>
+<p>An <em>example function</em>: Its name starts with <code>Example</code> provides machine-checked documentation.</p>
+</li>
+</ul>
+<p>The <code>go test</code> tool scans the *_test.go files for these special functions, generates a temporary main package that calls them all in the proper way, builds and runs it, reports the result, and then cleans up.</p>
+<h1>Test Functions</h1>
+<p>Each test file must import the testing package. Test functions has following signature :</p>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TestName</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ..</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Test function names must begin with Test; The optional suffix Name must begin with a capital letter:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">TestSin</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// ... }</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">TestCos</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// ... }</span>
+</code></pre></div>
+
+<p>The t parameter provides methods for reporting test failures and logging additional information. Lets create a new package palindrome containing a single function IsPalindrome that reports whether a string a string reads same forward and backward.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">palindrome</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">IsPalidrome</span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">s</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">s</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">i</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>In the same directory, the palindrome_test.go contains two test functions named TestPalindrome and TestNonPalindrome. Each check that IsPalindrome gives the right answer for a single input and reports failures using t.Errorf:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nx">palindrome</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">TestPalindrome</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">IsPalindrome</span><span class="p">(</span><span class="s">&quot;detartrated&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">`IsPalindrome(&quot;detartrated&quot;) = false`</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">IsPalindrome</span><span class="p">(</span><span class="s">&quot;kayak&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">`IsPalindrome(&quot;kayak&quot;) = false`</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">TestNonPalindrome</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="nx">IsPalindrome</span><span class="p">(</span><span class="s">&quot;palindrome&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">t</span><span class="p">.</span><span class="nx">Error</span><span class="p">(</span><span class="s">`IsPalindrome(&quot;palindrome&quot;) = true`</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now,we already have test code to test our functionality, we can use go test command to run tests in go.
+Remember <code>go test palindrome</code> will run the package level test.For this to work you have to place your package in either <code>$GOROOT</code> or <code>$GOPATH</code> directory.
+In our case we can test our functionlity by going into pacakge directory.</p>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>&lt;path_to_project_dir&gt;/palindrome
+&gt;<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span>
+
+PASS
+ok<span class="w">      </span>&lt;path_to_project_dir&gt;/palindrome<span class="w">    </span><span class="m">0</span>.001s
+</code></pre></div>
+
+<p>To look into more details on test function, To see which one failed and which one succeed, we can use <code>-v</code> flag , which will prints the name and execution time of each test in the package.</p>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-v
+
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestPalindrome
+---<span class="w"> </span>PASS:<span class="w"> </span>TestPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestNonPalindrome
+---<span class="w"> </span>PASS:<span class="w"> </span>TestNonPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestFrenchPalindrome
+---<span class="w"> </span>FAIL:<span class="w"> </span>TestFrenchPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+word_test.go:28:<span class="w"> </span>IsPalindrome<span class="o">(</span><span class="s2">&quot;été&quot;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestCanalPalindrome
+---<span class="w"> </span>FAIL:<span class="w"> </span>TestCanalPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+word_test.go:35:<span class="w"> </span>IsPalindrome<span class="o">(</span><span class="s2">&quot;A man, a plan, a canal: Panama&quot;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
+FAIL
+<span class="nb">exit</span><span class="w"> </span>status<span class="w"> </span><span class="m">1</span>
+FAIL<span class="w">  </span>&lt;path_to_project_dir&gt;/palindrome<span class="w"> </span><span class="m">0</span>.001s
+</code></pre></div>
+
+<p>and the -run flag, whose argument is a regular expression, causes go test to run only those tests whose function name matches the patter:</p>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-v<span class="w"> </span>-run<span class="o">=</span><span class="s2">&quot;French|Canal&quot;</span>
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestFrenchPalindrome
+---<span class="w"> </span>FAIL:<span class="w"> </span>TestFrenchPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+word_test.go:28:<span class="w"> </span>IsPalindrome<span class="o">(</span><span class="s2">&quot;été&quot;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
+<span class="o">===</span><span class="w"> </span>RUN<span class="w"> </span>TestCanalPalindrome
+---<span class="w"> </span>FAIL:<span class="w"> </span>TestCanalPalindrome<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00s<span class="o">)</span>
+word_test.go:35:<span class="w"> </span>IsPalindrome<span class="o">(</span><span class="s2">&quot;A man, a plan, a canal: Panama&quot;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span>
+FAIL
+<span class="nb">exit</span><span class="w"> </span>status<span class="w"> </span><span class="m">1</span>
+FAIL<span class="w">  </span>&lt;path_to_project_dir&gt;/palindrome<span class="w"> </span><span class="m">0</span>.001s
+</code></pre></div>
+
+<h1>Benchmark Function</h1>
+<p>Benchmarking is the practice of measuring the performance of a program on a fixed workload. In Go, a benchmark function look like a test function, but with the
+Benchmark prefix and a <em>testing.B parameter that provides most of the same methods as a </em>testing.T, plus few extra related performance measurement.It also exposes 
+an Integer field N, which specifies the number of times to perform the operation being measured.</p>
+<p>Here's a benchmark for IsPalindrome that calls it N times in a loop.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">func</span><span class="w"> </span><span class="nx">BenchmarkIsPalindrome</span><span class="p">(</span><span class="nx">b</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">IsPalindrome</span><span class="p">(</span><span class="s">&quot;A man, a plan, a canal: Panama&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Unlike tests, by default no benchmarks are run. The argument to the -bench flag selects which benchmark to run. It is regular expression matching the names of Benchmark functions, with a default value that matches none of the functions. The "." pattern causes it to match all benchmark functions in package. </p>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-bench<span class="o">=</span>.
+goos:<span class="w"> </span>linux
+goarch:<span class="w"> </span>amd64
+BenchmarkIsPalindrome-12<span class="w">         </span><span class="m">4377900</span><span class="w">           </span><span class="m">301</span><span class="w"> </span>ns/op
+PASS
+ok<span class="w">      </span>&lt;path_to_project_dir&gt;/palindrome<span class="w">    </span><span class="m">1</span>.598s
+</code></pre></div>
+
+<p>The benchmark name’s numeric suffix, 12 here , indicates the value of GOMAXPROCS, which is important for concurrent benchmarks.</p>
+<p>The report tells us that each call to <em>IsPalindrome</em> took about 0.301 microseconds, averaged over 4377900 runs. Since the benchmark runner initially has no idea how long the operation takes, it make some initial measuremetns using small values of N and then extrapolates to a value large enough for a stable timing measurement to be made.</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://aadityachapagain.com/tag/go.html">Go</a>
+      <a href="https://aadityachapagain.com/tag/golang.html">Golang</a>
+      <a href="https://aadityachapagain.com/tag/test.html">Test</a>
+      <a href="https://aadityachapagain.com/tag/testing.html">Testing</a>
+      <a href="https://aadityachapagain.com/tag/software-development.html">software development</a>
+      <a href="https://aadityachapagain.com/tag/programming-language.html">Programming language</a>
+    </p>
+  </div>
+
+
+
+
+
+<!-- Disqus -->
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'aadityachapagain';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>
+    Please enable JavaScript to view comments.
+</noscript>
+<!-- End Disqus -->
+</article>
+
+    <footer>
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#" class="license-text">
+  This work by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://aadityachapagain.com">Aaditya Chapagain</a> is licensed under <a rel="license" href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" /><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" /></a>
+</p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+  <span class="footer-separator">|</span>
+  Switch to the <a href="javascript:void(0)" onclick="theme.switch(`dark`)">dark</a> | <a href="javascript:void(0)" onclick="theme.switch(`light`)">light</a> | <a href="javascript:void(0)" onclick="theme.switch(`browser`)">browser</a> theme
+  <script id="dark-theme-script"
+          src="https://aadityachapagain.com/theme/dark-theme/dark-theme.min.js"
+          data-enable-auto-detect-theme="false"
+          data-default-theme="light"
+          type="text/javascript">
+  </script>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Aaditya Chapagain ",
+  "url" : "https://aadityachapagain.com",
+  "image": "/images/profile.jpg",
+  "description": ""
+}
+</script>
+
+
+</body>
+</html>

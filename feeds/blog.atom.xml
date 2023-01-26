@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Aaditya Chapagain - Blog</title><link href="https://aadityachapagain.com/" rel="alternate"></link><link href="https://aadityachapagain.com/feeds/blog.atom.xml" rel="self"></link><id>https://aadityachapagain.com/</id><updated>2020-09-15T12:00:00+05:45</updated><subtitle>Full-Time Machine Learning Engineer
+Part-Time Researcher</subtitle><entry><title>Distributed Training of Deep Learning model with Slurm on GCP</title><link href="https://aadityachapagain.com/2020/09/distributed-training-with-slurm-on-gcp/" rel="alternate"></link><published>2020-09-15T12:00:00+05:45</published><updated>2020-09-15T12:00:00+05:45</updated><author><name>Aaditya Chapagain</name></author><id>tag:aadityachapagain.com,2020-09-15:/2020/09/distributed-training-with-slurm-on-gcp/</id><summary type="html">&lt;p&gt;Faster Training of Large Deep Learning models is much easier than you think with the help of Slurm.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Recently, I was working on Big Machine Learning project. The task was to pretraining Large Machine learning models (with parameter in the range of several Billion ). And Normal training approch didn't work ( obviously ).With 8 GPU Volta core machines, it would take several months to complete just 1 epcoh of training, that's the point when i think of distributed training. I was using gcp ( google cloud ) for training models and found out that google already have support for High Performance Computing with Slurm . You can find Minimal working example on slurm from google codelabs here &lt;a href="https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine"&gt;https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine&lt;/a&gt;. &lt;/p&gt;
+&lt;p&gt;Through this blog, I will try to explain what is HPC? , Why HPC ?, how can we train large Deep Learning models with slurm.&lt;/p&gt;
+&lt;h1&gt;What is HPC ?&lt;/h1&gt;
+&lt;p&gt;High Performance Computing  (HPC) is the use of supercomputers and parallel processing techniques for solving complex mathematical and computational problems. HPC technology primarily focuses on developing parallel processing algorithms and systems by incorporating both administration and parallel computational techniques. HPC is typically used for solving advanced problems that require a lot time .&lt;/p&gt;
+&lt;h1&gt;Why HPC ?&lt;/h1&gt;
+&lt;p&gt;When you have loads of data and its processing takes really long time, then the approch &lt;strong&gt;divide et impera&lt;/strong&gt; comes at hand.&lt;/p&gt;
+&lt;p&gt;With HPC, we can divide any job so that every node processes different partitions of the data in parallel, speeding up the execution time.&lt;/p&gt;
+&lt;h1&gt;Slurm Workload Manager on GCP&lt;/h1&gt;
+&lt;p&gt;To make computing with  slurm easier in GCP, Google and SchedMD ( Slurm's Creators ) joined forces and as a result, we can run a Slurm cluster on Google Cloud Platform. We don't have to worry about the parallel computing techniques since slurm takes care of that and GCP takes care of setting up a cluster and providing resources. 
+Basic architectural diagram of a stand-alone Slurm Cluster in Google Cloud Platform.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/SPhjRyM"&gt;&lt;img alt="Slum Architecture in GCP" class="img-center" src="/images/slurm-archi.svg"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;As we can see in above pictures, Slurm cluster contains three types of nodes: &lt;strong&gt;login&lt;/strong&gt;, &lt;strong&gt;controller&lt;/strong&gt; and &lt;strong&gt;Compute&lt;/strong&gt; node.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Login Node&lt;/strong&gt; serves as an interface for the user: user should communicate with the cluster exclusively through the login node (starting the job, requiring resources, ...)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Controller Node&lt;/strong&gt; manages resources and job scheduling for the user.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Compute Node&lt;/strong&gt; executes the job.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;Setting Up a Slurm Cluster on GCP&lt;/h1&gt;
+&lt;p&gt;Before describing the setup, let us explain in short how does GCP implement a slurm cluster. &lt;/p&gt;
+&lt;p&gt;In GCP, a cluster is realized as a &lt;strong&gt;deployment&lt;/strong&gt;. A deployment is an instantiation of a set of resources  that are defined in a configuration. A deployment  can contain a number of resources, across a variety of Google Cloud Platform services. When you create a deployment, Deployment Manager creates all of the described resources in the respective Google Cloud Platform APIs.&lt;/p&gt;
+&lt;p&gt;This brings us to the cluster's nodes. Each node in a cluster is actually a &lt;strong&gt;Virtual Machine&lt;/strong&gt;.When a deployment is created, three new virtual machines appear in "VM instances" page, under "Compute  Engine". Those VMs are login instances, Controller instances, and compute image instance.&lt;/p&gt;
+&lt;p&gt;Compute Instance is a bit trickey part. One thing to notice is that deployment does not create compute instance,but exactly one compute image instance even if you request more compute nodes in your cluster. So, if a user requests 10 compute nodes for the cluster, those 10 virtual machines will not be immediately instantiated with the cluster deployment. Here's what is happening. These compute instances are created in the later step when you run a job and request the number of nodes for the job. Then the compute nodes will be allocated, and they will appear in the "VM Instances" page. Shortly after the job is completed, these virtual machines will be deallocated and will disappear from the list. This way a user gets new compute VMs everytime. The fact that deployment create compute image instance rather than compute nodes directly is that, you might not be using compute node all the time and creating compute nodes unnecessarily might affect your billing, so , slurm will create new compute nodes and use compute image instance as a templete to dynamically create new instance during running jobs, so that you will be billed for exact time period your compute node will run.&lt;/p&gt;
+&lt;p&gt;Below you can see visual representation of the described process:&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/mFrGDy3"&gt;&lt;img alt="Slum Architecture in GCP" class="img-center" src="/images/slurm_hpc.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Finally, let's head to the cluster setup. In this blog post, we will setup Slurm cluster for training Deep Learning Model with several nodes.Customize the information so that they will suit your needs:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Launch Google Cloud Shell&lt;/li&gt;
+&lt;li&gt;Check that you already authenticated and that the project is already set to your &lt;strong&gt;PROJECT_ID&lt;/strong&gt;: &lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;gcloud&lt;span class="w"&gt; &lt;/span&gt;auth&lt;span class="w"&gt; &lt;/span&gt;list
+
+Credentialed&lt;span class="w"&gt; &lt;/span&gt;accounts:
+&amp;lt;your&lt;span class="w"&gt; &lt;/span&gt;email&amp;gt;
+
+$&lt;span class="w"&gt; &lt;/span&gt;gcloud&lt;span class="w"&gt; &lt;/span&gt;config&lt;span class="w"&gt; &lt;/span&gt;list&lt;span class="w"&gt; &lt;/span&gt;project
+&lt;span class="o"&gt;[&lt;/span&gt;core&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;project&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;PROJECT_ID&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Clone git repository that contains the Slurm Google Cloud Platform deployment-manager files: &lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/SchedMD/slurm-gcp.git
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Switch to the Slurm deployment configuration directory: &lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;slurm-gcp
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Configure the Slurm Deployment YAML file. Provide information that suits your needs. There are plenty more parameters available, they can be found in SchedMD's GitHub repository. Below is the script that was sufficient for my needs.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# [START cluster_yaml]&lt;/span&gt;
+&lt;span class="nt"&gt;imports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="p p-Indicator"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;path&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;slurm.jinja&lt;/span&gt;
+
+&lt;span class="nt"&gt;resources&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="p p-Indicator"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;slurm-cluster&lt;/span&gt;
+&lt;span class="nt"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;slurm.jinja&lt;/span&gt;
+&lt;span class="nt"&gt;properties&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;cluster_name            &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;slurm-job&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;zone                    &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;us-central1-b&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;controller_machine_type &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;n1-standard-2&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;controller_disk_type      &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;pd-standard&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;controller_disk_size_gb   &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;50&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;external_controller_ip    &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;True&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;login_machine_type        &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;n1-standard-2&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;login_disk_type           &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;pd-standard&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;login_disk_size_gb        &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;50&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;external_login_ips        &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;True&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;compute_image_machine_type  &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;n1-standard-2&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;compute_image_disk_type   &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;pd-standard&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;compute_image_disk_size_gb&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;200&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;external_compute_ips      &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;False&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;partitions &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p p-Indicator"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name           &lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;gpu&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;machine_type&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;n1-standard-16&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;max_node_count&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;10&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;zone&lt;/span&gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;us-central1-b&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;# cpu_platform&lt;/span&gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;Intel Skylake&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;preemptible_bursting&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;True&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;compute_disk_type&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;pd-standard&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;compute_disk_size_gb&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;200&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;gpu_type&lt;/span&gt;&lt;span class="w"&gt;               &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;nvidia-tesla-v100&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;gpu_count&lt;/span&gt;&lt;span class="w"&gt;              &lt;/span&gt;&lt;span class="p p-Indicator"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;1&lt;/span&gt;
+
+&lt;span class="c1"&gt;#  [END cluster_yaml]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;In the Cloud shell Session, execute the following command from the slurm-gcp folder:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;gcloud&lt;span class="w"&gt; &lt;/span&gt;deployment-manager&lt;span class="w"&gt; &lt;/span&gt;deployments&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;slurm-deployment&lt;span class="w"&gt;  &lt;/span&gt;--config&lt;span class="w"&gt;  &lt;/span&gt;slurm-cluster.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;This command creates a deployment  named slurm-deployment. The operation can take few minutes to complete.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Verify the deployment ( Navigation menu --&amp;gt;  Deployment Manager)&lt;/li&gt;
+&lt;li&gt;Verify the cluster's instances ( Navigation menu --&amp;gt; Compute Engine --&amp;gt; VM Instances)  There should be login , controller, and compute image instances. Compute image instance will live for small amount of time for setting up compute images, after that it will be off. and Compute Instances show up only when you allocate them for the sbatch job. they disappear shortly the job is completed.&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Log in to login instance .&lt;/p&gt;
+&lt;p&gt;While logging in to the login instances if &lt;em&gt;Slurm is currently being installed/configured in the background.&lt;/em&gt; Don't install any packages  during that time, as that might disrupt the installation process of slurm. Wait for around 10 for slurm to be installed fully and you can log in to login instances and do whatever you want.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1&gt;Setting up Deep Learning Environment inside slurm cluster&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;SSH to login instance in your slurm cluster.&lt;/li&gt;
+&lt;li&gt;After sucessfully installing slurm on cluster,  ( /home , /apps ) directory of login instances will be shared with all other instances  like controller and compute instances. So that all deep learning  and python binaries must be installed inside &lt;code&gt;/home&lt;/code&gt; or &lt;code&gt;/apps&lt;/code&gt; directory.&lt;/li&gt;
+&lt;li&gt;Installing python inside /home:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~
+
+sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;-y&lt;span class="w"&gt; &lt;/span&gt;update&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;groupinstall&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Development Tools&amp;quot;&lt;/span&gt;
+
+sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;-y&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;openssl-devel&lt;span class="w"&gt; &lt;/span&gt;bzip2-devel&lt;span class="w"&gt; &lt;/span&gt;libffi-devel
+
+mkdir&lt;span class="w"&gt; &lt;/span&gt;tmp&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;tmp&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+
+tar&lt;span class="w"&gt; &lt;/span&gt;zxvf&lt;span class="w"&gt; &lt;/span&gt;Python-3.8.3.tgz&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Python-3.8.3
+
+./configure&lt;span class="w"&gt; &lt;/span&gt;--enable-optimizations&lt;span class="w"&gt; &lt;/span&gt;--prefix&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/opt/python-3.8
+
+make
+
+make&lt;span class="w"&gt; &lt;/span&gt;altinstall
+
+vi&lt;span class="w"&gt; &lt;/span&gt;~/.bashrc
+&lt;span class="o"&gt;(&lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;line:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/opt/python-3.8/bin:&lt;span class="nv"&gt;$PATH&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;end&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;.bashrc&lt;span class="w"&gt; &lt;/span&gt;
+
+&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt; which python3.8
+(output should be: /home/&amp;lt;username&amp;gt;/opt/python-3.8/bin/python3)
+
+# Now Lets install pytorch
+
+&amp;gt; curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+
+&amp;gt;  python3.8 get-pip.py
+
+&amp;gt; python3.8 -m pip install torch==1.5.0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Installing CUDA toolkits and Nvidia-drivers&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download the latest Nvidia CUDA &lt;a href="https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/"&gt;repository package&lt;/a&gt; cuda-repo-rhel7-*.rpm.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.2.89-1.x86_64.rpm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Install the CUDA repository package. This will enable CUDA repository on your CentOS 7 Linux system:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;rpm&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;cuda-repo-*.rpm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Install cuda package from nvidia repository. Pytorch 1.5 works with cuda 10.2, so lets install cuda 10.2. Below command will install cuda and nvidia-drivers inside  &lt;code&gt;/usr/local/cuda-10.2&lt;/code&gt; directory.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;cuda-10-2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;By Now we know that only  &lt;code&gt;/home&lt;/code&gt; and &lt;code&gt;/apps&lt;/code&gt; directory were shared across all other instances. So lets copy cuda directory from &lt;code&gt;/usr/local/&lt;/code&gt; to &lt;code&gt;~/opt/cuda&lt;/code&gt; &lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;~/opt/cuda&lt;span class="w"&gt; &lt;/span&gt;
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;/usr/local/cuda-10.2/*&lt;span class="w"&gt; &lt;/span&gt;~/opt/cuda/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Export cuda path to Nvidia CUDA binary executables. Open the ~/.bashrc using your preferred text editor and add the following two lines&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/opt/cuda/bin:&lt;span class="nv"&gt;$PATH&lt;/span&gt;
+&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/opt/cuda/lib64:&lt;span class="nv"&gt;$LD_LIBRARY_PATH&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Now Re-login or execute your updated ~/.bashrc file:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Now  Confirm the CUDA installation:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;nvcc&lt;span class="w"&gt; &lt;/span&gt;--version
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;nvidia-smi&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;#( doesn&amp;#39;t work as we dont have gpu in login instances )&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;By Now your slurm system is ready and can run any training script using &lt;code&gt;sbatch&lt;/code&gt; scheduling. Below I will discuss on how to compile nvidia-apex library. It takes me 2 days just to make nvidia-apex work on slurm cluster.If you follow my above steps exaclty, I am sure you will be able to install nvidia apex library inside your slurm cluster without any problems.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;Installing Nvidia-Apex library inside your slurm cluster ( Optional )&lt;/h1&gt;
+&lt;p&gt;If you don't know about Apex library, you can visit Nvidia-Apex &lt;a href="https://github.com/NVIDIA/apex"&gt;github page&lt;/a&gt; to know more about Apex library. It is a set of utilites to help training model in mixed precision mode. It provide more numerical stable layer norm operations during training model in mixed precision mode, So that you can have both faster and stable training.&lt;/p&gt;
+&lt;p&gt;For &lt;code&gt;Nvidia-apex&lt;/code&gt; to sucessfully compile, You need to upgrade your gcc --version to 7.3.0 .&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;centos-release-scl
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;yum&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;devtoolset-7-gcc*
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;scl&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;enable&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;devtoolset-7&lt;span class="w"&gt; &lt;/span&gt;bash
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;which&lt;span class="w"&gt; &lt;/span&gt;gcc
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;gcc&lt;span class="w"&gt; &lt;/span&gt;--version
+&lt;span class="o"&gt;(&lt;/span&gt;above&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;script&lt;span class="w"&gt; &lt;/span&gt;must&lt;span class="w"&gt; &lt;/span&gt;output&lt;span class="w"&gt; &lt;/span&gt;gcc&lt;span class="w"&gt; &lt;/span&gt;version&lt;span class="w"&gt; &lt;/span&gt;as&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;.3.0&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now We will compile and install Apex-library inside python3.8&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/NVIDIA/apex
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;apex
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;TORCH_CUDA_ARCH_LIST&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;6.0;7.0&amp;quot;&lt;/span&gt;
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;CUDA_HOME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;/opt/cuda&lt;span class="w"&gt; &lt;/span&gt;python3.8&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;--no-cache-dir&lt;span class="w"&gt; &lt;/span&gt;--global-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;--cpp_ext&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--global-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;--cuda_ext&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;./
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Its takes around 4 - 6 minutes to compile and install apex.&lt;/p&gt;
+&lt;h1&gt;Distributed Training with pytorch and slurm&lt;/h1&gt;
+&lt;p&gt;I will not give details on how to setup codebase in pytorch for distributed training, Its a huge topic and might need another blog post for it only. Meanwhile,  You can learn more about distributed training with pytorch &lt;a href="https://pytorch.org/tutorials/intermediate/dist_tuto.html"&gt;here&lt;/a&gt;. After you done setting up distributed training codebase in pytorch. You can start training using sbatch scripts.&lt;/p&gt;
+&lt;h2&gt;Running the training Job Using SBATCH Script&lt;/h2&gt;
+&lt;p&gt;After we have done the cluster setup, preparing deep learning envs and building of the model, the last step is to finally run a job, i.e. to start the training. That is easily done by running sbatch script, which is basically a customized shell script. It effectively has two parts. The first part of the script is specific for the Slurm, it specifies the parameters for the Slurm job scheduler using the SBATCH command. The second part consists of bash (or some other shell) commands that you would normally run in terminal.&lt;/p&gt;
+&lt;p&gt;Below you will see demo SBATCH script (You need to modify sbatch script according to your needs).&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;inside run_training.sh file.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="ch"&gt;#!/bin/sh&lt;/span&gt;
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --job-name=distributed_training&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --output=slurm_logs/slrm_stdout.%j&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --error=slurm_logs/slrm_stderr.%j&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --partition=gpu&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;## make sure we don&amp;#39;t clobber log files if jobs get restarted&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --open-mode=append&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --nodes=2&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --time=24:00:00&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;## make sure we are told about preempts, and jobs running out of time, 60s beforehand&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --signal=USR1@60&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --cpus-per-task=5&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;## srun forks ntasks_per_node times on each node&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --ntasks-per-node=1&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --mem=200G&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;#SBATCH --gpus-per-node=1&lt;/span&gt;
+
+python3.8&lt;span class="w"&gt; &lt;/span&gt;train.py&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;Your&lt;span class="w"&gt; &lt;/span&gt;training&lt;span class="w"&gt; &lt;/span&gt;args&lt;span class="w"&gt; &lt;/span&gt;here&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Execute the sbatch script using the sbatch command line:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sbatch&lt;span class="w"&gt; &lt;/span&gt;run_training.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Running sbatch will return a Job ID for the scheduled job, for example: &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;Submitted batch job 37
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To keep track of the job’s state, run squeue and to keep track of the cluster’s state, run sinfo:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;squeue
+
+JOBID&lt;span class="w"&gt; &lt;/span&gt;PARTITION&lt;span class="w"&gt; &lt;/span&gt;NAME&lt;span class="w"&gt; &lt;/span&gt;USER&lt;span class="w"&gt; &lt;/span&gt;ST&lt;span class="w"&gt; &lt;/span&gt;TIME&lt;span class="w"&gt; &lt;/span&gt;NODES&lt;span class="w"&gt; &lt;/span&gt;NODELIST&lt;span class="o"&gt;(&lt;/span&gt;REASON&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;gpu&lt;span class="w"&gt; &lt;/span&gt;hostname&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;username&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;CF&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;:11&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;slurm-job-compute-0-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;-1&lt;span class="o"&gt;]&lt;/span&gt;
+
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;sinfo
+
+PARTITION&lt;span class="w"&gt; &lt;/span&gt;AVAIL&lt;span class="w"&gt; &lt;/span&gt;TIMELIMIT&lt;span class="w"&gt; &lt;/span&gt;NODES&lt;span class="w"&gt; &lt;/span&gt;STATE&lt;span class="w"&gt; &lt;/span&gt;NODELIST
+gpu*&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;infinite&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;mix#&lt;span class="w"&gt; &lt;/span&gt;slurm-job-compute-0-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;-1&lt;span class="o"&gt;]&lt;/span&gt;
+gpu*&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;infinite&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;idle~&lt;span class="w"&gt; &lt;/span&gt;slurm-job-compute-0-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;-7&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;Summary&lt;/h1&gt;
+&lt;p&gt;In this blog post we learned how to setup slurm cluster in GCP  ( which is super easy ), setup own deeplearning environment from installing python, pytorch to compiling apex from source and finally run training using sbatch script and keeping track of job state using &lt;code&gt;sinfo&lt;/code&gt;, &lt;code&gt;squeue&lt;/code&gt; and &lt;code&gt;scontrol&lt;/code&gt;.&lt;/p&gt;
+&lt;h1&gt;REFERENCES&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine"&gt;https://cloud.google.com/solutions/deploying-slurm-cluster-compute-engine&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://cloud.google.com/deployment-manager/docs/deployments"&gt;https://cloud.google.com/deployment-manager/docs/deployments&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://pytorch.org/tutorials/intermediate/dist_tuto.html"&gt;https://pytorch.org/tutorials/intermediate/dist_tuto.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/NVIDIA/apex"&gt;https://github.com/NVIDIA/apex&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><category term="Blog"></category><category term="Datasets"></category><category term="Machine Learning"></category><category term="Visualization"></category><category term="training"></category><category term="Deep Learning"></category><category term="ML tools"></category><category term="tensorboard"></category><category term="python"></category><category term="slurm"></category><category term="distributed training"></category><category term="High performance computing"></category><category term="HPC"></category><category term="parallel processing"></category><category term="tensorflow"></category><category term="Pytorch"></category><category term="DL"></category><category term="Language model"></category></entry><entry><title>Wandb Your machine learning project.</title><link href="https://aadityachapagain.com/2020/09/wandb-your-machine-learning-project/" rel="alternate"></link><published>2020-09-02T12:00:00+05:45</published><updated>2020-09-02T12:00:00+05:45</updated><author><name>Aaditya Chapagain</name></author><id>tag:aadityachapagain.com,2020-09-02:/2020/09/wandb-your-machine-learning-project/</id><summary type="html">&lt;p&gt;&lt;strong&gt;Wandb&lt;/strong&gt; Tool for visualizing and tracking your machine learning experiments better than tensorboard.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Have you ever worked on large Machine learning projects or research where you have to manage many experimentations ? often during large projects or experiments you have to log every nits and bits of your Machine Learning training. Some of us might already be there.
+Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization,  experiments. There were lots of them and It would take lots of time to prepare presentation's  of my experiments results to my peers and that's when I learned about wandb.&lt;/p&gt;
+&lt;p&gt;Wandb is API created by &lt;a href="https://www.wandb.com/"&gt;Weights &amp;amp; Biases&lt;/a&gt; to collect, manage and visualize all your Machine learning experiments all at one place. Ohh, wait you must be wandering that &lt;strong&gt;tensorboard&lt;/strong&gt; can also do these things right ?&lt;/p&gt;
+&lt;p&gt;Well, there are lots of things which makes &lt;strong&gt;wandb&lt;/strong&gt;  a straight winner.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Visually aesthetics UI.&lt;/li&gt;
+&lt;li&gt;More manageable and customizable visualization and experiment tracking.&lt;/li&gt;
+&lt;li&gt;Super easy to use API.&lt;/li&gt;
+&lt;li&gt;Analyze system usage metrics alongside runs.&lt;/li&gt;
+&lt;li&gt;Collaborate with team members&lt;/li&gt;
+&lt;li&gt;Run parameter sweeps&lt;/li&gt;
+&lt;li&gt;Keep records of experiments available forever&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I think the last point in above list is super cool, which is not feasible to do with tensorboard i.e You have to write huge amount of code by yourself to log these system wide metrics into tensorboard, but with wandb you can do this with just one line of code. and &lt;/p&gt;
+&lt;p&gt;Lets Dive into wandb API.&lt;/p&gt;
+&lt;h1&gt;Installation&lt;/h1&gt;
+&lt;p&gt;Installing &lt;code&gt;wandb&lt;/code&gt; is very easy, just run below command in terminal and you are good to go.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;wandb
+
+pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;wandb&lt;span class="w"&gt; &lt;/span&gt;--upgrade
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;One thing I noticed during installing wandb is that, if we run only &lt;code&gt;pip install wandb&lt;/code&gt; it will sometimes only install wrapper class of wandb. So, upgrading wandb library after installing it , worked for me.&lt;/p&gt;
+&lt;h1&gt;Integration with your python code&lt;/h1&gt;
+&lt;p&gt;You can use &lt;code&gt;wandb&lt;/code&gt; with any deeplearning framework, either it is pytorch or Tensorflow.But, first you need to have account on &lt;a href="https://www.wandb.com/"&gt;Weights &amp;amp; Biases&lt;/a&gt;. After you create account on &lt;a href="https://www.wandb.com/"&gt;Weights &amp;amp; Biases&lt;/a&gt; , you can get your wandb api keys from &lt;a href="https://app.wandb.ai/settings"&gt;setting&lt;/a&gt;. After you get your keys, you just need to write couple of code to integrate your deeplearning system with wandb logger.&lt;/p&gt;
+&lt;h2&gt;Login&lt;/h2&gt;
+&lt;p&gt;First you need to login into your wandb using wandb API KEYS. you can login programetically or from terminal, but login using terminal is advised.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# This is secret and shouldn&amp;#39;t be checked into version control&lt;/span&gt;
+&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;WANDB_API_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$YOUR_API_KEY&lt;/span&gt;
+
+wandb&lt;span class="w"&gt; &lt;/span&gt;login
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To Programatically login you can use following code:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;WANDB_API_KEYS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;your api keys here&amp;gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;wandb&lt;/span&gt;
+
+&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;login&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;WANDB_API_KEYS&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# if you don&amp;#39;t have $WANDB_API_KEYS in your env variable (Not Advised)&lt;/span&gt;
+
+&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;login&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="c1"&gt;# if $WANDB_API_KEYS is already been set.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Initializing wandb ( wandb.init )&lt;/h2&gt;
+&lt;p&gt;Below you will see simple wandb integration examples with keras.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# initialize wandb with your project name and optionally with configutations.&lt;/span&gt;
+&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;project&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;demo-keras-integration&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;first_run&amp;#39;&lt;/span&gt;
+           &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;learning_rate&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.005&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;epochs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;batch_size&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;loss_function&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;sparse_categorical_crossentropy&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;architecture&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;CNN&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;dataset&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;CIFAR-10&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="n"&gt;anonymous&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;never&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;config&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Initialize model like you usually do.&lt;/span&gt;
+&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keras&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;backend&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clear_session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Model&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;summary&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c1"&gt;# compile model like you usually do.&lt;/span&gt;
+&lt;span class="c1"&gt;# notice use of config.&lt;/span&gt;
+&lt;span class="n"&gt;optimizer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keras&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;optimizers&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Adam&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;learning_rate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;optimizer&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loss_function&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;metrics&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;project&lt;/code&gt; is name of  your project and your project might have different run, so &lt;code&gt;name&lt;/code&gt; parameter will distinguish one run from other. 
+If you run above code and get back to your wandb dashboard it will new project called &lt;code&gt;demo-keras-integration&lt;/code&gt; and with &lt;code&gt;first_run&lt;/code&gt; in it.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/hDjwC6s"&gt;&lt;img alt="wandb Init" class="img-center" src="/images/wandb_init.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Above init configuration will create new run everytime you call &lt;code&gt;wandb.init&lt;/code&gt; But sometimes that not what you want, If your training is preemptible and might takes days or months to complete then you can resume from previous logged metrics by providing &lt;code&gt;resume = True&lt;/code&gt; parameter to &lt;code&gt;wandb.init&lt;/code&gt; and you will also need to set unique id, to distinguish one run from another. Below code will resume your logs with current run in your wandb dashboard even after you run &lt;code&gt;init&lt;/code&gt; multiple times.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;project&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;demo-keras-integration&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;first_run&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;resume&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="nb"&gt;id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;my_first_run&amp;#39;&lt;/span&gt;
+           &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;learning_rate&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.005&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;epochs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;batch_size&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;loss_function&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;sparse_categorical_crossentropy&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;architecture&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;CNN&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+              &lt;span class="s2"&gt;&amp;quot;dataset&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;CIFAR-10&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="n"&gt;anonymous&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;never&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Train with Wandb callback&lt;/h2&gt;
+&lt;p&gt;wandb made easy to log your model metrics into your project space by providing various callback function to log your metrics directly into wandb dashboard, without writing extra code.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;wandb.keras&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;WandbCallback&lt;/span&gt;
+
+&lt;span class="c1"&gt;# train with our favorite model.fit&lt;/span&gt;
+&lt;span class="c1"&gt;# notice WandbCallback used as a regular callback&lt;/span&gt;
+&lt;span class="c1"&gt;# notice the use of config&lt;/span&gt;
+&lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="n"&gt;epochs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;epochs&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; 
+          &lt;span class="n"&gt;batch_size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;batch_size&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="n"&gt;validation_data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+          &lt;span class="n"&gt;callbacks&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;WandbCallback&lt;/span&gt;&lt;span class="p"&gt;()])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you are working on images and need a way to log your correctly classified and misclassified sample images, you can also do so using wandb. Below you will see the examples of it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# in order to get prediction on small subset of images.&lt;/span&gt;
+&lt;span class="n"&gt;val_images&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;val_labels&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x_test&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;32&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="c1"&gt;# train with our favorite model.fit&lt;/span&gt;
+&lt;span class="c1"&gt;# notice WandbCallback used as a regular callback&lt;/span&gt;
+&lt;span class="c1"&gt;# notice that we are passing in some arguments as well&lt;/span&gt;
+&lt;span class="c1"&gt;# notice the use of config&lt;/span&gt;
+&lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="n"&gt;epochs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;epochs&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; 
+          &lt;span class="n"&gt;batch_size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;batch_size&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="n"&gt;validation_data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+          &lt;span class="n"&gt;callbacks&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;WandbCallback&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data_type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;image&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; 
+                                   &lt;span class="n"&gt;training_data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;val_images&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;val_labels&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; 
+                                   &lt;span class="n"&gt;labels&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;CLASS_NAMES&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://ibb.co/ZcbvNP9"&gt;&lt;img alt="logging images with wandb" class="img-center" src="/images/wand_log_images.PNG"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Log Custom metrics with wandb.log&lt;/h2&gt;
+&lt;p&gt;You can always log custom metrics and extra information using wandb.log .&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;loss&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;accuracy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;evaluate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Test Error Rate: &amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;round&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;accuracy&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;# notice the use of wandb.log. &lt;/span&gt;
+&lt;span class="c1"&gt;# We can easiy pass in values as key-value pairs.&lt;/span&gt;
+&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Test Error Rate&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;round&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;accuracy&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)})&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;wandb Dashboard&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/tBZDJzW"&gt;&lt;img alt="Wandb dashboard" class="img-center" src="/images/wandb_dashboard.PNG"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;You can see all your logged metrics in your wandb project dashboard. Wandb Groups information into different sections like Overview, Charts ,logs, system, model and files.&lt;/p&gt;
+&lt;h2&gt;Overview&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/RvNFHTW"&gt;&lt;img alt="Wandb dashboard" class="img-center" src="/images/wandb_overview.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The information in the &lt;code&gt;overview&lt;/code&gt; section is pretty intuitive and self-explanatory. However, the Git Repository field and the Git State field are worthy of special mention. You can run the checkout command in the Git State field to pin down the exact code for reproducing the experiment. Under the hood, wandb tracks all the changes you made to the original repo, and save the "diff" files in a local directory. In this way, you can easily switch between different versions of the code without manually pushing the change to the remote repo.&lt;/p&gt;
+&lt;h2&gt;Logs&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;logs&lt;/code&gt; section shows the console output during the experiment. This is useful for debugging the performance of the model.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/hmKFC7H"&gt;&lt;img alt="Wandb dashboard" class="img-center" src="/images/wandb_logs.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Systems&lt;/h2&gt;
+&lt;p&gt;To me, the system section is where wandb really shines and separates itself from other options such as TensorBoard. It is a centralized place to track system utilization during the experiment. There are in total of 8 graphs displayed in this section. These graphs give you insight into the training bottleneck and possible ways to uplift it. For example, below are the diagrams of the experiment:&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/VNGQbyQ"&gt;&lt;img alt="Wandb dashboard" class="img-center" src="/images/wandb_system.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Tensorboard&lt;/h2&gt;
+&lt;p&gt;wandb also provide options for people who love tensorboard. You can directly sync wandb with tensorboard by just setting &lt;code&gt;sync_tensorboard = True&lt;/code&gt; in your &lt;code&gt;wandb.init&lt;/code&gt;. So, that every information that is logged into tensorboard will also be logged into wandb.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;wandb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;lt;your run name&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;project&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;your project name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;config&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&amp;lt;your config&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;sync_tensorboard&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;Summary&lt;/h1&gt;
+&lt;p&gt;We discuss how to integrate wandb in any deeplearning framework using python for inspecting the efficiency of training jobs. We also looked into other aspects of wandb that makes it so much unique than other training logging software like tensorboard.&lt;/p&gt;
+&lt;p&gt;To learn more about wandb, check out their website: &lt;a href="https://www.wandb.com/"&gt;https://www.wandb.com/&lt;/a&gt;.&lt;/p&gt;</content><category term="Blog"></category><category term="Datasets"></category><category term="Machine Learning"></category><category term="Visualization"></category><category term="training"></category><category term="Deep Learning"></category><category term="ML tools"></category><category term="tensorboard"></category><category term="python"></category></entry><entry><title>Build Conversational Reddit Dataset using Google DataFlow and Big Query</title><link href="https://aadityachapagain.com/2020/08/build-reddit-datasets/" rel="alternate"></link><published>2020-08-22T12:00:00+05:45</published><updated>2020-08-22T12:00:00+05:45</updated><author><name>Aaditya Chapagain</name></author><id>tag:aadityachapagain.com,2020-08-22:/2020/08/build-reddit-datasets/</id><summary type="html">&lt;p&gt;Build Conversational Reddit Dataset using Google DataFlow and Big Query&lt;/p&gt;</summary><content type="html">&lt;p&gt;So, I was building chatbot Agent using BlenderBot which is available in &lt;a href="https://parl.ai"&gt;Parlai framework&lt;/a&gt; .ParlAI is a python framework for sharing, training and testing dialogue models, from open-domain chitchat to VQA( Visual Question Answering). BlenderBot is current State of the Art chatbot model built and open-sourced by &lt;a href="https://ai.facebook.com"&gt;Facebook AI&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;They have open-sourced 3 different variant of BlenderBot model based on Number of Parameters model have.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;BlenderBot_10B&lt;/code&gt; having 9.4 Billion parameters.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;BlenderBot_3B&lt;/code&gt; having 2.9 Billion parameters.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;BlenderBot_90M&lt;/code&gt; having 90 Million parameters.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The generated dialogue by &lt;code&gt;BlenderBot_3B&lt;/code&gt; was better than &lt;code&gt;BlenderBot_90M&lt;/code&gt; but we were limited by resources. &lt;/p&gt;
+&lt;p&gt;With &lt;code&gt;Nvidia Tesla P100&lt;/code&gt; dialog generation given context histories takes around 3 - 10 secs. The bigger the context histories the slower it will become.&lt;/p&gt;
+&lt;p&gt;Since 10 secs is to much for our application. So, we try using &lt;code&gt;90M&lt;/code&gt; Variant of BlenderBot. But comparing to &lt;code&gt;3B&lt;/code&gt; it was not that good though dialogue generation was very fast.&lt;/p&gt;
+&lt;p&gt;As a result, We decided to build our own BlenderBot variant having parameter between 90M and 3B from scratch. So, To reproduce their results with our Custom model, we had to redo everything, What facebook did to train the model.
+1. Pre Training seq2seq Transformer model with similar hyperparameters used by facebook.
+2. Finetune our Model with BST Datasets.( Blended Skill and Talk Datasets).&lt;/p&gt;
+&lt;p&gt;For Pre-Training, We needed reddit datasets. You can download reddit datasets from &lt;a href="https://files.pushshift.io/reddit/comments/"&gt;Pushshift.io&lt;/a&gt;.After opening this website you can see its huge and I my waste entire week trying to read and preprocess these files using python (&lt;strong&gt;FYI&lt;/strong&gt;: &lt;em&gt;I still regret doing that, I was young and stupid&lt;/em&gt; ) ZZZzzz.&lt;/p&gt;
+&lt;p&gt;Below I will show you How I am able to read and preprocess this huge datasets using Google dataflow and Big Query.&lt;/p&gt;
+&lt;h2&gt;Prerequisties&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Google cloud project.&lt;/li&gt;
+&lt;li&gt;Enable Big Query API and DataFlow API.&lt;/li&gt;
+&lt;li&gt;Create new Bucket or use existing Bucket for storing datasets.&lt;/li&gt;
+&lt;li&gt;Google Application Credentials key file.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Getting Started&lt;/h2&gt;
+&lt;p&gt;Reddit datasets were created using Apache Beam pipeline scripts, run on Google Dataflow. This parallelizes the data processing pipeline across many worker machines. Apache Beam requires python &amp;gt;= 3.6, so you will need to set up a python =&amp;gt; 3.6 virtual environment:&lt;/p&gt;
+&lt;p&gt;The Dataflow scripts write conversational datasets to Google cloud storage, so you will need to create a bucket to save the dataset to.&lt;/p&gt;
+&lt;p&gt;Dataflow will run workers on multiple Compute Engine instances, so make sure you have a sufficient quota of n1-standard-1 machines. The READMEs for individual datasets give an idea of how many workers are required, and how long each dataflow job should take.&lt;/p&gt;
+&lt;p&gt;And you will need to set up authentication by creating a service account with access to Dataflow and Cloud Storage, and set GOOGLE_APPLICATION_CREDENTIALS:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;/span&gt;&lt;span class="o"&gt;={{&lt;/span&gt;json&lt;span class="w"&gt; &lt;/span&gt;file&lt;span class="w"&gt; &lt;/span&gt;key&lt;span class="w"&gt; &lt;/span&gt;location&lt;span class="o"&gt;}}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Create the BigQuery Input Table&lt;/h2&gt;
+&lt;p&gt;Reddit comment data were already stored as a public BigQuery dataset, partitioned into months: &lt;a href="https://console.cloud.google.com/bigquery?p=fh-bigquery&amp;amp;d=reddit_comments&amp;amp;page=dataset&amp;amp;pli=1"&gt;fh-bigquery:reddit_comments.YYYY_MM&lt;/a&gt;. The first step in creating the dataset is to create a single table that contains all the comment data to include.&lt;/p&gt;
+&lt;p&gt;First, &lt;a href="https://cloud.google.com/bigquery/docs/bq-command-line-tool"&gt;install the bq command-line tool&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Ensure you have a BigQuery dataset to write the table to:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;DATASET&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;data&amp;quot;&lt;/span&gt;
+bq&lt;span class="w"&gt; &lt;/span&gt;mk&lt;span class="w"&gt; &lt;/span&gt;--dataset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATASET&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Write a new table by querying the public reddit data:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;TABLE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;reddit
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# For all data up to 2019.&lt;/span&gt;
+&lt;span class="nv"&gt;TABLE_REGEX&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;^201[5678]_[01][0-9]&lt;/span&gt;$&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="nv"&gt;QUERY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;SELECT * \&lt;/span&gt;
+&lt;span class="s2"&gt;  FROM TABLE_QUERY(\&lt;/span&gt;
+&lt;span class="s2"&gt;  [fh-bigquery:reddit_comments], \&lt;/span&gt;
+&lt;span class="s2"&gt;  \&amp;quot;REGEXP_MATCH(table_id, &amp;#39;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;TABLE_REGEX&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;#39;)\&amp;quot; )&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Run the query.&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;QUERY&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bq&lt;span class="w"&gt; &lt;/span&gt;query&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--batch&lt;span class="w"&gt; &lt;/span&gt;--allow_large_results&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--destination_table&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATASET&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;.&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;TABLE&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--use_legacy_sql&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Run The Dataflow Script&lt;/h2&gt;
+&lt;p&gt;First download requirements.txt file from &lt;a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets/blob/master/requirements.txt"&gt;here&lt;/a&gt; to your project root directory.&lt;/p&gt;
+&lt;p&gt;create virtual Environment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;python3&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;virtualenv&lt;span class="w"&gt; &lt;/span&gt;venv
+.&lt;span class="w"&gt; &lt;/span&gt;venv/bin/activate
+pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Download create_data.py file from &lt;a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets/blob/master/reddit/create_data.py"&gt;here&lt;/a&gt; to your project root directory.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;create_data.py&lt;/code&gt; is a &lt;a href="https://cloud.google.com/dataflow/"&gt;Google Dataflow&lt;/a&gt; script that reads the input BigQuery table and saves the dataset to Google Cloud Storage.&lt;/p&gt;
+&lt;p&gt;Now you can run the Dataflow script:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;PROJECT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;your-google-cloud-project&amp;gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;BUCKET&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;your-bucket&amp;gt;&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;INSTANCE_REGION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;lt;your-dataflow-instances-region&amp;gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="nv"&gt;DATADIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;gs://&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;BUCKET&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;/reddit/&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;date&lt;span class="w"&gt; &lt;/span&gt;+&lt;span class="s2"&gt;&amp;quot;%Y%m%d&amp;quot;&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# The below uses values of $DATASET and $TABLE set&lt;/span&gt;
+&lt;span class="c1"&gt;# in the previous section.&lt;/span&gt;
+
+python&lt;span class="w"&gt; &lt;/span&gt;reddit/create_data.py&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--output_dir&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATADIR&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--reddit_table&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECT&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;:&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATASET&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;.&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;TABLE&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--runner&lt;span class="w"&gt; &lt;/span&gt;DataflowRunner&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--temp_location&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATADIR&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/temp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--staging_location&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;DATADIR&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/staging&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--project&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;PROJECT&lt;/span&gt;&lt;span class="p"&gt;?&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--dataset_format&lt;span class="w"&gt; &lt;/span&gt;JSON&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--region&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;INSTANCE_REGION&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--save_main_session
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once the above is running, you can continue to monitor it in the terminal, or quit the process and follow the running job on the &lt;a href="https://console.cloud.google.com/dataflow"&gt;dataflow admin page&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The dataset will be saved in the &lt;code&gt;$DATADIR&lt;/code&gt; directory, as sharded train and test sets- &lt;code&gt;gs://your-bucket/reddit/YYYYMMDD/train-*-of-01000.json&lt;/code&gt; and &lt;code&gt;gs://your-bucket/reddit/YYYYMMDD/test-*-of-00100.json&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can download script from &lt;a href="https://github.com/aadityachapagain/Conversational-Reddit-datasets"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;My &lt;code&gt;create_data.py&lt;/code&gt; file was adapted version for reddit conversational datasets of this example from &lt;a href="https://github.com/GoogleCloudPlatform/cloudml-samples/blob/master/molecules/preprocess.py"&gt;GoogleCloudPlatform Repo&lt;/a&gt; you might wanna look into this also. As it covers more broader concept and topics on Dataflow in ML pipelines.&lt;/p&gt;</content><category term="Blog"></category><category term="Datasets"></category><category term="Machine Learning"></category><category term="Reddit Datasets"></category><category term="Conversational Datasets"></category><category term="Training Pipeline"></category><category term="Preprocessing Pipeline"></category><category term="BigQuery"></category><category term="BigData"></category><category term="Google DataFlow"></category></entry><entry><title>Testing Go Program: In Nutshell</title><link href="https://aadityachapagain.com/2020/08/Testing-in-Go/" rel="alternate"></link><published>2020-08-11T08:00:00+05:45</published><updated>2020-08-11T08:00:00+05:45</updated><author><name>Aaditya Chapagain</name></author><id>tag:aadityachapagain.com,2020-08-11:/2020/08/Testing-in-Go/</id><summary type="html">&lt;p&gt;Testing Framework in Go is extremely simple and minimal&lt;/p&gt;</summary><content type="html">&lt;p&gt;Testing, by which we implicitly mean &lt;em&gt;automated testing&lt;/em&gt;, is the practice of writing small programs that check that the code under test ( the production code ) behaved as expected for certain input pools, which is usually either carefully chosen to exercise certain features or randomized to ensure broad coverage.&lt;/p&gt;
+&lt;p&gt;Go's approach to testing seems rather low-tech in comparison to some big language like java, c++. It relies on one command, &lt;code&gt;go test&lt;/code&gt;, and a set of conventions for writing test functions that go test can run. The comparatively lightweight mechanism is effective for pure testing, and it extends naturally to benchmarks and systematic example for documentation. The best thing about writing test code in Go is , that test code is no different from code if we intend to implement API we are testing.We focus on short functions that focus on one part of the task.We have to be careful about boundary conditions. think about data structures, and reason about what results a computation should produce from suitable inputs. But is the same as writing ordinary Go code.&lt;/p&gt;
+&lt;h1&gt;The GO test Tool&lt;/h1&gt;
+&lt;p&gt;Testing in Go starts with &lt;code&gt;go test&lt;/code&gt; subcommand i.e. test driver for Go packages that are organized according to certain conventions. &lt;code&gt;go test&lt;/code&gt; command specifically looks and execute files that ends with &lt;strong&gt;_test.go&lt;/strong&gt; which are not part of the package when built by &lt;code&gt;go build&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The Go test files contains three kinds of special functions :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A &lt;em&gt;test function&lt;/em&gt;: Function which name starts with &lt;code&gt;Test&lt;/code&gt;. This function exercises some program logic for correct behaviour; subcommand &lt;code&gt;go test&lt;/code&gt; calls the test function and reports the result which is either &lt;code&gt;PASS&lt;/code&gt; or &lt;code&gt;FAIL&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A &lt;em&gt;benchmark function&lt;/em&gt;: It has the name beginning with &lt;code&gt;Benchmark&lt;/code&gt; and measures the performance of some operations; subcommand &lt;code&gt;go test&lt;/code&gt; reports the mean execution time of the operation.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;An &lt;em&gt;example function&lt;/em&gt;: Its name starts with &lt;code&gt;Example&lt;/code&gt; provides machine-checked documentation.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;go test&lt;/code&gt; tool scans the *_test.go files for these special functions, generates a temporary main package that calls them all in the proper way, builds and runs it, reports the result, and then cleans up.&lt;/p&gt;
+&lt;h1&gt;Test Functions&lt;/h1&gt;
+&lt;p&gt;Each test file must import the testing package. Test functions has following signature :&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TestName&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;// ..&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Test function names must begin with Test; The optional suffix Name must begin with a capital letter:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TestSin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// ... }&lt;/span&gt;
+&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TestCos&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// ... }&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The t parameter provides methods for reporting test failures and logging additional information. Lets create a new package palindrome containing a single function IsPalindrome that reports whether a string a string reads same forward and backward.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;palindrome&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;IsPalidrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;bool&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;range&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the same directory, the palindrome_test.go contains two test functions named TestPalindrome and TestNonPalindrome. Each check that IsPalindrome gives the right answer for a single input and reports failures using t.Errorf:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;palindrome&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TestPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;IsPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;detartrated&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Errorf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;`IsPalindrome(&amp;quot;detartrated&amp;quot;) = false`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt;&lt;span class="nx"&gt;IsPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;kayak&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Errorf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;`IsPalindrome(&amp;quot;kayak&amp;quot;) = false`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TestNonPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;IsPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;palindrome&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;t&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;`IsPalindrome(&amp;quot;palindrome&amp;quot;) = true`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now,we already have test code to test our functionality, we can use go test command to run tests in go.
+Remember &lt;code&gt;go test palindrome&lt;/code&gt; will run the package level test.For this to work you have to place your package in either &lt;code&gt;$GOROOT&lt;/code&gt; or &lt;code&gt;$GOPATH&lt;/code&gt; directory.
+In our case we can test our functionlity by going into pacakge directory.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path_to_project_dir&amp;gt;/palindrome
+&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;go&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;
+
+PASS
+ok&lt;span class="w"&gt;      &lt;/span&gt;&amp;lt;path_to_project_dir&amp;gt;/palindrome&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.001s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To look into more details on test function, To see which one failed and which one succeed, we can use &lt;code&gt;-v&lt;/code&gt; flag , which will prints the name and execution time of each test in the package.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;go&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-v
+
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;PASS:&lt;span class="w"&gt; &lt;/span&gt;TestPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestNonPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;PASS:&lt;span class="w"&gt; &lt;/span&gt;TestNonPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestFrenchPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;FAIL:&lt;span class="w"&gt; &lt;/span&gt;TestFrenchPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+word_test.go:28:&lt;span class="w"&gt; &lt;/span&gt;IsPalindrome&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;été&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestCanalPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;FAIL:&lt;span class="w"&gt; &lt;/span&gt;TestCanalPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+word_test.go:35:&lt;span class="w"&gt; &lt;/span&gt;IsPalindrome&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A man, a plan, a canal: Panama&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;
+FAIL
+&lt;span class="nb"&gt;exit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;status&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+FAIL&lt;span class="w"&gt;  &lt;/span&gt;&amp;lt;path_to_project_dir&amp;gt;/palindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.001s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and the -run flag, whose argument is a regular expression, causes go test to run only those tests whose function name matches the patter:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;go&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;-run&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;French|Canal&amp;quot;&lt;/span&gt;
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestFrenchPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;FAIL:&lt;span class="w"&gt; &lt;/span&gt;TestFrenchPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+word_test.go:28:&lt;span class="w"&gt; &lt;/span&gt;IsPalindrome&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;été&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;
+&lt;span class="o"&gt;===&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;RUN&lt;span class="w"&gt; &lt;/span&gt;TestCanalPalindrome
+---&lt;span class="w"&gt; &lt;/span&gt;FAIL:&lt;span class="w"&gt; &lt;/span&gt;TestCanalPalindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.00s&lt;span class="o"&gt;)&lt;/span&gt;
+word_test.go:35:&lt;span class="w"&gt; &lt;/span&gt;IsPalindrome&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A man, a plan, a canal: Panama&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;
+FAIL
+&lt;span class="nb"&gt;exit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;status&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+FAIL&lt;span class="w"&gt;  &lt;/span&gt;&amp;lt;path_to_project_dir&amp;gt;/palindrome&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.001s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h1&gt;Benchmark Function&lt;/h1&gt;
+&lt;p&gt;Benchmarking is the practice of measuring the performance of a program on a fixed workload. In Go, a benchmark function look like a test function, but with the
+Benchmark prefix and a &lt;em&gt;testing.B parameter that provides most of the same methods as a &lt;/em&gt;testing.T, plus few extra related performance measurement.It also exposes 
+an Integer field N, which specifies the number of times to perform the operation being measured.&lt;/p&gt;
+&lt;p&gt;Here's a benchmark for IsPalindrome that calls it N times in a loop.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;BenchmarkIsPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;testing&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;B&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;N&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;IsPalindrome&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;A man, a plan, a canal: Panama&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Unlike tests, by default no benchmarks are run. The argument to the -bench flag selects which benchmark to run. It is regular expression matching the names of Benchmark functions, with a default value that matches none of the functions. The "." pattern causes it to match all benchmark functions in package. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;go&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-bench&lt;span class="o"&gt;=&lt;/span&gt;.
+goos:&lt;span class="w"&gt; &lt;/span&gt;linux
+goarch:&lt;span class="w"&gt; &lt;/span&gt;amd64
+BenchmarkIsPalindrome-12&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="m"&gt;4377900&lt;/span&gt;&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="m"&gt;301&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ns/op
+PASS
+ok&lt;span class="w"&gt;      &lt;/span&gt;&amp;lt;path_to_project_dir&amp;gt;/palindrome&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.598s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The benchmark name’s numeric suffix, 12 here , indicates the value of GOMAXPROCS, which is important for concurrent benchmarks.&lt;/p&gt;
+&lt;p&gt;The report tells us that each call to &lt;em&gt;IsPalindrome&lt;/em&gt; took about 0.301 microseconds, averaged over 4377900 runs. Since the benchmark runner initially has no idea how long the operation takes, it make some initial measuremetns using small values of N and then extrapolates to a value large enough for a stable timing measurement to be made.&lt;/p&gt;</content><category term="Blog"></category><category term="Go"></category><category term="Golang"></category><category term="Test"></category><category term="Testing"></category><category term="software development"></category><category term="Programming language"></category></entry><entry><title>Speech Signal Processing using python</title><link href="https://aadityachapagain.com/2020/08/asr-mfcc-filterbanks/" rel="alternate"></link><published>2020-08-11T08:00:00+05:45</published><updated>2020-08-11T08:00:00+05:45</updated><author><name>Aaditya Chapagain</name></author><id>tag:aadityachapagain.com,2020-08-11:/2020/08/asr-mfcc-filterbanks/</id><summary type="html">&lt;p&gt;Signal Processing and Speech Recognition using python&lt;/p&gt;</summary><content type="html">&lt;p&gt;Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.&lt;/p&gt;
+&lt;p&gt;In this post we will learn very important mathematical concept about speech processing in any speech system and implement the mathematics in python.&lt;/p&gt;
+&lt;p&gt;Mel Frequency Cepstral Coefficents (MFCCs) and Filter Banks are a feature widely used in automatic speech and speaker recognition. But Filter Banks is more popluar Nowadays due to its robustness on mapping vocal features.Computing filter banks and MFCCs involve somewhat same procedure, where in both cases filter banks are computed and with  a few more extra steps MFCCs can be obtained.&lt;/p&gt;
+&lt;p&gt;Let's get started with loading speech signal with python. I will be using python 3.6 for this post.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy.io&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;wavfile&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy.fftpack&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;dct&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;matplotlib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;pyplot&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;
+
+&lt;span class="n"&gt;sample_rate&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;signal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wavfile&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;../audio/mfcc.wav&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;signal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sample_rate&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;Time&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;sample_rate&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Time&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The raw signal has the following from in the time domain:
+&lt;a href="https://ibb.co/nPvnTGc"&gt;&lt;img alt="raw signal image of speech" class="img-center" src="/images/spectral_image_speech.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Pre-Emphasis&lt;/h2&gt;
+&lt;p&gt;The first step is to apply a pre-emphesis filter on signal to amplify the high frequencies. A pre-emphesis filter is useful in several ways:
+ - balance frequency spectrum since high frequencies usually have smaller magnitudes compared to lower frequencies
+ - avoid numerical problems during fourier operation
+ - Might also improve the signal to Noise Ratio (SNR)&lt;/p&gt;
+&lt;p&gt;The pre-emphesis filter can be applied to a signal x using the first order filter in the following equation:
+$$ y(t) = x(t) - \alpha x(t-1) $$&lt;/p&gt;
+&lt;p&gt;which can be easily implemented using the following line, where typical values for the filter coefficeint ( $\alpha$ ) are 0.95 to 0.97, 
+&lt;code&gt;pre_empasis = 0.97&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;pre_emphasis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.97&lt;/span&gt;
+&lt;span class="n"&gt;emphasized_signal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;pre_emphasis&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;signal&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Pre-emphasis has a modest effect in modern systems, mainly because most of the motivations for the pre-emphasis filter can be achieved using mean normalization except for avoiding the Fourier transfrom numerical issues which should not be a problem in modern FFT implementations.&lt;/p&gt;
+&lt;p&gt;The signal after pre-emphasis has the following effect in orignal signal.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://ibb.co/Jqn0x33"&gt;&lt;img alt="before and after pre-emphesis" class="img-center" src="\images\before_after_preemphesis.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Framing&lt;/h2&gt;
+&lt;p&gt;After pre-emphasis, we need to split the signal into short-time frames. The rationale behind this step is that frequencies in a signal change over time, so in most cases it dosen't make sense to do the Fourier Transform across the entier signal in that we would lose the frequency contours of the signal over time. To avoid that, we can safely assume that frequencies in a signal are stationary over a very short period of time. Therefore, by doing a Fourier transform over this short-time frame, we can obtain a good approximation of the frequency contours of the signal by concatenating adjacent frames.&lt;/p&gt;
+&lt;p&gt;Typical frame sizes in speech processing rnage from 20 ms to 40 ms with 50% (+/- 10%) overlap between conseutive frames.Popular settings are 25 ms for the frame size, frame_size = 0.025 and a 10 ms stride (15 ms overlap), frame_stride = 0.01&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;frame_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.025&lt;/span&gt;
+&lt;span class="n"&gt;frame_stride&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;
+
+&lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frame_step&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;frame_size&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sample_rate&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frame_stride&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;sample_rate&lt;/span&gt;  &lt;span class="c1"&gt;# Convert from seconds to samples&lt;/span&gt;
+&lt;span class="n"&gt;signal_length&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;emphasized_signal&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;frame_length&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;frame_step&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frame_step&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;num_frames&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ceil&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;abs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;signal_length&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;frame_step&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  &lt;span class="c1"&gt;# Make sure that we have at least 1 frame&lt;/span&gt;
+
+&lt;span class="n"&gt;pad_signal_length&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;num_frames&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;frame_step&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;frame_length&lt;/span&gt;
+&lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;zeros&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;pad_signal_length&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;signal_length&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;pad_signal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;emphasized_signal&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# Pad Signal to make sure that all frames have equal number of samples without truncating any samples from the original signal&lt;/span&gt;
+
+&lt;span class="n"&gt;indices&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num_frames&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num_frames&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;frame_step&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frame_step&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;
+&lt;span class="n"&gt;frames&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pad_signal&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;indices&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;astype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;int32&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;copy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Window&lt;/h2&gt;
+&lt;p&gt;After slicing the signal into frames, we apply a window function such as the Hamming window to each frame. A Hamming window has the following form:
+$$ w[n] = 0.54 − 0.46 cos ( \frac{2πn}{N − 1} ) $$
+where,  0 $\leq$ n $\leq$ N-1,N is the window length.&lt;/p&gt;
+&lt;p&gt;There are several reasons why we need to apply a window function to the frames, notably to counteract the assumption made by the FFT that the data is infinite and to reduce spectral leakage.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;frames&lt;/span&gt; &lt;span class="o"&gt;*=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;hamming&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frame_length&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;```&lt;/span&gt;
+&lt;span class="c1"&gt;# frames *= 0.54 - 0.46 * np.cos((2 * np.pi * n) / (frame_length - 1))  # Explicit Implementation **&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Fourier-Transfrom and Power Spectrum&lt;/h2&gt;
+&lt;p&gt;We can now do an N-point FFT on each frame to calculate the frequency spectrum, which is also called Short-Time-Fourier-Transfrom (STFT), where N is typically 256 or 512, &lt;code&gt;NFFT = 512&lt;/code&gt;; and then compute the power spectrum (Periodogram) using the following equation: 
+$$P = \frac{|FFT(x_i)|^2}{N}$$
+where , $x_i$ is the $i^{th}$ frame of signal $x$. This can be easily imlemented with the following lines:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;NFFT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;512&lt;/span&gt;
+
+&lt;span class="n"&gt;mag_frames&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;absolute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fft&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rfft&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frames&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;NFFT&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  &lt;span class="c1"&gt;# Magnitude of the FFT&lt;/span&gt;
+&lt;span class="n"&gt;pow_frames&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mf"&gt;1.0&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;NFFT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;mag_frames&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  &lt;span class="c1"&gt;# Power Spectrum&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Filter Banks&lt;/h2&gt;
+&lt;p&gt;The final step to computing filter banks is applying triangular filters, typically 40 filters, nfilt = 40 on a Mel-scale to the power spectrum to extract frequency bands. The Mel-Scale aims to mimic the non-linear human ear perception of sound, by being more discriminative at lower frequenceis and less discriminative at higher frequencies. We can convert between Hertz ($f$) and Mel ( $m$) using the following equations:
+$$ \Large m = 2595 \log_{10} (1 + \frac{f}{700}) \approx  1125 \ln (1 + \frac{f}{700} )  $$&lt;/p&gt;
+&lt;p&gt;$$ \Large f = 700 ( 10^{ \frac{m}{2595} } -1)$$&lt;/p&gt;
+&lt;p&gt;Each filter in the filter bank is triangular having a response of 1 at the center frequency and decrease linearly towards 0 till it reaches the center frequencies of the two adjacent filters where the response is 0. which can be modeled by the following equation:&lt;/p&gt;
+&lt;p&gt;$$
+H_m(k) =
+  \begin{cases}
+      \ 0                                      &amp;amp; k &amp;lt; f(m - 1) \
+      \
+      \dfrac{k - f(m - 1)}{f(m) - f(m - 1)}  &amp;amp; f(m - 1) \leq k &amp;lt; f(m) \
+      \
+      1                                      &amp;amp; k = f(m) \
+      \
+      \dfrac{f(m + 1) - k}{f(m + 1) - f(m)}  &amp;amp; f(m) &amp;lt; k \leq f(m + 1) \
+      \
+      0                                      &amp;amp; k &amp;gt; f(m + 1) \
+  \end{cases}
+  $$&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;nfilt&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;40&lt;/span&gt;
+
+&lt;span class="n"&gt;low_freq_mel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="n"&gt;high_freq_mel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2595&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log10&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sample_rate&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;700&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  &lt;span class="c1"&gt;# Convert Hz to Mel&lt;/span&gt;
+&lt;span class="n"&gt;mel_points&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;low_freq_mel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;high_freq_mel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;nfilt&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# Equally spaced in Mel scale&lt;/span&gt;
+&lt;span class="n"&gt;hz_points&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;700&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mel_points&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;2595&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;  &lt;span class="c1"&gt;# Convert Mel to Hz&lt;/span&gt;
+&lt;span class="nb"&gt;bin&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;floor&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;NFFT&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;hz_points&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;sample_rate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;fbank&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;zeros&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;nfilt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;floor&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;NFFT&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))))&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;nfilt&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;f_m_minus&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;   &lt;span class="c1"&gt;# left&lt;/span&gt;
+    &lt;span class="n"&gt;f_m&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;             &lt;span class="c1"&gt;# center&lt;/span&gt;
+    &lt;span class="n"&gt;f_m_plus&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;    &lt;span class="c1"&gt;# right&lt;/span&gt;
+
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f_m_minus&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f_m&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;fbank&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f_m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f_m_plus&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;fbank&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;filter_banks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pow_frames&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;fbank&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;filter_banks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;finfo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;eps&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;filter_banks&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# Numerical Stability&lt;/span&gt;
+&lt;span class="n"&gt;filter_banks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log10&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# dB&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;After applying the filter bank to the power spectrum (peridogram) of the signal, we obtain the following spectrogram:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplots&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nrows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ncols&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;cax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;matshow&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transpose&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;interpolation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;nearest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;aspect&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;auto&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cmap&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;afmhot_r&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;origin&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;lower&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;colorbar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cax&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Mel compression Spectrogram&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://ibb.co/xSyfhsV"&gt;&lt;img alt="melspectrogram of speech signal " class="img-center" src="\images\mfcc_spectorgram.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Mel-frequency cepstral Coecfficents (MFCCs)&lt;/h2&gt;
+&lt;p&gt;It turns out that filter bank coefficients computed in the previous step are higly correlated, which could be problematic in some machine learning algorithms. Therefore, we can apply Discrete Cosine Transform(DCT)  to decorrelate the filter bank coefficients and yield compressed representation of filter banks. Typically, for Automatic SPeech Recognition (ASR), the resulting cepstral coefficeints 2- 13 are retained and the rest are discareded; &lt;code&gt;num_ceps = 12&lt;/code&gt;. The reasons for discarding the other coefficeints is that they represent fast changes in the filter bank coefficients and these fine details don't contribute to ASR.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;num_ceps&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;12&lt;/span&gt;
+&lt;span class="n"&gt;mfcc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dct&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;norm&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ortho&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)[:,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num_ceps&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt; &lt;span class="c1"&gt;# keep 2-13&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;One may apply sinusoidal liftering to the MFCCs to de-emphasize higher MFCCs which has been claimed to improve speech recognition in noisy signals.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;cep_lifter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;22&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nframes&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ncoeff&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mfcc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shape&lt;/span&gt;
+&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;arange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ncoeff&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;lift&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cep_lifter&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pi&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;cep_lifter&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;mfcc&lt;/span&gt; &lt;span class="o"&gt;*=&lt;/span&gt; &lt;span class="n"&gt;lift&lt;/span&gt;
+
+&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;subplots&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nrows&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ncols&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;figsize&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;cax&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;matshow&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transpose&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mfcc&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;interpolation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;nearest&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;aspect&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;auto&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;cmap&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;afmhot_r&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;origin&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;lower&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;colorbar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cax&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;MFCC Spectrogram&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href="https://ibb.co/S7c5pnL"&gt;&lt;img alt="MFCC spectrogram of speech signal " class="img-center" src="\images\mel_spectrogram.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Mean Normalization&lt;/h2&gt;
+&lt;p&gt;As previously mentioned, to balance the spectrum and improve the Signal-to-Noise (SNR), we can simply substract the mean of each coefficeint from all frames,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt; &lt;span class="o"&gt;-=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filter_banks&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mf"&gt;1e-8&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and similarly for MFCCs:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;mfcc&lt;/span&gt; &lt;span class="o"&gt;-=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mfcc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mf"&gt;1e-8&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To this point, the steps to compute filter banks and MFCCs were discussed in terms of their motivation and implementations.It is interesting to note that all steps needed to compute filter banks were motivated by the nature of the speech signal and the human perception of such signals. &lt;/p&gt;
+&lt;p&gt;On the Contrary, the extra steps needed to compute MFCCs were motivated by the limitation of some classifical machine learning algorithms.The Discrete cosine Transfrom (DCT) was needed to decorrelate filter banks coeffiicients, a process refer as whitening. In particular, MFCCs were very popular with Gaussian Mixture Models - Hidden Markov Models(GMM - HMM).
+ But with the advent of Deep learning in speech system, one might not need DCT.&lt;/p&gt;</content><category term="Blog"></category><category term="signal processing"></category><category term="speech recognition"></category><category term="ASR"></category><category term="machine learning"></category><category term="Deep Learning."></category></entry></feed>
