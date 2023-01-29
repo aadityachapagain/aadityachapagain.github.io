@@ -6,14 +6,7 @@ import Container from '../../components/container'
 import distanceToNow from '../../lib/dateRelative'
 import { getAllPosts, getPostBySlug } from '../../lib/getPost'
 import Head from 'next/head'
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
-import remarkRehype from 'remark-rehype'
-import rehypeMathJaxSvg from 'rehype-mathjax'
-import rehypeHighlight from 'rehype-highlight'
-import remarkToc from 'remark-toc'
-import remarkMdx from 'remark-mdx'
+import markdownToHtml from '../../lib/markdownToHtml'
 
 
 export default function PostPage({
@@ -46,17 +39,11 @@ export default function PostPage({
               </time>
             </header>
 
-            {/* <div
+            <div
               className="prose mt-10 "
               dangerouslySetInnerHTML={{ __html: post.content }}
             >
-            </div> */}
-            <ReactMarkdown
-              remarkPlugins={[remarkMath, remarkGfm, remarkRehype, remarkToc, remarkMdx]}
-              rehypePlugins={[rehypeMathJaxSvg, rehypeHighlight, ]}
-            >
-              {post.content??""}
-            </ReactMarkdown>
+            </div>
           </article>
 
           <Comment />
@@ -73,27 +60,21 @@ type Params = {
 }
 
 export async function getStaticProps({ params }: Params) {
-  const post = getPostBySlug(params.slug, [
-    'tags',
-    'slug',
-    'title',
-    'excerpt',
-    'date',
-    'content',
-  ])
-  // const content = await markdownToHtml(post.content || '')
+  const post = getPostBySlug(params.slug)
+  const content = await markdownToHtml(post.content || '')
 
   return {
     props: {
       post: {
         ...post,
+        content: content,
       },
     },
   }
 }
 
 export async function getStaticPaths() {
-  const posts = getAllPosts(['slug'])
+  const posts = getAllPosts()
 
   return {
     paths: posts.map(({ slug }) => {
