@@ -5,8 +5,16 @@ import Comment from '../../components/comment'
 import Container from '../../components/container'
 import distanceToNow from '../../lib/dateRelative'
 import { getAllPosts, getPostBySlug } from '../../lib/getPost'
-import markdownToHtml from '../../lib/markdownToHtml'
 import Head from 'next/head'
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import remarkRehype from 'remark-rehype'
+import rehypeMathJaxSvg from 'rehype-mathjax'
+import rehypeHighlight from 'rehype-highlight'
+import remarkToc from 'remark-toc'
+import remarkMdx from 'remark-mdx'
+
 
 export default function PostPage({
   post,
@@ -38,10 +46,17 @@ export default function PostPage({
               </time>
             </header>
 
-            <div
-              className="prose mt-10"
+            {/* <div
+              className="prose mt-10 "
               dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            >
+            </div> */}
+            <ReactMarkdown
+              remarkPlugins={[remarkMath, remarkGfm, remarkRehype, remarkToc, remarkMdx]}
+              rehypePlugins={[rehypeMathJaxSvg, rehypeHighlight, ]}
+            >
+              {post.content??""}
+            </ReactMarkdown>
           </article>
 
           <Comment />
@@ -66,13 +81,12 @@ export async function getStaticProps({ params }: Params) {
     'date',
     'content',
   ])
-  const content = await markdownToHtml(post.content || '')
+  // const content = await markdownToHtml(post.content || '')
 
   return {
     props: {
       post: {
         ...post,
-        content,
       },
     },
   }

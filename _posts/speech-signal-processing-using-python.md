@@ -3,14 +3,14 @@ title: Speech Signal Processing using python
 date: 2020-08-11 8:00
 modified: 2020-08-11 8:00
 category: Blog
-slug: asr-mfcc-filterbanks
+slug: speech-signal-processing-using-python
 summary: Signal Processing and Speech Recognition using python
 tags: signal processing, speech recognition, ASR, machine learning, Deep Learning.
 authors: Aaditya Chapagain
 status: published
 ---
 
-Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.
+Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.  
 
 In this post we will learn very important mathematical concept about speech processing in any speech system and implement the mathematics in python.
 
@@ -34,7 +34,7 @@ plt.plot(Time, signal)
 ```
 
 The raw signal has the following from in the time domain:
-[![raw signal image of speech](/images/spectral_image_speech.png){.img-center}](https://ibb.co/nPvnTGc)
+[![raw signal image of speech](/images/spectral-image-speech.png)](https://ibb.co/nPvnTGc)
 
 ## Pre-Emphasis
 
@@ -44,6 +44,7 @@ The first step is to apply a pre-emphesis filter on signal to amplify the high f
  - Might also improve the signal to Noise Ratio (SNR)
 
 The pre-emphesis filter can be applied to a signal x using the first order filter in the following equation:
+
 $$ y(t) = x(t) - \alpha x(t-1) $$
 
 which can be easily implemented using the following line, where typical values for the filter coefficeint ( $\alpha$ ) are 0.95 to 0.97, 
@@ -59,7 +60,7 @@ Pre-emphasis has a modest effect in modern systems, mainly because most of the m
 
 The signal after pre-emphasis has the following effect in orignal signal.
 
-[![before and after pre-emphesis](\images\before_after_preemphesis.png){.img-center}](https://ibb.co/Jqn0x33)
+[![before and after pre-emphesis](/images/before-after-preemphesis.png)](https://ibb.co/Jqn0x33)
 
 ## Framing
 
@@ -86,6 +87,7 @@ indices = np.tile(np.arange(0, frame_length), (num_frames, 1)) + np.tile(np.aran
 frames = pad_signal[indices.astype(np.int32, copy=False)]
 
 ```
+
 ## Window
 
 After slicing the signal into frames, we apply a window function such as the Hamming window to each frame. A Hamming window has the following form:
@@ -112,6 +114,7 @@ NFFT = 512
 mag_frames = np.absolute(np.fft.rfft(frames, NFFT))  # Magnitude of the FFT
 pow_frames = ((1.0 / NFFT) * ((mag_frames) ** 2))  # Power Spectrum
 ```
+
 ## Filter Banks
 
 The final step to computing filter banks is applying triangular filters, typically 40 filters, nfilt = 40 on a Mel-scale to the power spectrum to extract frequency bands. The Mel-Scale aims to mimic the non-linear human ear perception of sound, by being more discriminative at lower frequenceis and less discriminative at higher frequencies. We can convert between Hertz ($f$) and Mel ( $m$) using the following equations:
@@ -176,7 +179,7 @@ plt.title("Mel compression Spectrogram")
 plt.show()
 ```
 
-[![melspectrogram of speech signal ](\images\mfcc_spectorgram.png){.img-center}](https://ibb.co/xSyfhsV)
+[![melspectrogram of speech signal](/images/mfcc-spectorgram.png)](https://ibb.co/xSyfhsV)
 
 ## Mel-frequency cepstral Coecfficents (MFCCs)
 
@@ -210,7 +213,7 @@ plt.title("MFCC Spectrogram")
 plt.show()
 ```
 
-[![MFCC spectrogram of speech signal ](\images\mel_spectrogram.png){.img-center}](https://ibb.co/S7c5pnL)
+[![MFCC spectrogram of speech signal](/images/mel-spectrogram.png)](https://ibb.co/S7c5pnL)
 
 ## Mean Normalization
 
@@ -232,5 +235,3 @@ To this point, the steps to compute filter banks and MFCCs were discussed in ter
  
  On the Contrary, the extra steps needed to compute MFCCs were motivated by the limitation of some classifical machine learning algorithms.The Discrete cosine Transfrom (DCT) was needed to decorrelate filter banks coeffiicients, a process refer as whitening. In particular, MFCCs were very popular with Gaussian Mixture Models - Hidden Markov Models(GMM - HMM).
  But with the advent of Deep learning in speech system, one might not need DCT.
-
- 
