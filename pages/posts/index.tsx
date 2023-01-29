@@ -33,7 +33,7 @@ export default function NotePage({
 }
 
 export async function getStaticProps() {
-  const allPosts = getAllPosts(['slug', 'title', 'excerpt', 'date', 'tags'])
+  const allPosts = getAllPosts()
 
   return {
     props: { allPosts },
