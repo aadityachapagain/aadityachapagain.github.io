@@ -13,7 +13,7 @@ export const postsHeader: string[] = [
   'slug',
   'summary',
   'tags', 
-  'author',
+  'authors',
   'status'
 ]
 
@@ -30,14 +30,14 @@ export function getPostBySlug(slug: string) {
   // make sure data is of type Post
   const items: Post = {
     slug: data['slug']??realSlug,
-    title: data['title'],
-    date: data['date'],
-    modified: data['modified']??"",
-    category: data['category']??"",
-    summary: data['summary']??"",
+    title: data['title'].trim(),
+    date: data['date'].trim(),
+    modified: data['modified'].trim()??"",
+    category: data['category'].trim()??"",
+    summary: data['summary'].trim()??"",
     tags: data['tags']??"",
-    author: data['author']??"",
-    status: data['status']??"",
+    authors: data['authors'].trim().split(',').map((items) => items.trim())??"",
+    status: data['status'].trim()??"",
     content: content??""
   }
 

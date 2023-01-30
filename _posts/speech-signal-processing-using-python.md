@@ -10,6 +10,8 @@ authors: Aaditya Chapagain
 status: published
 ---
 
+## Table of contents
+
 Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.  
 
 In this post we will learn very important mathematical concept about speech processing in any speech system and implement the mathematics in python.

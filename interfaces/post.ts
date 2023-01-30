@@ -13,7 +13,7 @@ export interface Post {
     category: Date
     summary: string
     tags: string[]
-    author: string
+    authors: string[]
     status: PostStatus
     content?: string
   }

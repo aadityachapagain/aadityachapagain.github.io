@@ -16,8 +16,6 @@ function HomePage() {
     if (typeof window != "undefined"){
       window.location.href = URL
     }
-
-    console.log(URL)
   }
 
   return (
