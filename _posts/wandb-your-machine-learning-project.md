@@ -99,7 +99,7 @@ model.compile(optimizer, config.loss_function, metrics=['acc'])
 `project` is name of  your project and your project might have different run, so `name` parameter will distinguish one run from other. 
 If you run above code and get back to your wandb dashboard it will new project called `demo-keras-integration` and with `first_run` in it.
 
-[![wandb Init](/images/wandb_init.png){.img-center}](https://ibb.co/hDjwC6s)
+[![wandb Init](/images/wandb-init.png)](https://ibb.co/hDjwC6s)
 
 Above init configuration will create new run everytime you call `wandb.init` But sometimes that not what you want, If your training is preemptible and might takes days or months to complete then you can resume from previous logged metrics by providing `resume = True` parameter to `wandb.init` and you will also need to set unique id, to distinguish one run from another. Below code will resume your logs with current run in your wandb dashboard even after you run `init` multiple times.
 
@@ -155,7 +155,7 @@ _ = model.fit(x_train, y_train,
                                    labels=CLASS_NAMES)])
 ```
 
-[![logging images with wandb](/images/wand_log_images.PNG){.img-center}](https://ibb.co/ZcbvNP9)
+[![logging images with wandb](/images/wand-log-images.png)](https://ibb.co/ZcbvNP9)
 
 ## Log Custom metrics with wandb.log
 
@@ -173,13 +173,13 @@ wandb.log({'Test Error Rate': round((1-accuracy)*100, 2)})
 
 # wandb Dashboard
 
-[![Wandb dashboard](/images/wandb_dashboard.PNG){.img-center}](https://ibb.co/tBZDJzW)
+[![Wandb dashboard](/images/wandb-dashboard.png)](https://ibb.co/tBZDJzW)
 
 You can see all your logged metrics in your wandb project dashboard. Wandb Groups information into different sections like Overview, Charts ,logs, system, model and files.
 
 ## Overview
 
-[![Wandb dashboard](/images/wandb_overview.png){.img-center}](https://ibb.co/RvNFHTW)
+[![Wandb dashboard](/images/wandb-overview.png)](https://ibb.co/RvNFHTW)
 
 The information in the `overview` section is pretty intuitive and self-explanatory. However, the Git Repository field and the Git State field are worthy of special mention. You can run the checkout command in the Git State field to pin down the exact code for reproducing the experiment. Under the hood, wandb tracks all the changes you made to the original repo, and save the "diff" files in a local directory. In this way, you can easily switch between different versions of the code without manually pushing the change to the remote repo.
 
@@ -188,13 +188,13 @@ The information in the `overview` section is pretty intuitive and self-explanato
 The `logs` section shows the console output during the experiment. This is useful for debugging the performance of the model.
 
 
-[![Wandb dashboard](/images/wandb_logs.png){.img-center}](https://ibb.co/hmKFC7H)
+[![Wandb dashboard](/images/wandb-logs.png)](https://ibb.co/hmKFC7H)
 
 ## Systems
 
 To me, the system section is where wandb really shines and separates itself from other options such as TensorBoard. It is a centralized place to track system utilization during the experiment. There are in total of 8 graphs displayed in this section. These graphs give you insight into the training bottleneck and possible ways to uplift it. For example, below are the diagrams of the experiment:
 
-[![Wandb dashboard](/images/wandb_system.png){.img-center}](https://ibb.co/VNGQbyQ)
+[![Wandb dashboard](/images/wandb-system.png)](https://ibb.co/VNGQbyQ)
 
 ## Tensorboard
 
