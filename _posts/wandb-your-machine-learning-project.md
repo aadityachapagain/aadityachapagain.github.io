@@ -4,7 +4,7 @@ date: 2020-09-2 12:00
 modified: 2020-9-2 12:00
 category: Blog
 slug: wandb-your-machine-learning-project
-summary: **Wandb** Tool for visualizing and tracking your machine learning experiments better than tensorboard.
+summary: Wandb Tool for visualizing and tracking your machine learning experiments better than tensorboard.
 tags: Datasets, Machine Learning, Visualization, training, Deep Learning, ML tools, tensorboard, python
 authors: Aaditya Chapagain
 status: published
