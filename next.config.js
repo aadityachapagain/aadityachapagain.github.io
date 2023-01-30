@@ -1,8 +1,7 @@
 // next.config.js
-const staticRemotePath = "aadiimages.imgix.net"
 
-let assetPrefix = ''
-let basePath = ''
+let assetPrefix = "";
+let basePath = "";
 
 module.exports = {
   assetPrefix: assetPrefix,
@@ -10,8 +9,7 @@ module.exports = {
   images: {
     loader: "custom",
     loaderFile: "./lib/imgixLoader.ts"
-
   },
   reactStrictMode: true,
-  swcMinify: true,
-}
+  swcMinify: true
+};
