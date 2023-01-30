@@ -1,5 +1,5 @@
 ---
-title:  Wandb Your machine learning project.
+title: Wandb Your machine learning project.
 date: 2020-09-2 12:00
 modified: 2020-9-2 12:00
 category: Blog
@@ -11,12 +11,12 @@ status: published
 ---
 
 Have you ever worked on large Machine learning projects or research where you have to manage many experimentations ? often during large projects or experiments you have to log every nits and bits of your Machine Learning training. Some of us might already be there.
-Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization,  experiments. There were lots of them and It would take lots of time to prepare presentation's  of my experiments results to my peers and that's when I learned about wandb.
+Recently I was also working on large Machine learning Projects and it was very hard for me to track every experiments logs, visualization, experiments. There were lots of them and It would take lots of time to prepare presentation's of my experiments results to my peers and that's when I learned about wandb.
 
 Wandb is API created by [Weights & Biases](https://www.wandb.com/) to collect, manage and visualize all your Machine learning experiments all at one place. Ohh, wait you must be wandering that **tensorboard** can also do these things right ?
 
-Well, there are lots of things which makes **wandb**  a straight winner.
- 
+Well, there are lots of things which makes **wandb** a straight winner.
+
 1. Visually aesthetics UI.
 2. More manageable and customizable visualization and experiment tracking.
 3. Super easy to use API.
@@ -24,8 +24,8 @@ Well, there are lots of things which makes **wandb**  a straight winner.
 5. Collaborate with team members
 6. Run parameter sweeps
 7. Keep records of experiments available forever
-   
-I think the last point in above list is super cool, which is not feasible to do with tensorboard i.e You have to write huge amount of code by yourself to log these system wide metrics into tensorboard, but with wandb you can do this with just one line of code. and 
+
+I think the last point in above list is super cool, which is not feasible to do with tensorboard i.e You have to write huge amount of code by yourself to log these system wide metrics into tensorboard, but with wandb you can do this with just one line of code. and
 
 Lets Dive into wandb API.
 
@@ -58,7 +58,7 @@ wandb login
 
 To Programatically login you can use following code:
 
-```python 
+```python
 WANDB_API_KEYS = "<your api keys here>"
 
 import wandb
@@ -71,6 +71,7 @@ wandb.login() # if $WANDB_API_KEYS is already been set.
 ## Initializing wandb ( wandb.init )
 
 Below you will see simple wandb integration examples with keras.
+
 ```python
 
 # initialize wandb with your project name and optionally with configutations.
@@ -92,11 +93,12 @@ model.summary()
 
 # compile model like you usually do.
 # notice use of config.
-optimizer = tf.keras.optimizers.Adam(config.learning_rate) 
+optimizer = tf.keras.optimizers.Adam(config.learning_rate)
 model.compile(optimizer, config.loss_function, metrics=['acc'])
 
 ```
-`project` is name of  your project and your project might have different run, so `name` parameter will distinguish one run from other. 
+
+`project` is name of your project and your project might have different run, so `name` parameter will distinguish one run from other.
 If you run above code and get back to your wandb dashboard it will new project called `demo-keras-integration` and with `first_run` in it.
 
 [![wandb Init](/images/wandb-init.png)](https://ibb.co/hDjwC6s)
@@ -129,12 +131,13 @@ from wandb.keras import WandbCallback
 # notice WandbCallback used as a regular callback
 # notice the use of config
 _ = model.fit(x_train, y_train,
-          epochs=config.epochs, 
+          epochs=config.epochs,
           batch_size=config.batch_size,
           validation_data=(x_test, y_test),
           callbacks=[WandbCallback()])
 
 ```
+
 If you are working on images and need a way to log your correctly classified and misclassified sample images, you can also do so using wandb. Below you will see the examples of it.
 
 ```python
@@ -147,11 +150,11 @@ val_images, val_labels = x_test[:32], y_test[:32]
 # notice that we are passing in some arguments as well
 # notice the use of config
 _ = model.fit(x_train, y_train,
-          epochs=config.epochs, 
+          epochs=config.epochs,
           batch_size=config.batch_size,
           validation_data=(x_test, y_test),
-          callbacks=[WandbCallback(data_type='image', 
-                                   training_data=(val_images, val_labels), 
+          callbacks=[WandbCallback(data_type='image',
+                                   training_data=(val_images, val_labels),
                                    labels=CLASS_NAMES)])
 ```
 
@@ -165,7 +168,7 @@ You can always log custom metrics and extra information using wandb.log .
 loss, accuracy = model.evaluate(x_test, y_test)
 print('Test Error Rate: ', round((1-accuracy)*100, 2))
 
-# notice the use of wandb.log. 
+# notice the use of wandb.log.
 # We can easiy pass in values as key-value pairs.
 wandb.log({'Test Error Rate': round((1-accuracy)*100, 2)})
 
@@ -186,7 +189,6 @@ The information in the `overview` section is pretty intuitive and self-explanato
 ## Logs
 
 The `logs` section shows the console output during the experiment. This is useful for debugging the performance of the model.
-
 
 [![Wandb dashboard](/images/wandb-logs.png)](https://ibb.co/hmKFC7H)
 

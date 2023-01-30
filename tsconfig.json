@@ -22,8 +22,7 @@
     "**/*.tsx",
     "tailwind.config.js",
     "postcss.config.js",
-    "environment.d.ts",
-
+    "environment.d.ts"
   ],
   "exclude": ["node_modules"]
 }

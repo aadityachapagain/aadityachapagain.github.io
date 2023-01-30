@@ -12,11 +12,11 @@ status: published
 
 ## Table of contents
 
-Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.  
+Speech processing is very first phase in any speech system either it is speech recognition system or speaker Diarization or something else. Speech processing plays an important role in speech system to extract vocal features i.e identify the components of the audio signal that are good for identifying the linguistic content and discarding all other stuff which carries information like background noise, emotion etc.
 
 In this post we will learn very important mathematical concept about speech processing in any speech system and implement the mathematics in python.
 
-Mel Frequency Cepstral Coefficents (MFCCs) and Filter Banks are a feature widely used in automatic speech and speaker recognition. But Filter Banks is more popluar Nowadays due to its robustness on mapping vocal features.Computing filter banks and MFCCs involve somewhat same procedure, where in both cases filter banks are computed and with  a few more extra steps MFCCs can be obtained.
+Mel Frequency Cepstral Coefficents (MFCCs) and Filter Banks are a feature widely used in automatic speech and speaker recognition. But Filter Banks is more popluar Nowadays due to its robustness on mapping vocal features.Computing filter banks and MFCCs involve somewhat same procedure, where in both cases filter banks are computed and with a few more extra steps MFCCs can be obtained.
 
 Let's get started with loading speech signal with python. I will be using python 3.6 for this post.
 
@@ -41,16 +41,17 @@ The raw signal has the following from in the time domain:
 ## Pre-Emphasis
 
 The first step is to apply a pre-emphesis filter on signal to amplify the high frequencies. A pre-emphesis filter is useful in several ways:
- - balance frequency spectrum since high frequencies usually have smaller magnitudes compared to lower frequencies
- - avoid numerical problems during fourier operation
- - Might also improve the signal to Noise Ratio (SNR)
+
+- balance frequency spectrum since high frequencies usually have smaller magnitudes compared to lower frequencies
+- avoid numerical problems during fourier operation
+- Might also improve the signal to Noise Ratio (SNR)
 
 The pre-emphesis filter can be applied to a signal x using the first order filter in the following equation:
 
 $$ y(t) = x(t) - \alpha x(t-1) $$
 
-which can be easily implemented using the following line, where typical values for the filter coefficeint ( $\alpha$ ) are 0.95 to 0.97, 
-```pre_empasis = 0.97```
+which can be easily implemented using the following line, where typical values for the filter coefficeint ( $\alpha$ ) are 0.95 to 0.97,
+`pre_empasis = 0.97`
 
 ```python
 
@@ -58,6 +59,7 @@ pre_emphasis = 0.97
 emphasized_signal = np.append(signal[0], signal[1:] - pre_emphasis * signal[:-1])
 
 ```
+
 Pre-emphasis has a modest effect in modern systems, mainly because most of the motivations for the pre-emphasis filter can be achieved using mean normalization except for avoiding the Fourier transfrom numerical issues which should not be a problem in modern FFT implementations.
 
 The signal after pre-emphasis has the following effect in orignal signal.
@@ -98,15 +100,15 @@ where,  0 $\leq$ n $\leq$ N-1,N is the window length.
 
 There are several reasons why we need to apply a window function to the frames, notably to counteract the assumption made by the FFT that the data is infinite and to reduce spectral leakage.
 
-```python
+````python
 
 frames *= np.hamming(frame_length)```
 # frames *= 0.54 - 0.46 * np.cos((2 * np.pi * n) / (frame_length - 1))  # Explicit Implementation **
-```
+````
 
 ## Fourier-Transfrom and Power Spectrum
 
-We can now do an N-point FFT on each frame to calculate the frequency spectrum, which is also called Short-Time-Fourier-Transfrom (STFT), where N is typically 256 or 512, ```NFFT = 512```; and then compute the power spectrum (Periodogram) using the following equation: 
+We can now do an N-point FFT on each frame to calculate the frequency spectrum, which is also called Short-Time-Fourier-Transfrom (STFT), where N is typically 256 or 512, `NFFT = 512`; and then compute the power spectrum (Periodogram) using the following equation:
 $$P = \frac{|FFT(x_i)|^2}{N}$$
 where , $x_i$ is the $i^{th}$ frame of signal $x$. This can be easily imlemented with the following lines:
 
@@ -120,7 +122,7 @@ pow_frames = ((1.0 / NFFT) * ((mag_frames) ** 2))  # Power Spectrum
 ## Filter Banks
 
 The final step to computing filter banks is applying triangular filters, typically 40 filters, nfilt = 40 on a Mel-scale to the power spectrum to extract frequency bands. The Mel-Scale aims to mimic the non-linear human ear perception of sound, by being more discriminative at lower frequenceis and less discriminative at higher frequencies. We can convert between Hertz ($f$) and Mel ( $m$) using the following equations:
-$$ \Large m = 2595 \log_{10} (1 + \frac{f}{700}) \approx  1125 \ln (1 + \frac{f}{700} )  $$
+$$ \Large m = 2595 \log\_{10} (1 + \frac{f}{700}) \approx 1125 \ln (1 + \frac{f}{700} ) $$
 
 $$ \Large f = 700 ( 10^{ \frac{m}{2595} } -1)$$
 
@@ -139,7 +141,7 @@ H_m(k) =
       \\
       0                                      & k > f(m + 1) \\
   \end{cases}
-  $$
+$$
 
 ```python
 nfilt = 40
@@ -185,13 +187,14 @@ plt.show()
 
 ## Mel-frequency cepstral Coecfficents (MFCCs)
 
-It turns out that filter bank coefficients computed in the previous step are higly correlated, which could be problematic in some machine learning algorithms. Therefore, we can apply Discrete Cosine Transform(DCT)  to decorrelate the filter bank coefficients and yield compressed representation of filter banks. Typically, for Automatic SPeech Recognition (ASR), the resulting cepstral coefficeints 2- 13 are retained and the rest are discareded; ```num_ceps = 12```. The reasons for discarding the other coefficeints is that they represent fast changes in the filter bank coefficients and these fine details don't contribute to ASR.
+It turns out that filter bank coefficients computed in the previous step are higly correlated, which could be problematic in some machine learning algorithms. Therefore, we can apply Discrete Cosine Transform(DCT) to decorrelate the filter bank coefficients and yield compressed representation of filter banks. Typically, for Automatic SPeech Recognition (ASR), the resulting cepstral coefficeints 2- 13 are retained and the rest are discareded; `num_ceps = 12`. The reasons for discarding the other coefficeints is that they represent fast changes in the filter bank coefficients and these fine details don't contribute to ASR.
 
 ```python
 num_ceps = 12
 mfcc = dct(filter_banks, type = 2, axis=1, norm="ortho")[:,1: (num_ceps + 1)] # keep 2-13
 
 ```
+
 One may apply sinusoidal liftering to the MFCCs to de-emphasize higher MFCCs which has been claimed to improve speech recognition in noisy signals.
 
 ```python
@@ -233,7 +236,7 @@ mfcc -= (np.mean(mfcc, axis = 0) + 1e-8)
 
 ```
 
-To this point, the steps to compute filter banks and MFCCs were discussed in terms of their motivation and implementations.It is interesting to note that all steps needed to compute filter banks were motivated by the nature of the speech signal and the human perception of such signals. 
- 
- On the Contrary, the extra steps needed to compute MFCCs were motivated by the limitation of some classifical machine learning algorithms.The Discrete cosine Transfrom (DCT) was needed to decorrelate filter banks coeffiicients, a process refer as whitening. In particular, MFCCs were very popular with Gaussian Mixture Models - Hidden Markov Models(GMM - HMM).
- But with the advent of Deep learning in speech system, one might not need DCT.
+To this point, the steps to compute filter banks and MFCCs were discussed in terms of their motivation and implementations.It is interesting to note that all steps needed to compute filter banks were motivated by the nature of the speech signal and the human perception of such signals.
+
+On the Contrary, the extra steps needed to compute MFCCs were motivated by the limitation of some classifical machine learning algorithms.The Discrete cosine Transfrom (DCT) was needed to decorrelate filter banks coeffiicients, a process refer as whitening. In particular, MFCCs were very popular with Gaussian Mixture Models - Hidden Markov Models(GMM - HMM).
+But with the advent of Deep learning in speech system, one might not need DCT.

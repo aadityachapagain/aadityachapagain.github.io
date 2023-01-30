@@ -139,7 +139,7 @@ FAIL  <path_to_project_dir>/palindrome 0.001s
 # Benchmark Function
 
 Benchmarking is the practice of measuring the performance of a program on a fixed workload. In Go, a benchmark function look like a test function, but with the
-Benchmark prefix and a *testing.B parameter that provides most of the same methods as a *testing.T, plus few extra related performance measurement.It also exposes 
+Benchmark prefix and a *testing.B parameter that provides most of the same methods as a *testing.T, plus few extra related performance measurement.It also exposes
 an Integer field N, which specifies the number of times to perform the operation being measured.
 
 Here's a benchmark for IsPalindrome that calls it N times in a loop.
@@ -152,7 +152,7 @@ func BenchmarkIsPalindrome(b *testing.B) {
 }
 ```
 
-Unlike tests, by default no benchmarks are run. The argument to the -bench flag selects which benchmark to run. It is regular expression matching the names of Benchmark functions, with a default value that matches none of the functions. The "." pattern causes it to match all benchmark functions in package. 
+Unlike tests, by default no benchmarks are run. The argument to the -bench flag selects which benchmark to run. It is regular expression matching the names of Benchmark functions, with a default value that matches none of the functions. The "." pattern causes it to match all benchmark functions in package.
 
 ```bash
 > go test -bench=.
@@ -165,4 +165,4 @@ ok  	<path_to_project_dir>/palindrome	1.598s
 
 The benchmark name’s numeric suffix, 12 here , indicates the value of GOMAXPROCS, which is important for concurrent benchmarks.
 
-The report tells us that each call to *IsPalindrome* took about 0.301 microseconds, averaged over 4377900 runs. Since the benchmark runner initially has no idea how long the operation takes, it make some initial measuremetns using small values of N and then extrapolates to a value large enough for a stable timing measurement to be made.
+The report tells us that each call to _IsPalindrome_ took about 0.301 microseconds, averaged over 4377900 runs. Since the benchmark runner initially has no idea how long the operation takes, it make some initial measuremetns using small values of N and then extrapolates to a value large enough for a stable timing measurement to be made.
