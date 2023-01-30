@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import Header from '../components/header'
 import { Auth0Provider } from '@auth0/auth0-react'
+import Footer from '../components/footer';
 
 config.autoAddCss = false;
 
@@ -25,13 +26,19 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>Welcome to Aaditya Chapagain's notebook!</title>
       </Head>
 
-      <Header />
-      <div className='p-4 lg:p-8 '>
+      <div className='flex flex-col h-screen '>
+        <Header />
 
-      <main className="py-8 px-8 lg:px-0 ">
-        <Component {...pageProps} />
-      </main>
+        <div className='p-4 lg:p-8  inline-block grow '>
+          <main className="py-8 px-8 lg:px-0 ">
+            <Component {...pageProps} />
+          </main>
+        </div>
+
+        <Footer />
       </div>
+      
+      
     </Auth0Provider>
   )
 }
