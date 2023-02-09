@@ -6,6 +6,7 @@ export default function distanceToNow(dateTime: number | Date) {
       addSuffix: true
     });
   } catch {
-    console.log("something is wrong!");
+    // some kinda error handling here
+    return "Few years back ...";
   }
 }

@@ -1,7 +1,7 @@
 ---
 title: Speech Signal Processing using python
-date: 2020-08-11 8:00
-modified: 2020-08-11 8:00
+date: 2020-08-11 08:00
+modified: 2020-08-11 08:00
 category: Blog
 slug: speech-signal-processing-using-python
 summary: Signal Processing and Speech Recognition using python

@@ -1,7 +1,7 @@
 ---
 title: Testing Go Program in Nutshell.
-date: 2020-08-11 8:00
-modified: 2020-08-11 8:00
+date: 2020-08-11 08:00
+modified: 2020-08-11 08:00
 category: Blog
 slug: testing-in-go-nutshell
 summary: Testing Framework in Go is extremely simple and minimal

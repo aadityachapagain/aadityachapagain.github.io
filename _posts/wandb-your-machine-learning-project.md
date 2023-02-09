@@ -1,7 +1,7 @@
 ---
 title: Wandb Your machine learning project.
-date: 2020-09-2 12:00
-modified: 2020-9-2 12:00
+date: 2020-09-02 12:00
+modified: 2020-09-02 12:00
 category: Blog
 slug: wandb-your-machine-learning-project
 summary: Wandb Tool for visualizing and tracking your machine learning experiments better than tensorboard.
