@@ -21,6 +21,20 @@ export default function PostPage({
     <Container>
       <Head>
         <title>{post.title} | My awesome blog</title>
+        <meta
+          name="description"
+          content={`This post is about ${post.tags} .`}
+        />
+        <meta property="og:title" content="My Personal blog site." />
+        <meta
+          property="og:description"
+          content={`This post is about ${post.tags} .`}
+        />
+        <meta
+          property="og:url"
+          content={`https://aadityachapagain.com/${router.asPath}`}
+        />
+        <meta property="og:type" content="website" />
       </Head>
 
       {router.isFallback ? (

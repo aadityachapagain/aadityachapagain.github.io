@@ -21,8 +21,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="description"
-          content="Tech, life, uprising , upbringing, futuristic logbook made with love."
+          content="Tech, life, uprising , upbringing, futuristic logbook of aaditya chapagain made with love."
         />
+        <meta property="og:title" content="My Personal website." />
+        <meta
+          property="og:description"
+          content="my takes written all over in digital wallpaper."
+        />
+        <meta property="og:url" content="https://aadityachapagain.com/" />
+        <meta property="og:type" content="website" />
         <title>Welcome to Aaditya Chapagain&apos;s notebook!</title>
       </Head>
 

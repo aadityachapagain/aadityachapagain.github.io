@@ -11,7 +11,7 @@ export interface Post {
   modified: Date;
   category: Date;
   summary: string;
-  tags: string[];
+  tags: string;
   authors: string[];
   status: PostStatus;
   content?: string;
