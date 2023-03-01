@@ -35,6 +35,12 @@ export default function PostPage({
           content={`https://aadityachapagain.com/${router.asPath}`}
         />
         <meta property="og:type" content="website" />
+        {post.tags
+          .trim()
+          .split(",")
+          .map((val: string, idx: number) => {
+            return <meta key={idx} name="keywords" content={val} />;
+          })}
       </Head>
 
       {router.isFallback ? (
