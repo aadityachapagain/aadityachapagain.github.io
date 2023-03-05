@@ -20,7 +20,7 @@ export default function PostPage({
   return (
     <Container>
       <Head>
-        <title>{post.title} | My awesome blog</title>
+        <title>{post.title} | aaditya&apos;s blog</title>
         <meta
           name="description"
           content={`This post is about ${post.tags} .`}

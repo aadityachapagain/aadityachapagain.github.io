@@ -4,7 +4,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 
 import type { AppProps } from "next/app";
-import Head from "next/head";
+// import Head from "next/head";
 import Header from "../components/header";
 import { Auth0Provider } from "@auth0/auth0-react";
 import Footer from "../components/footer";
@@ -17,22 +17,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN}
     >
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="description"
-          content="Tech, life, uprising , upbringing, futuristic logbook of aaditya chapagain made with love."
-        />
-        <meta property="og:title" content="My Personal website." />
-        <meta
-          property="og:description"
-          content="my takes written all over in digital wallpaper."
-        />
-        <meta property="og:url" content="https://aadityachapagain.com/" />
-        <meta property="og:type" content="website" />
-        <title>Welcome to Aaditya Chapagain&apos;s notebook!</title>
-      </Head>
-
       <div className="flex flex-col h-screen ">
         <Header />
 
