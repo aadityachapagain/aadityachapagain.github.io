@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-function HomePage() {
+const HomePage = () => {
   const router = useRouter();
 
   const downloadResume = () => {
@@ -59,9 +59,10 @@ function HomePage() {
                 ML Engineer/Researcher, Full Stack Developer
               </div>
               <p className="text-stone-600 text-sm tracking-wide font-serif">
-                Hi there &#128075; , I am Machine Learning Engineer currently
-                studying in <b>University of Wollongong, Computer Science </b>
-                and working on <b>Cloud Shuttle</b> as Machine Learning
+                Hi there &#128075; , I am a Machine Learning Engineer currently
+                studying in the{" "}
+                <b>University of Wollongong, Computer Science </b>
+                and working on <b>Cloud Shuttle</b> as a Machine Learning
                 Engineer, a community-focused data cloud based consulting
                 company.
               </p>
@@ -92,6 +93,6 @@ function HomePage() {
       </div>
     </>
   );
-}
+};
 
 export default HomePage;
