@@ -40,7 +40,8 @@ export default function CommentForm({
                 logout({
                   async openUrl(url) {
                     window.location.replace(url);
-                  }, logoutParams: {
+                  },
+                  logoutParams: {
                     returnTo: window.location.origin
                   }
                 })

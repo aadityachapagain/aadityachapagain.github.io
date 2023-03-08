@@ -81,6 +81,11 @@ const resumePage: React.FC = ({}) => {
                 <div className="font-semibold text-xl mb-1 ">EXPERIENCE</div>
                 <div className="h-0.5 bg-gray-500 "></div>
               </div>
+              {/* Technical Skills */}
+              <div className="">
+                <div className="font-semibold text-xl mb-1 ">Skills</div>
+                <div className="h-0.5 bg-gray-500 "></div>
+              </div>
             </div>
           </div>
           <div className="w-1/2 ">
@@ -88,6 +93,13 @@ const resumePage: React.FC = ({}) => {
               {/* Education section */}
               <div className="">
                 <div className="font-semibold text-xl mb-1 ">EDUCATION</div>
+                <div className="h-0.5 bg-gray-500 "></div>
+              </div>
+              {/* Certifications */}
+              <div className="">
+                <div className="font-semibold text-xl mb-1 ">
+                  CERTIFICATIONS
+                </div>
                 <div className="h-0.5 bg-gray-500 "></div>
               </div>
             </div>
