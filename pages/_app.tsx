@@ -8,6 +8,7 @@ import type { AppProps } from "next/app";
 import Header from "../components/header";
 import { Auth0Provider } from "@auth0/auth0-react";
 import Footer from "../components/footer";
+import "../css/main.css";
 
 config.autoAddCss = false;
 
