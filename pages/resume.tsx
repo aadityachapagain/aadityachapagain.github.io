@@ -9,8 +9,18 @@ import Head from "next/head";
 import Link from "next/link";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import distanceToNow from "../lib/dateRelative";
+import React, { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 
 const resumePage: React.FC = ({}) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const PrintRef = useRef<HTMLDivElement>(null);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const handlePrint = useReactToPrint({
+    content: () => PrintRef.current
+  });
+
   return (
     <>
       <Head>
@@ -28,8 +38,20 @@ const resumePage: React.FC = ({}) => {
         <meta property="og:type" content="website" />
         <title>Welcome to Aaditya Chapagain&apos;s notebook!</title>
       </Head>
+
+      <div className="container max-w-4xl m-auto px-4 flex flex-row mb-10">
+        <div>
+          <button onClick={handlePrint} className="hover-blue-btn">
+            Print My Resume
+          </button>
+        </div>
+        <div className="grow h-full"></div>
+      </div>
       {/* Resume Content begins from here */}
-      <div className="container min-screen-resume max-w-4xl m-auto px-4 font-serif ">
+      <div
+        ref={PrintRef}
+        className=" py-8 min-screen-resume max-w-5xl m-auto px-12 font-serif "
+      >
         <div className="text-2xl text-slate-700 tracking-wide">
           AADITYA CHAPAGAIN
         </div>
