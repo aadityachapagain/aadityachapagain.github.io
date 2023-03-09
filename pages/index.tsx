@@ -5,18 +5,18 @@ import { useRouter } from "next/router";
 const HomePage = () => {
   const router = useRouter();
 
-  const downloadResume = () => {
-    // get origin url
-    const origin =
-      typeof window !== "undefined" && window.location.origin
-        ? window.location.origin
-        : "";
+  // const downloadResume = () => {
+  //   // get origin url
+  //   const origin =
+  //     typeof window !== "undefined" && window.location.origin
+  //       ? window.location.origin
+  //       : "";
 
-    const URL = `${origin}/resume/Aaditya_Chapagain_Resume.pdf`;
-    if (typeof window != "undefined") {
-      window.location.href = URL;
-    }
-  };
+  //   const URL = `${origin}/resume/Aaditya_Chapagain_Resume.pdf`;
+  //   if (typeof window != "undefined") {
+  //     window.location.href = URL;
+  //   }
+  // };
 
   return (
     <>
@@ -71,8 +71,7 @@ const HomePage = () => {
                   className="border-emerald-500 border-2 rounded-full py-2 px-7 shadow-md hover:bg-emerald-500 hover:text-white "
                   onClick={e => {
                     e.preventDefault();
-                    // router.push('/contact')
-                    downloadResume();
+                    router.push("/resume");
                   }}
                 >
                   Download CV
