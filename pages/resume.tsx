@@ -164,7 +164,7 @@ const resumePage: React.FC = ({}) => {
                         icon={faLocationDot}
                         style={{ fontSize: 16 }}
                       />
-                      <span>Canberra, Australia</span>
+                      <span>Kathmandu, Nepal</span>
                     </div>
                   </div>
                 </div>
