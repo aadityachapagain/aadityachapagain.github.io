@@ -33,7 +33,7 @@ const resumePage: React.FC = ({}) => {
           AADITYA CHAPAGAIN
         </div>
         <div className="font-semibold text-sm">
-          Machine Learning Engineeer | Full Stack Developer
+          Machine Learning Engineer | Full Stack Developer
         </div>
         <div className="font-semibold text-sm ">
           Computer Science Student @ University of Wollongong
