@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Head from "next/head";
 import Link from "next/link";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
+import distanceToNow from "../lib/dateRelative";
 
 const resumePage: React.FC = ({}) => {
   return (
@@ -72,6 +73,20 @@ const resumePage: React.FC = ({}) => {
             <FontAwesomeIcon icon={faGithub} style={{ fontSize: 20 }} />{" "}
             aadityachapagain
           </Link>
+        </div>
+        {/* summary section here */}
+        <div className="text-sm font-sans mt-4 text-stone-700">
+          <div>
+            Machine Learning Engineer skilled in Natural Language Processing
+            with {distanceToNow(new Date("2019-04-01 12:00"), false)} of
+            experience of prototyping Intelligent machine learning platform and
+            transforming any startup ideas into production grade solutions.
+          </div>
+          <div className="mt-1.5 ">
+            Analytical, client-focused, detail-oriented, problem-solving
+            professional with strong technical skills and the ability to grasp
+            the concept very quickly.
+          </div>
         </div>
         <div className="h-2 p-2 ">{""}</div>
         <div className="flex flex-row gap-10 mt-2 ">
