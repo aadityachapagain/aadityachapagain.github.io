@@ -286,6 +286,138 @@ const resumePage: React.FC = ({}) => {
                   CERTIFICATIONS
                 </div>
                 <div className="h-0.5 bg-gray-500 "></div>
+                <div className="mt-1.5 text-sm ">
+                  <ul className="flex flex-col gap-2 list-disc ">
+                    <li>
+                      <div className="font-semibold">
+                        Natural Language Processing
+                      </div>
+                      <div className="flex flex-col">
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/certificate/93Q9C9DEKG5C"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/certificate/93Q9C9DEKG5C
+                        </Link>
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/certificate/M69JGBDMTMWR"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/certificate/M69JGBDMTMWR
+                        </Link>
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/verify/AQR9YUCS4QPE"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/verify/AQR9YUCS4QPE
+                        </Link>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-1.5 text-sm ">
+                  <ul className="flex flex-col gap-2 list-disc ">
+                    <li>
+                      <div className="font-semibold">
+                        Machine Learning and Deep Learning
+                      </div>
+                      <div className="flex flex-col">
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/certificate/Z34F9TSHMAB9"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/certificate/Z34F9TSHMAB9
+                        </Link>
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/verify/WREGBKEZSPFB"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/verify/WREGBKEZSPFB
+                        </Link>
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.coursera.org/account/accomplishments/verify/YZAEL97XWQBP"
+                          }
+                        >
+                          https://www.coursera.org/account/accomplishments/verify/YZAEL97XWQBP
+                        </Link>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-1.5 text-sm ">
+                  <ul className="flex flex-col gap-2 list-disc ">
+                    <li>
+                      <div className="font-semibold">
+                        Databricks Certified Data Engineer Associate
+                      </div>
+                      <div className="flex flex-col">
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70"
+                          }
+                        >
+                          https://credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70
+                        </Link>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-1.5 text-sm ">
+                  <ul className="flex flex-col gap-2 list-disc ">
+                    <li>
+                      <div className="font-semibold">
+                        TensorFlow Developer Certificate
+                      </div>
+                      <div className="flex flex-col">
+                        <Link
+                          className="font-thin text-xs"
+                          style={{
+                            textDecoration: "normal"
+                          }}
+                          href={
+                            "https://www.credential.net/8b27ce74-5170-45a3-a5c5-91e5d8b5940b"
+                          }
+                        >
+                          https://www.credential.net/8b27ce74-5170-45a3-a5c5-91e5d8b5940b
+                        </Link>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
