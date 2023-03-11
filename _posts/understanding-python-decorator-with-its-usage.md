@@ -7,7 +7,7 @@ slug: understanding-python-decorator-with-its-usage
 summary: Upskill your python using awesome decorators
 tags: Machine Learning, python, coding, decorator, callbacks, developer, python skill,
 authors: Aaditya Chapagain
-status: unpublished
+status: published
 ---
 
 You might have seen python code that has `@<function_or_class>` written immediately above a function or Class.
