@@ -37,6 +37,7 @@
     "remark-rehype": "^10.1.0",
     "remark-slug": "^7.0.1",
     "remark-toc": "^8.0.1",
+    "sib-api-v3-typescript": "^2.2.2",
     "swr": "^2.1.0",
     "to-vfile": "^7.2.4",
     "unified": "^10.1.2"

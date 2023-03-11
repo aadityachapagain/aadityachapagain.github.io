@@ -19,11 +19,11 @@ const ContactUs: React.FC = () => {
   const [errors, setErrors] = useState<IFormErrors>({});
 
   //   Setting button text on form submission
-  const [buttonText, setButtonText] = useState("Send");
+  const [buttonText, setButtonText] = useState<string>("Send");
 
   // Setting success or failure messages states
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showFailureMessage, setShowFailureMessage] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+  const [showFailureMessage, setShowFailureMessage] = useState<boolean>(false);
 
   // Validation check method
   const handleValidation = () => {

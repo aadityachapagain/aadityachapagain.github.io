@@ -26,6 +26,7 @@ jobs:
           export REDIS_URL=${{ secrets.REDIS_URL }}
           export AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
           export AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
+          export SMTP_API_KEY=${{ secrets.SMTP_API_KEY }}
           envsubst < .env.example > .env.production
 
       - name: Build
