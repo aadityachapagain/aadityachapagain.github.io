@@ -16,7 +16,7 @@ export default async function markdownToHtml(markdown: VFileCompatible) {
     .use(remarkGfm)
     .use(remarkSlug)
     .use(remarkMath)
-    .use(remarkToc, { maxDepth: 3 })
+    .use(remarkToc, { maxDepth: 3, tight: true, ordered: true })
     .use(remarkRehype)
     .use(rehypeMathJaxSvg)
     .use(rehypeHighlight)
