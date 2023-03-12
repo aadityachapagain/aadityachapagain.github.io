@@ -60,27 +60,15 @@ const ContactUs: React.FC = () => {
 
     if (isValidForm) {
       setButtonText("Sending");
-      const HTMLContent: string = `{
-        "sender":{
-          "name":"${fullname}",
-          "email":"${email}"
-        },
-        "to": [
-          {
-            "email":"${process.env.NEXT_PUBLIC_CONTACT_EMAIL_ADDRESS}",
-            "name":"Aaditya Chapagain"
-          }
-        ],
-        "subject":"${subject}",
-        "htmlContent":"<html><head></head><body>${message}</body></html>"
-      }`;
-
-      const res = await fetch("https://api.sendinblue.com/v3/smtp/email", {
-        body: HTMLContent,
+      const res = await fetch("/api/sendemail/v1", {
+        body: JSON.stringify({
+          email: email,
+          fullname: fullname,
+          subject: subject,
+          message: message
+        }),
         headers: {
-          accept: "application/json",
-          "api-key": process.env.NEXT_PUBLIC_SMTP_API_KEY,
-          "content-type": "application/json"
+          "Content-Type": "application/json"
         },
         method: "POST"
       });

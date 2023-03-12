@@ -39,7 +39,7 @@ jobs:
       - name: Write CNAME
         run: |
           touch out/CNAME
-          echo "aadityachapagain.com" > out/CNAME
+          echo "testing.aadityachapagain.com" > out/CNAME
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
