@@ -6,11 +6,11 @@ import {
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Head from "next/head";
-import Link from "next/link";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import distanceToNow from "../lib/dateRelative";
 import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
+import NewTabLink from "../components/newtabLink";
 
 const resumePage: React.FC = ({}) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -66,35 +66,35 @@ const resumePage: React.FC = ({}) => {
             <FontAwesomeIcon icon={faLocationDot} style={{ fontSize: 20 }} />{" "}
             Wollongong, NSW, 2500
           </div>
-          <Link
+          <NewTabLink
             className="flex flex-auto gap-3 "
             href={"mailto:aadityachapagain101@gmail.com"}
           >
             <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: 20 }} />{" "}
             aadityachapagain101@gmail.com
-          </Link>
-          <Link href={"https://aadityachapagain.com"}>
+          </NewTabLink>
+          <NewTabLink href={"https://aadityachapagain.com"}>
             <div className="flex flex-auto gap-3 ">
               <FontAwesomeIcon icon={faGlobe} style={{ fontSize: 20 }} />{" "}
               wwww.aadityachapagain.com
             </div>
-          </Link>
+          </NewTabLink>
         </div>
         <div className="flex flex-auto gap-2 mt-2 ">
-          <Link
+          <NewTabLink
             href="https://www.linkedin.com/in/aadityachapagain/"
             className="flex flex-auto gap-3"
           >
             <FontAwesomeIcon icon={faLinkedinIn} style={{ fontSize: 20 }} />{" "}
             https://www.linkedin.com/in/aadityachapagain/
-          </Link>
-          <Link
+          </NewTabLink>
+          <NewTabLink
             href="https://github.com/aadityachapagain/"
             className="flex flex-auto gap-3"
           >
             <FontAwesomeIcon icon={faGithub} style={{ fontSize: 20 }} />{" "}
             aadityachapagain
-          </Link>
+          </NewTabLink>
         </div>
         {/* summary section here */}
         <div className="text-sm font-sans mt-4 text-stone-700">
@@ -330,39 +330,30 @@ const resumePage: React.FC = ({}) => {
                         Natural Language Processing
                       </div>
                       <div className="flex flex-col">
-                        <Link
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/certificate/93Q9C9DEKG5C"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/certificate/93Q9C9DEKG5C
-                        </Link>
-                        <Link
+                        </NewTabLink>
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/certificate/M69JGBDMTMWR"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/certificate/M69JGBDMTMWR
-                        </Link>
-                        <Link
+                        </NewTabLink>
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/verify/AQR9YUCS4QPE"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/verify/AQR9YUCS4QPE
-                        </Link>
+                        </NewTabLink>
                       </div>
                     </li>
                   </ul>
@@ -374,39 +365,30 @@ const resumePage: React.FC = ({}) => {
                         Machine Learning and Deep Learning
                       </div>
                       <div className="flex flex-col">
-                        <Link
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/certificate/Z34F9TSHMAB9"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/certificate/Z34F9TSHMAB9
-                        </Link>
-                        <Link
+                        </NewTabLink>
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/verify/WREGBKEZSPFB"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/verify/WREGBKEZSPFB
-                        </Link>
-                        <Link
+                        </NewTabLink>
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.coursera.org/account/accomplishments/verify/YZAEL97XWQBP"
                           }
                         >
                           https://www.coursera.org/account/accomplishments/verify/YZAEL97XWQBP
-                        </Link>
+                        </NewTabLink>
                       </div>
                     </li>
                   </ul>
@@ -418,17 +400,14 @@ const resumePage: React.FC = ({}) => {
                         Databricks Certified Data Engineer Associate
                       </div>
                       <div className="flex flex-col">
-                        <Link
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70"
                           }
                         >
                           https://credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70
-                        </Link>
+                        </NewTabLink>
                       </div>
                     </li>
                   </ul>
@@ -440,17 +419,14 @@ const resumePage: React.FC = ({}) => {
                         TensorFlow Developer Certificate
                       </div>
                       <div className="flex flex-col">
-                        <Link
+                        <NewTabLink
                           className="font-thin text-xs"
-                          style={{
-                            textDecoration: "normal"
-                          }}
                           href={
                             "https://www.credential.net/8b27ce74-5170-45a3-a5c5-91e5d8b5940b"
                           }
                         >
                           https://www.credential.net/8b27ce74-5170-45a3-a5c5-91e5d8b5940b
-                        </Link>
+                        </NewTabLink>
                       </div>
                     </li>
                   </ul>

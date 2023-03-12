@@ -1,6 +1,7 @@
 import { faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import NewTabLink from "../components/newtabLink";
 
 interface IFormErrors {
   fullname?: string;
@@ -212,7 +213,10 @@ const ContactUs: React.FC = () => {
           Reach out
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 mx-2 md:grid-cols-2 gap-6 max-w-6xl md:mx-auto my-20">
-          <div className="card p-8 shadow rounded-md flex flex-row items-center space-x-4 hover:shadow-lg cursor-pointer transition duration-200">
+          <NewTabLink
+            href={"mailto:connect@aadityachapagain.com"}
+            className="card p-8 shadow rounded-md flex flex-row items-center space-x-4 hover:shadow-lg cursor-pointer transition duration-200"
+          >
             <svg
               width="24"
               height="24"
@@ -228,14 +232,17 @@ const ContactUs: React.FC = () => {
                 fill="currentColor"
               />
             </svg>
-            <p className="0 font-light">aadityachapagain101@gmail.com</p>
-          </div>
-          <div className="card p-8 shadow rounded-md flex flex-row items-center space-x-4 hover:shadow-lg cursor-pointer transition duration-200">
+            <p className="0 font-light">connect@aadityachapagain.com</p>
+          </NewTabLink>
+          <NewTabLink
+            href={"https://www.linkedin.com/in/aadityachapagain/"}
+            className="card p-8 shadow rounded-md flex flex-row items-center space-x-4 hover:shadow-lg cursor-pointer transition duration-200"
+          >
             <FontAwesomeIcon icon={faLinkedinIn} style={{ fontSize: 18 }} />
             <p className="0 font-light">
               https://www.linkedin.com/in/aadityachapagain/
             </p>
-          </div>
+          </NewTabLink>
         </div>
       </section>
     </div>
