@@ -61,23 +61,24 @@ const resumePage: React.FC = ({}) => {
         <div className="font-semibold text-sm ">
           Computer Science Student @ University of Wollongong
         </div>
-        <div className="flex flex-auto gap-2  mt-2 ">
-          <div className="flex flex-auto gap-3 ">
+        <div className="flex flex-row gap-4 justify-start mt-2 ">
+          <div className="flex gap-3 ">
             <FontAwesomeIcon icon={faLocationDot} style={{ fontSize: 20 }} />{" "}
             Wollongong, NSW, 2500
           </div>
           <NewTabLink
             className="flex flex-auto gap-3 "
-            href={"mailto:aadityachapagain101@gmail.com"}
+            href={"mailto:connect@aadityachapagain.com"}
           >
             <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: 20 }} />{" "}
-            aadityachapagain101@gmail.com
+            <p>connect@aadityachapagain.com</p>
           </NewTabLink>
-          <NewTabLink href={"https://aadityachapagain.com"}>
-            <div className="flex flex-auto gap-3 ">
-              <FontAwesomeIcon icon={faGlobe} style={{ fontSize: 20 }} />{" "}
-              wwww.aadityachapagain.com
-            </div>
+          <NewTabLink
+            href={"https://aadityachapagain.com"}
+            className="flex flex-auto gap-3 "
+          >
+            <FontAwesomeIcon icon={faGlobe} style={{ fontSize: 20 }} />{" "}
+            <p>wwww.aadityachapagain.com</p>
           </NewTabLink>
         </div>
         <div className="flex flex-auto gap-2 mt-2 ">
