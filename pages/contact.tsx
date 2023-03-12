@@ -88,7 +88,7 @@ const ContactUs: React.FC = () => {
 
   return (
     <div>
-      <header className="p-8 grid grid-cols-1 md:grid-cols-2 gap-4 pt-10 lg:px-40 bg-indigo-500 md:h-96 rounded-3xl shadow-xl shadow-gray-400">
+      <header className="p-8 grid grid-cols-1 md:grid-cols-2 gap-4 pt-10 lg:px-40 bg-indigo-300 md:h-96 rounded-3xl shadow-xl shadow-gray-400">
         <div className="mx-auto mb-10 md:mt-20">
           <div className="badge bg-green-500 inline-block rounded-xl">
             <p className="font-light text-base px-4 py-1 ">Lets have a chat</p>
@@ -103,7 +103,7 @@ const ContactUs: React.FC = () => {
         </div>
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg shadow-lg flex flex-col px-8 py-8 text-white bg-purple-600 shadow-gray-300"
+          className="rounded-lg shadow-lg flex flex-col px-8 py-8 text-white bg-purple-400 shadow-gray-300"
         >
           <h1 className="text-2xl font-bold ">Send a message</h1>
 
