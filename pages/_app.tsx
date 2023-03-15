@@ -10,6 +10,8 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import Footer from "../components/footer";
 import "../css/main.css";
 
+import {Analytics} from '@vercel/analytics/react';
+
 config.autoAddCss = false;
 
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -28,6 +30,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         </div>
 
         <Footer />
+        <Analytics />
       </div>
     </Auth0Provider>
   );
