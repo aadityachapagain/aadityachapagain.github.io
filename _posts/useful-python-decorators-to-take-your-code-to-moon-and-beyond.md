@@ -10,10 +10,7 @@ authors: Aaditya Chapagain
 status: published
 ---
 
-
-In this blog post, we will explore 10 helpful decorators which I regularly use in my projects to extend my mode with extra functionalites. We'll dive into each decorator, look at the code and play  with some hands-on examples. If you are also Python developer, these decorators will help you massively in your python projects.
-
-
+In this blog post, we will explore 10 helpful decorators which I regularly use in my projects to extend my mode with extra functionalites. We'll dive into each decorator, look at the code and play with some hands-on examples. If you are also Python developer, these decorators will help you massively in your python projects.
 
 ## Table of contents
 
@@ -46,6 +43,7 @@ def some_func(text):
 ```
 
 ## @lru_cache
+
 This is a built-in decorator that you can import from `functools`.
 
 It caches the return values of a function , using a least-recently-used( LRU ) algorithm to discard the least-used values when the cache is full.
@@ -335,7 +333,7 @@ def call_api(url):
     return response
 ```
 
-This causes the function to sleep the remaining amount of time before  being executed again.
+This causes the function to sleep the remaining amount of time before being executed again.
 
 ## @register
 
@@ -359,7 +357,7 @@ while True:
 
 The `@dataclass` decorator in Python is used to decorate classes.
 
-It automatically generates special methods such as ```__init__```, `__repr__`,
+It automatically generates special methods such as `__init__`, `__repr__`,
 `__eq__`, `__lt__`, and `__str__` for classes that primarily store data. This can reduce the boilerplate code and make the classes more readable and maintainable.
 
 It also provides nifty methods off-the-shelf to represent objects nicely, convert them into JSON format, make them immutable, etc.
@@ -368,7 +366,7 @@ The `@dataclass` decorator was introduced in Python 3.7 and is available in the 
 
 ```python
 
-from dataclasses import dataclass, 
+from dataclasses import dataclass,
 
 @dataclass
 class Person:
@@ -388,14 +386,14 @@ class Person:
         return NotImplemented
 
 
-john = Person(first_name="John", 
-              last_name="Doe", 
-              age=30, 
+john = Person(first_name="John",
+              last_name="Doe",
+              age=30,
               job="doctor",)
 
-anne = Person(first_name="Anne", 
-              last_name="Smith", 
-              age=40, 
+anne = Person(first_name="Anne",
+              last_name="Smith",
+              age=40,
               job="software engineer",)
 
 print(john == anne)
