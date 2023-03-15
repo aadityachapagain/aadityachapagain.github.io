@@ -42,7 +42,6 @@ export default function Header() {
     { href: "/", content: "About Me" },
     { href: "/posts", content: "Logs" },
     { href: "/projects", content: "Projects" },
-    { href: "/sapiens", content: "Thoughts" },
     { href: "/resume", content: "Resume" },
     { href: "/contact", content: "Contact" }
   ];
