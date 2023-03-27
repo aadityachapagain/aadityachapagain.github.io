@@ -1,5 +1,5 @@
 ---
-title: 'Understanding useEffect in React: A Beginner's Guide'
+title: Understanding useEffect in React - A Beginner's Guide
 date: 2023-03-27 19:45
 modified: 2023-03-27 19:45
 category: Blog
@@ -182,12 +182,12 @@ It's important to pass the correct dependencies to useEffect to avoid unnecessar
 
 ## Tips and Tricks on using useEffect effectively:
 
-- Use it for handling side effects: useEffects is designed to handle side effects and you should only use it that way.If you need to modify the state of your component, you should use useState instead.
+- **Use it for handling side effects**: useEffects is designed to handle side effects and you should only use it that way.If you need to modify the state of your component, you should use useState instead.
 
-- Seperate concerns: Use multiple useEffect hooks to separate unrelated side effects. This makes your code easier to understand and maintain.
+- **Seperate concerns**: Use multiple useEffect hooks to separate unrelated side effects. This makes your code easier to understand and maintain.
 
-- Optimize performance: Be mindful of the dependencies you pass to useEffect. Provide an array of dependencies that accurately represent when the effect should be executed to avoid unnecessary updates.
+- **Optimize performance**: Be mindful of the dependencies you pass to useEffect. Provide an array of dependencies that accurately represent when the effect should be executed to avoid unnecessary updates.
 
-- Avoid infinite loops: When using a state variable as a dependency, make sure your effect does not cause an infinite loop by updating that state variable on every render.
+- **Avoid infinite loops**: When using a state variable as a dependency, make sure your effect does not cause an infinite loop by updating that state variable on every render.
 
-- Don't forget the cleanup: Always provide a cleanup function when your side effect requires it to avoid memory leaks and unexpected behavior.
+- **Don't forget the cleanup**: Always provide a cleanup function when your side effect requires it to avoid memory leaks and unexpected behavior.
