@@ -100,6 +100,7 @@ In summary, Rust and Go are both powerful languages with unique strengths and we
 - [Awesome Rust learning Resources by Awesome People **Github Repo**](https://github.com/ctjhoa/rust-learning)
 
 ## How to Get Started With Golang ?
+
 - [Official Golang documentation](https://go.dev/doc/)
 - [Golang Book](https://www.golang-book.com/)
 - [50 sates of Go - flaws and common mistakes for new Golang Developers](http://devs.cloudimmunity.com/gotchas-and-common-mistakes-in-go-golang/index.html)
