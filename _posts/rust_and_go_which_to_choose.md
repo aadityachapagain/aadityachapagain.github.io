@@ -4,7 +4,7 @@ date: 2023-03-30 10:15
 modified: 2023-04-01 10:15
 category: Blog
 summary: Rust for developing systems and performance-critical applications, Go for implicity and scalability of mircro-services and distributed systems.
-tags: Machine Learning, Golang, Go, Rust, rustlang, programming languages, programming, tech, technology, technology stack, coding, learning rust, learning golang, 
+tags: Machine Learning, Golang, Go, Rust, rustlang, programming languages, programming, tech, technology, technology stack, coding, learning rust, learning golang,
 authors: Aaditya Chapagain
 status: published
 ---
@@ -90,7 +90,6 @@ In summary, Rust and Go are both powerful languages with unique strengths and we
 - [Why use Golang](https://www.uptech.team/blog/why-use-golang-for-your-project)
 - [Rust to webassembly](https://surma.dev/things/rust-to-webassembly/)
 - [Go for Begineers](https://www.freecodecamp.org/news/go-beginners-handbook/)
-
 
 ## How To Get Started with Rust for Beginners ?
 
