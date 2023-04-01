@@ -9,7 +9,7 @@ authors: Aaditya Chapagain
 status: published
 ---
 
-Recently I had a talk with my friends about how they want to rewrite their entire company codebase with Rust, given  their most of the codebases are bunch of mircro-services and few bit of AI models. Since I have had fair bit of participation on writing code on both Rust and Go. Here is my understanding of these languages and when to use these languages to get most out of it.
+Recently I had a talk with my friends about how they want to rewrite their entire company codebase with Rust, given their most of the codebases are bunch of mircro-services and few bit of AI models. Since I have had fair bit of participation on writing code on both Rust and Go. Here is my understanding of these languages and when to use these languages to get most out of it.
 
 ## Table of contents
 
@@ -25,13 +25,13 @@ If I must say something, there is no shortage of languages to choose from, each 
 
 - **Performance** : It compiles to machine code, which can be optimized for performance, making it ideal for systems programming and performance-critical aplication.
 
-- **C Interoperability** :  Rust can easily with C, allowing developers to leverage libraries and gradually migrate legecy codebases.
+- **C Interoperability** : Rust can easily with C, allowing developers to leverage libraries and gradually migrate legecy codebases.
 
 ## What I don't like about `Rust` ?
 
-- **Steep Learning Curve** : Concepts like ownership, lifetimes, borrow and  smart pointers takes significant time and effort to master, and can be challenging for newcomers to the field.
+- **Steep Learning Curve** : Concepts like ownership, lifetimes, borrow and smart pointers takes significant time and effort to master, and can be challenging for newcomers to the field.
 
-- **Compilation Time** : Rust is compiled language. So, It needs to compile Before converting the code into working app and during compile time, Rust compiler try to do all the heavey lifting  i.e. borrow checking, make sure app is type saftey, make sure there will be no memory leaks at the runtime and everything. Hence, for fairly complex and big application written in rust , it has ridiculous compilation time.
+- **Compilation Time** : Rust is compiled language. So, It needs to compile Before converting the code into working app and during compile time, Rust compiler try to do all the heavey lifting i.e. borrow checking, make sure app is type saftey, make sure there will be no memory leaks at the runtime and everything. Hence, for fairly complex and big application written in rust , it has ridiculous compilation time.
 
 ## What is `Go` mostly known for ?
 
@@ -64,10 +64,9 @@ When deciding between Rust and Go, consider the specific requirements of your pr
 
 - Simplicity, readability, and scalability are your primary concerns
 - If you have a choice of converting your application code base to rust or Go ( Use Go instead )
-- Microservices, where its concurrency support enables scalable,  performant applications.
+- Microservices, where its concurrency support enables scalable, performant applications.
 - Command-line utilites, where its simplicity and fast compilation times are beneficial
 - Networking and Distributed sytems, where its concurrency model simplifies complex interactions
-
 
 ## What future holds for them
 
@@ -87,7 +86,7 @@ In summary, Rust and Go are both powerful languages with unique strengths and we
 
 ## REFERENCES
 
-* [Rust Ownership's](https://doc.rust-lang.org/stable/book/ch04-00-understanding-ownership.html)
-* [Why use Golang](https://www.uptech.team/blog/why-use-golang-for-your-project)
-* [Rust to webassembly](https://surma.dev/things/rust-to-webassembly/)
-* [Go for Begineers](https://www.freecodecamp.org/news/go-beginners-handbook/)
+- [Rust Ownership's](https://doc.rust-lang.org/stable/book/ch04-00-understanding-ownership.html)
+- [Why use Golang](https://www.uptech.team/blog/why-use-golang-for-your-project)
+- [Rust to webassembly](https://surma.dev/things/rust-to-webassembly/)
+- [Go for Begineers](https://www.freecodecamp.org/news/go-beginners-handbook/)
