@@ -13,7 +13,7 @@ Recently I had a talk with my friends about how they want to rewrite their entir
 
 ## Table of contents
 
-## `Rust` and `Go` : Caught between a rock and and hard place are you ?
+## `Rust` and `Go` : Caught between a rock and hard place are you ?
 
 If I must say something, there is no shortage of languages to choose from, each with its own strengths and weaknesses.I think there are around 20 languages currently, that got fair share of market in current world, each can do lots of great things and great part of uniqueness in them. But given Rust and Go ( also known as Golang ),both are relatively new and popular programming languages that have been gaining lof of traction since their release to public world. I'll try to dive into the differences between Rust and Go and possibly we will figure out when to use these languages.
 
