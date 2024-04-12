@@ -20,10 +20,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
       domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN}
     >
-      <div className="flex flex-col h-screen ">
+      <div className="flex flex-col h-screen relative">
         <Header />
 
-        <div className="p-4 lg:p-8  inline-block grow ">
+        <div className="p-4 lg:p-8  inline-block grow mt-20 ">
           <main className="py-8 px-8 lg:px-0 ">
             <Component {...pageProps} />
           </main>

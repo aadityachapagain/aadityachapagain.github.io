@@ -3,6 +3,7 @@ import Link from "next/link";
 import Container from "../../components/container";
 import distanceToNow from "../../lib/dateRelative";
 import { getAllPosts } from "../../lib/getPost";
+import markdownToHtml from "../../lib/markdownToHtml";
 
 export default function NotePage({
   allPosts
@@ -19,8 +20,11 @@ export default function NotePage({
             >
               {post.title}
             </Link>
-            <p>{post.summary}</p>
-            <div className="text-gray-400">
+            <p
+              className="mt-2 italic prose text-gray-500"
+              dangerouslySetInnerHTML={{ __html: post.summary }}
+            ></p>
+            <div className="text-gray-400n mt-1.5">
               <time>{distanceToNow(new Date(post.date), true)}</time>
             </div>
           </article>
@@ -33,7 +37,14 @@ export default function NotePage({
 }
 
 export async function getStaticProps() {
-  const allPosts = getAllPosts();
+  const allPosts = await Promise.all(
+    getAllPosts().map(async post => {
+      return {
+        ...post,
+        summary: await markdownToHtml(post.summary)
+      };
+    })
+  );
 
   return {
     props: { allPosts }

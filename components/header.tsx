@@ -26,7 +26,7 @@ const FocusedLink: React.FC<FLinkProps> = ({
     <Link
       href={href}
       className={
-        href === path ? "text-black font-semibold" : " " + className ?? " "
+        path === href ? "text-black font-semibold" : " " + className ?? " "
       }
     >
       {children}
@@ -39,15 +39,15 @@ export default function Header() {
   const router = useRouter();
 
   const LinkContents: Linktype[] = [
-    { href: "/", content: "About Me" },
+    { href: "/", content: "Home" },
     { href: "/posts", content: "Logs" },
     { href: "/projects", content: "Projects" },
     { href: "/resume", content: "Resume" },
     { href: "/contact", content: "Contact" }
   ];
   return (
-    <header className="py-8 lg:px-10 ">
-      <div className="px-2 md:px-8 relative">
+    <header className="py-8 lg:px-10 fixed  w-full bg-white shadow-md z-100">
+      <div className="px-2 md:px-8 relative mx-auto max-w-4xl">
         <nav className="flex space-x-6 text-zinc-400 tracking-wide items-center justify-between ">
           <Link href={"/"} className="text-xl ml-4 ">
             <div className="flex flex-row gap-1 items-center content-center ">
@@ -62,7 +62,7 @@ export default function Header() {
               <span>Chapagain</span>
             </div>
           </Link>
-          <div className="grow h-full"> </div>
+          <div className="grow h-3"> {''}</div>
           {/* for large screen views only display this */}
           <div className="hidden lg:flex space-x-6 text-zinc-400 tracking-wide items-center justify-between ">
             {LinkContents.map((item: Linktype, idx: number) => {
@@ -75,7 +75,7 @@ export default function Header() {
           </div>
           {/* for small screens */}
           <div
-            className="flex lg:hidden border rounded-md p-2 mr-3 hover:bg-stone-200 "
+            className="flex flex-row-reverse lg:hidden border rounded-md p-2 mr-3 hover:bg-stone-200 w-full "
             onClick={() => {
               setShowMenu(!showMenu);
             }}

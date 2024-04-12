@@ -46,7 +46,7 @@ const HomePage = () => {
                   <Image
                     className="rounded-full border "
                     alt="Profile Image"
-                    src="/profile_image.jpg"
+                    src="https://i.ibb.co/xf7g90z/profile-image.jpg"
                     width={400}
                     height={400}
                   ></Image>

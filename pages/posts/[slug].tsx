@@ -50,12 +50,37 @@ export default function PostPage({
           <article>
             <header>
               <h1 className="text-4xl font-bold">{post.title}</h1>
-              {post.summary ? (
-                <p className="mt-2 text-xl">{post.summary}</p>
-              ) : null}
-              <time className="flex mt-2 text-gray-400">
-                {distanceToNow(new Date(post.date), true)}
-              </time>
+              <div className="flex mt-4">
+                <div className="flex flex-row ml-2 space-x-4 ">
+                  <time className="flex text-gray-400">
+                    {distanceToNow(new Date(post.date), true)}
+                  </time>
+                  <span className="text-gray-400">by</span>
+                  <span className="text-indigo-400">{post.authors}</span>
+                </div>
+              </div>
+              <div className="flex mt-4 overflow-x-auto">
+                {post.tags
+                  .trim()
+                  .split(",")
+                  .filter((val: string) => val.trim() !== "")
+                  .map((val: string, idx: number) => {
+                    return (
+                      <span
+                        key={idx}
+                        className="mr-2 text-sm bg-gray-200 py-1 px-1.5 rounded-md"
+                      >
+                        {val}
+                      </span>
+                    );
+                  })}
+              </div>
+              {/* horizontal line of faded color */}
+              <div className="mt-4 mb-4 border-teal-800 w-full h-3 border-t-2 opacity-45 z-0" />
+              <div
+                className="my-4 prose "
+                dangerouslySetInnerHTML={{ __html: post.summary }}
+              ></div>
             </header>
 
             <div
@@ -80,12 +105,14 @@ type Params = {
 export async function getStaticProps({ params }: Params) {
   const post = getPostBySlug(params.slug);
   const content = await markdownToHtml(post.content || "");
+  const summary = await markdownToHtml(post.summary || "");
 
   return {
     props: {
       post: {
         ...post,
-        content: content
+        content: content,
+        summary: summary
       }
     }
   };
