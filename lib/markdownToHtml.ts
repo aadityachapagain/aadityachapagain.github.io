@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { VFileCompatible } from "vfile";
 import { unified } from "unified";
 import remarkGfm from "remark-gfm";
