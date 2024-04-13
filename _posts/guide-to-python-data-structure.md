@@ -7,7 +7,7 @@ slug: guide-to-python-data-structure
 tags: basics, intermediate, python, datastructure, tech, programming language
 summary: Datastructures are essential building blocks upon which any programs are constructed. Each data-structure offers a unique method of arranging data, So It can be retrieaved effectively. [Python's Standard Library](https://docs.python.org/3/library/index.html) contains a large collections of data structures.
 authors: Aaditya Chapagain
-status: Draft
+status: published
 ---
 
 **In this Blog, you'll learn:**
