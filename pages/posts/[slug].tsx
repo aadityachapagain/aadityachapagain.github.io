@@ -76,7 +76,7 @@ export default function PostPage({
                   })}
               </div>
               {/* horizontal line of faded color */}
-              <div className="mt-4 mb-4 border-teal-800 w-full h-3 border-t-2 opacity-45 z-0" />
+              <hr className="w-full h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700"></hr>
               <div
                 className="my-4 prose "
                 dangerouslySetInnerHTML={{ __html: post.summary }}

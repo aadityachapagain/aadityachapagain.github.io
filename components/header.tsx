@@ -46,7 +46,7 @@ export default function Header() {
     { href: "/contact", content: "Contact" }
   ];
   return (
-    <header className="py-8 lg:px-10 fixed  w-full bg-white shadow-md z-100">
+    <header className="py-8 lg:px-10 top-0 fixed  w-full bg-white shadow-md z-100">
       <div className="px-2 md:px-8 relative mx-auto max-w-4xl">
         <nav className="flex space-x-6 text-zinc-400 tracking-wide items-center justify-between ">
           <Link href={"/"} className="text-xl ml-4 ">
