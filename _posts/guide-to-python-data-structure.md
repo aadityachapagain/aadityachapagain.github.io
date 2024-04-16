@@ -147,6 +147,261 @@ If you want to have your dictionary ordered without worrying about order to inse
 
 An **array** is a fundamental data structure available in most programming languages, and it has a wide range of uses across different algorithms.
 
+Performance-wise, it’s very fast to look up an element contained in an array given the element’s index. A proper array implementation guarantees a constant O(1) access time for this case.
+
+Python contains several array-like data structures in its standard library that each have slightly different characteristics. Let's take a look.
+
+> **List*: Mutable Dynamic Arrays
+
+Python's list are implemented as  **dynamic arrays** behind the scenes.
+
+This means a list allows elements to be added or removed , and list will automatically adjust the backing store that holds these elements by allocating or releasing memory.
+
+Python lists can hold arbitrary elements - everything is an object in Python. Therefore, you can mix and match different kinds of data types and store them all in a single list.
+
+This can be a powerful feature, but the downside is that supporting multiple data types at the same time means that data is generally less tightly packed. As a result, the whole strucure takes up more space:
+
+```py
+>>> arr = ["one", "two", "three"]
+>>> arr[0]
+'one'
+
+>>> # Lists have a nice repr:
+>>> arr
+['one', 'two', 'three']
+
+>>> # Lists are mutable:
+>>> arr[1] = "hello"
+>>> arr
+['one', 'hello', 'three']
+
+>>> del arr[1]
+>>> arr
+['one', 'three']
+
+>>> # Lists can hold arbitrary data types:
+>>> arr.append(23)
+>>> arr
+['one', 'three', 23]
+```
+
+> **tuple**: Immutable Containers
+
+Just like lists, tuples are part of the Python core langauge. Unline lists, however, python's tuple objects are immutable. This means elements can't be added or removed dynamically -all elements in a tuple be defined at creation time.
+
+Tuple are another data structure that can hold elements of arbitrary data types. Having this flexibility is powerful, but again, it also means that data is less tighlty packed than it would be in a typed array.
+
+```py
+
+>>> arr = ("one", "two", "three")
+>>> arr[0]
+'one'
+
+>>> # Tuples have a nice repr:
+>>> arr
+('one', 'two', 'three')
+
+>>> # Tuples are immutable:
+>>> arr[1] = "hello"
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object does not support item assignment
+
+>>> del arr[1]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object doesn't support item deletion
+
+>>> # Tuples can hold arbitrary data types:
+>>> # (Adding elements creates a copy of the tuple)
+>>> arr + (23,)
+('one', 'two', 'three', 23)
+```
+
+> **array.array**: Basic Typed Arrays
+
+Pyton's `array` module provides space-efficient storage of basic C-style data types like bytes, 32-bit integers, floating-point numbers and so on.
+
+Arrays created with `array.array` class are mutable and behave similarly to lists except for one important different: they'are typed arrays constrained to a single data type.
+
+Because of this , `array.array` objects with many elements are more space efficient than lists and tuples. The elements stored in them are tightly packed, and this can be useful if you need to store many elements of the same type.
+
+```py
+
+import array
+>>> arr = array.array("f", (1.0, 1.5, 2.0, 2.5))
+>>> arr[1]
+1.5
+
+>>> # Arrays have a nice repr:
+>>> arr
+array('f', [1.0, 1.5, 2.0, 2.5])
+
+>>> # Arrays are mutable:
+>>> arr[1] = 23.0
+>>> arr
+array('f', [1.0, 23.0, 2.0, 2.5])
+
+>>> del arr[1]
+>>> arr
+array('f', [1.0, 2.0, 2.5])
+
+>>> arr.append(42.0)
+>>> arr
+array('f', [1.0, 2.0, 2.5, 42.0])
+
+>>> # Arrays are "typed":
+>>> arr[1] = "hello"
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: must be real number, not str
+
+```
+
+> **str**: Immutable Arrays of Unicode Characters
+
+Python 3.x uses str objects to store textual data as immutable sequences of Unicode characters. Practically speaking, that means a str is an immutable array of characters. Oddly enough, it’s also a recursive data structure—each character in a string is itself a str object of length 1.
+
+String objects are space efficient because they’re tightly packed and they specialize in a single data type. If you’re storing Unicode text, then you should use a string.
+
+Because strings are immutable in Python, modifying a string requires creating a modified copy. The closest equivalent to a mutable string is storing individual characters inside a list:
+
+```py
+
+>>> arr = "abcd"
+>>> arr[1]
+'b'
+
+>>> arr
+'abcd'
+
+>>> # Strings are immutable:
+>>> arr[1] = "e"
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'str' object does not support item assignment
+
+>>> del arr[1]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'str' object doesn't support item deletion
+
+>>> # Strings can be unpacked into a list to
+>>> # get a mutable representation:
+>>> list("abcd")
+['a', 'b', 'c', 'd']
+>>> "".join(list("abcd"))
+'abcd'
+
+>>> # Strings are recursive data structures:
+>>> type("abc")
+"<class 'str'>"
+>>> type("abc"[0])
+"<class 'str'>"
+
+```
+
+> **bytes**: Immutable Arrays of Single Bytes
+
+bytes objects are immutable sequences of single bytes, or integers in the range 0 ≤ x ≤ 255. Conceptually, bytes objects are similar to str objects, and you can also think of them as immutable arrays of bytes.
+
+Like strings, bytes have their own literal syntax for creating objects and are space efficient. bytes objects are immutable, but unlike strings, there’s a dedicated mutable byte array data type called bytearray that they can be unpacked into:
+
+```py
+
+>>> arr = bytes((0, 1, 2, 3))
+>>> arr[1]
+1
+
+>>> # Bytes literals have their own syntax:
+>>> arr
+b'\x00\x01\x02\x03'
+>>> arr = b"\x00\x01\x02\x03"
+
+>>> # Only valid `bytes` are allowed:
+>>> bytes((0, 300))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: bytes must be in range(0, 256)
+
+>>> # Bytes are immutable:
+>>> arr[1] = 23
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'bytes' object does not support item assignment
+
+>>> del arr[1]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'bytes' object doesn't support item deletion
+
+```
+
+> **bytearray**: Mutable Arrays of Single Bytes
+
+The bytearray type is a mutable sequence of integers in the range 0 ≤ x ≤ 255. The bytearray object is closely related to the bytes object, with the main difference being that a bytearray can be modified freely—you can overwrite elements, remove existing elements, or add new ones. The bytearray object will grow and shrink accordingly.
+
+A bytearray can be converted back into immutable bytes objects, but this involves copying the stored data in full—a slow operation taking O(n) time:
+
+```py
+
+>>> arr = bytearray((0, 1, 2, 3))
+>>> arr[1]
+1
+
+>>> # The bytearray repr:
+>>> arr
+bytearray(b'\x00\x01\x02\x03')
+
+>>> # Bytearrays are mutable:
+>>> arr[1] = 23
+>>> arr
+bytearray(b'\x00\x17\x02\x03')
+
+>>> arr[1]
+23
+
+>>> # Bytearrays can grow and shrink in size:
+>>> del arr[1]
+>>> arr
+bytearray(b'\x00\x02\x03')
+
+>>> arr.append(42)
+>>> arr
+bytearray(b'\x00\x02\x03*')
+
+>>> # Bytearrays can only hold `bytes`
+>>> # (integers in the range 0 <= x <= 255)
+>>> arr[1] = "hello"
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'str' object cannot be interpreted as an integer
+
+>>> arr[1] = 300
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: byte must be in range(0, 256)
+
+>>> # Bytearrays can be converted back into bytes objects:
+>>> # (This will copy the data)
+>>> bytes(arr)
+b'\x00\x02\x03*'
+
+```
+
+### Conclusion
+
+If you’re willing to go beyond the Python standard library, then third-party packages like NumPy and pandas offer a wide range of fast array implementations for scientific computing and data science.
+
+if you need to store arbitrary objects, potentially with mixed data types, then use a list or a tuple, depending on whether or not you want an immutable data structure.
+
+If you have numeric (integer or floating-point) data and tight packing and performance is important, then try out array.array.
+
+If you have textual data represented as Unicode characters, then use Python’s built-in str. If you need a mutable string-like data structure, then use a list of characters.
+
+If you want to store a contiguous block of bytes, then use the immutable bytes type or a bytearray if you need a mutable data structure.
+
+
 ## Records, Structs and Data Transfer Objects
 
 Compared to array, **record** data structures provide a fixed number of fields. Each field can have a name and may also have a different type.
