@@ -17,6 +17,139 @@ html, body {
   @apply bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded;
 }
 
+/* for spinner */
+
+/* Loading Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes hexSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Hexagon loader */
+.hex-loader {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  animation: hexSpin 3s linear infinite;
+}
+
+.hex-loader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 3px solid #8960df;
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+/* Fancy loading spinner */
+.fancy-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5rem;
+  height: 5rem;
+}
+
+.fancy-spinner div {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+}
+
+.fancy-spinner div.ring {
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: transparent;
+  animation: spinnerOne 2s linear infinite;
+}
+
+.fancy-spinner div.ring:nth-child(1) {
+  border-bottom-color: #8960df;
+  border-right-color: #8960df;
+}
+
+.fancy-spinner div.ring:nth-child(2) {
+  border-right-color: #5d3ab9;
+  border-top-color: #5d3ab9;
+  animation-delay: 0.2s;
+}
+
+.fancy-spinner div.ring:nth-child(3) {
+  border-top-color: #3a236f;
+  border-left-color: #3a236f;
+  animation-delay: 0.4s;
+}
+
+.fancy-spinner div.dot {
+  width: 1rem;
+  height: 1rem;
+  background: #8960df;
+}
+
+@keyframes spinnerOne {
+  0% {
+    transform: rotate(0deg);
+    border-width: 0.5rem;
+  }
+  50% {
+    transform: rotate(180deg);
+    border-width: 0.1rem;
+  }
+  100% {
+    transform: rotate(360deg);
+    border-width: 0.5rem;
+  }
+}
+
+
 /* for Hexagon */
 
 /* Improved hexagon styling without horizontal overlap */
@@ -277,4 +410,118 @@ html, body {
   height: 100vh; /* Use viewport height instead of 100% */
   z-index: -10;
   background-color: #070717; /* Match your background color */
+}
+
+
+/* Blog specific styles to add to your CSS */
+
+/* Prose styling for blog content */
+.prose-purple a {
+  @apply text-purple-400 hover:text-purple-300;
+}
+
+.prose-purple h1, 
+.prose-purple h2, 
+.prose-purple h3, 
+.prose-purple h4, 
+.prose-purple h5, 
+.prose-purple h6 {
+  @apply text-white font-bold;
+}
+
+.prose-purple h2 {
+  @apply text-2xl border-b border-purple-900/50 pb-2 mt-12;
+}
+
+.prose-purple h3 {
+  @apply text-xl mt-10;
+}
+
+.prose-purple blockquote {
+  @apply border-l-4 border-purple-500 bg-purple-900/20 py-1 px-4 italic text-gray-300;
+}
+
+.prose-purple pre {
+  @apply bg-[#0d0d1a] border border-purple-900/30 rounded-md p-4 overflow-x-auto;
+}
+
+.prose-purple code {
+  @apply bg-[#0d0d1a] text-purple-300 px-1 py-0.5 rounded text-sm;
+}
+
+.prose-purple ul {
+  @apply list-disc list-inside text-gray-300 space-y-2 ml-4 mt-4;
+}
+
+.prose-purple ol {
+  @apply list-decimal list-inside text-gray-300 space-y-2 ml-4 mt-4;
+}
+
+.prose-purple table {
+  @apply w-full border-collapse mt-4 mb-6;
+}
+
+.prose-purple th {
+  @apply bg-[#0d0d1a] text-left p-2 font-bold border border-purple-900/50 text-purple-300;
+}
+
+.prose-purple td {
+  @apply border border-purple-900/50 p-2;
+}
+
+.prose-purple hr {
+  @apply border-purple-900/50 my-8;
+}
+
+.prose-purple img {
+  @apply max-w-full h-auto rounded-lg shadow-md my-6 mx-auto;
+}
+
+/* Blog list page card hover effect */
+.blog-card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(137, 96, 223, 0.2);
+}
+
+/* Loading spinner for blog pages */
+.blog-loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+/* Comments section styling */
+.comments-section {
+  @apply mt-12 pt-8 border-t border-purple-900/50;
+}
+
+/* Pagination for blog list */
+.blog-pagination {
+  @apply flex justify-center mt-12 space-x-2;
+}
+
+.blog-pagination-button {
+  @apply px-4 py-2 border border-purple-500 rounded-md text-purple-400 hover:bg-purple-500 hover:text-white transition duration-300;
+}
+
+.blog-pagination-current {
+  @apply px-4 py-2 border border-purple-500 bg-purple-500 rounded-md text-white;
+}
+
+/* For code snippets in blog posts */
+.code-header {
+  @apply flex justify-between items-center bg-purple-900/30 text-purple-300 px-4 py-2 text-sm rounded-t-md border border-purple-900/50 border-b-0;
+}
+
+.code-block {
+  @apply relative;
+}
+
+.copy-button {
+  @apply text-purple-400 hover:text-white transition duration-300;
 }

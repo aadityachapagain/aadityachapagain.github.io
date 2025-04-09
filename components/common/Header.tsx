@@ -1,6 +1,5 @@
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
@@ -68,14 +67,6 @@ export default function Header() {
         <nav className="flex space-x-6 items-center justify-between">
           <Link href={"/"} className="text-xl ml-4">
             <div className="flex flex-row gap-1 items-center content-center">
-              <div className="relative h-10 w-10 rounded-full overflow-hidden border border-purple-600 mr-2">
-                <Image
-                  src={"/aaditya-profile.png"}
-                  alt="profile logo"
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
               <span className="font-bold text-white">/</span>
               <span className="font-bold text-purple-400">Aaditya</span>
               <span className="font-bold text-white">.</span>

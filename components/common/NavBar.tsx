@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const NavBar: React.FC = () => {
   const [activeSection, setActiveSection] = useState("home");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +40,8 @@ const NavBar: React.FC = () => {
     });
     
     setMobileMenuOpen(false);
+    const currentHref = window.location.href.split('#')[0]
+    router.push(`${currentHref}#${sectionId}`)
   };
 
   // Navigation items
