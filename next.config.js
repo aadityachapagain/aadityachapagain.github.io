@@ -10,6 +10,5 @@ module.exports = {
     loader: "custom",
     loaderFile: "./lib/imgixLoader.ts"
   },
-  reactStrictMode: true,
-  swcMinify: true
+  reactStrictMode: true
 };

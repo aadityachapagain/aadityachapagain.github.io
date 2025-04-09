@@ -10,13 +10,14 @@ interface INewTabLink {
 
 const NewTabLink: React.FC<INewTabLink> = ({ className, href, children }) => {
   return (
-    <div>
-      <Link href={href} passHref legacyBehavior>
-        <a target={"_blank"} rel="noreferrer">
-          <div className={className}>{children}</div>
-        </a>
-      </Link>
-    </div>
+    <Link 
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className || "text-purple-400 hover:text-purple-300 transition-colors"}
+    >
+      {children}
+    </Link>
   );
 };
 

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
 .min-screen-resume {
   min-width: 896px;
   scroll-behavior: smooth;
@@ -9,4 +15,266 @@
 
 .hover-blue-btn {
   @apply bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded;
+}
+
+/* for Hexagon */
+
+/* Improved hexagon styling without horizontal overlap */
+.hexagon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 900px;
+  position: relative;
+}
+
+.hexagon-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px; /* Gap between rows */
+}
+
+/* Second row offset */
+.hexagon-row:nth-child(2) {
+  margin-left: 90px; /* Half hexagon width for proper offset */
+}
+
+.hexagon {
+  position: relative;
+  width: 160px; /* Slightly smaller width */
+  height: 139px; /* Height is ~0.866 of width for perfect hexagon */
+  margin: 0 5px; /* Small horizontal gap */
+  display: inline-block;
+  background-color: #1a1a35;
+  transition: all 0.3s ease;
+  /* Create a hexagon shape using clip-path */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Add before element for border effect */
+.hexagon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a35;
+  clip-path: polygon(50% 2%, 98% 26%, 98% 74%, 50% 98%, 2% 74%, 2% 26%);
+  z-index: -1;
+}
+
+/* Create a border effect using a slightly larger background element */
+.hexagon::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  background-color: rgba(137, 96, 223, 0.3); /* Purple border color */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  z-index: -2;
+  opacity: 0.7;
+}
+
+.hexagon:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(137, 96, 223, 0.4);
+}
+
+.hexagon:hover::after {
+  background-color: rgba(137, 96, 223, 0.6); /* Brighter border on hover */
+  opacity: 1;
+}
+
+.hexagon-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.hexagon-content img {
+  max-width: 60%;
+  max-height: 60%;
+  object-fit: contain;
+}
+
+/* Text-based skills styling */
+.text-icon {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #8960df; /* Purple text for better visibility */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Label that appears on hover */
+.hexagon-label {
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(26, 26, 53, 0.8);
+  color: #8960df;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.hexagon:hover .hexagon-label {
+  opacity: 1;
+}
+
+/* Text icons with specific colors */
+.icon-python {
+  color: #4B8BBE;
+}
+
+.icon-java {
+  color: #f89820;
+}
+
+.icon-js {
+  color: #f7df1e;
+}
+
+.icon-ts {
+  color: #007acc;
+}
+
+.icon-react {
+  color: #61dafb;
+}
+
+.icon-mongo {
+  color: #4DB33D;
+}
+
+.icon-cpp {
+  color: #00599C;
+}
+
+.icon-php {
+  color: #777BB4;
+}
+
+.icon-aws {
+  color: #FF9900;
+}
+
+.icon-docker {
+  color: #2496ED;
+}
+
+/* Third row adjustments */
+.hexagon-row:nth-child(3) {
+  margin-left: 0; /* Reset to align with first row */
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .hexagon {
+    width: 120px;
+    height: 104px;
+    margin: 0 3px;
+  }
+  
+  .hexagon-row:nth-child(2) {
+    margin-left: 65px;
+  }
+  
+  .text-icon {
+    font-size: 2rem;
+  }
+}
+
+
+/* Text icons with specific colors */
+.icon-python {
+  color: #4B8BBE;
+  font-size: 5rem;
+}
+
+.icon-java {
+  color: #f89820;
+}
+
+.icon-js {
+  color: #f7df1e;
+}
+
+.icon-ts {
+  color: #007acc;
+}
+
+.icon-react {
+  color: #61dafb;
+}
+
+.icon-mongo {
+  color: #4DB33D;
+}
+
+@media (max-width: 768px) {
+  /* Make timeline vertical on mobile */
+  .timeline-container {
+    padding-left: 20px;
+  }
+  
+  /* Adjust timeline line position */
+  .timeline-container::before {
+    left: 0;
+  }
+  
+  /* Stack content vertically */
+  .timeline-item {
+    flex-direction: column;
+  }
+  
+  /* Make all content cards full width */
+  .timeline-content {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  /* Position timeline dots on the left */
+  .timeline-dot {
+    left: 0;
+  }
+}
+
+/* Hexagon grid mobile adjustment */
+@media (max-width: 640px) {
+  .hex-grid {
+    grid-template-columns: repeat(3, 90px);
+  }
+  
+  .hex-container {
+    width: 80px;
+    height: 92px;
+  }
+}
+
+/* Fix for white rectangle issue */
+.canvas-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Use viewport width instead of 100% */
+  height: 100vh; /* Use viewport height instead of 100% */
+  z-index: -10;
+  background-color: #070717; /* Match your background color */
 }

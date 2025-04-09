@@ -1,97 +1,109 @@
+import React from "react";
 import Head from "next/head";
-import Image from "next/image";
-import { useRouter } from "next/router";
+import { GetStaticProps } from "next";
 
-const HomePage = () => {
-  const router = useRouter();
+// Import common components
+import AnimatedBackground from "../components/common/AnimatedBackgroud";
+import NavBar from "../components/common/NavBar";
+import Footer from "../components/common/Footer";
 
-  // const downloadResume = () => {
-  //   // get origin url
-  //   const origin =
-  //     typeof window !== "undefined" && window.location.origin
-  //       ? window.location.origin
-  //       : "";
+// Import section components
+import About from "../components/sections/About";
+import Education from "../components/sections/Education";
+import Experience from "../components/sections/Experience";
+import Certifications from "../components/sections/Certifications";
+import Skills from "../components/sections/Skills";
+import Blogs from "../components/sections/Blogs";
+import Contact from "../components/sections/Contact";
 
-  //   const URL = `${origin}/resume/Aaditya_Chapagain_Resume.pdf`;
-  //   if (typeof window != "undefined") {
-  //     window.location.href = URL;
-  //   }
-  // };
+// Import server-side data fetching functions
+import { getAllPosts } from "../lib/getPost";
+import markdownToHtml from "../lib/markdownToHtml";
+import { getRandomTechImage } from "../lib/imageUtils";
+import { BlogPost } from "../components/sections/Blogs/types";
 
+// Define props type
+interface HomePageProps {
+  blogPosts: BlogPost[];
+}
+
+const HomePage: React.FC<HomePageProps> = ({ blogPosts }) => {
   return (
-    <>
+    <div className="bg-[#070717] text-white min-h-screen overflow-x-hidden w-full ">
       <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+          Aaditya Chapagain | Machine Learning Engineer & Full Stack Developer
+        </title>
         <meta
           name="description"
-          content="Tech, life, uprising , upbringing, futuristic logbook of aaditya chapagain made with love."
+          content="Portfolio of Aaditya Chapagain, Machine Learning Engineer and Full Stack Developer specializing in NLP, Computer Vision, and web development."
         />
-        <meta property="og:title" content="My Personal website." />
-        <meta
-          property="og:description"
-          content="my takes written all over in digital wallpaper."
-        />
-        <meta property="og:url" content="https://aadityachapagain.com/" />
-        <meta property="og:type" content="website" />
-        <title>Welcome to Aaditya Chapagain&apos;s notebook!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="container max-w-4xl m-auto ">
-        <div className="space-y-6">
-          <div className="p-2"> </div>
-          <div className="flex flex-col md:flex-row  gap-8 content-center items-center ">
-            {/* profile image layout here */}
-            <div className=" shrink md:w-2/5 p-1 ">
-              <div className="rounded-full shadow shadow-gray-200 border  bg-white ">
-                <div className="rounded-full shadow-sm shadow-stone-400 border-none p-5">
-                  <Image
-                    className="rounded-full border "
-                    alt="Profile Image"
-                    src="https://i.ibb.co/xf7g90z/profile-image.jpg"
-                    width={400}
-                    height={400}
-                  ></Image>
-                </div>
-              </div>
-            </div>
-            <div className="md:w-1/2 md:ml-4 mt-3 items-center content-center ">
-              <div className="text-4xl font-semibold ">Aaditya Chapagain</div>
-              <div className="text-zinc-400 py-4 font-mono">
-                ML Engineer/Researcher, Full Stack Developer
-              </div>
-              <p className="text-stone-600 text-sm tracking-wide font-serif">
-                Hi there &#128075; , I am a Machine Learning Engineer currently
-                studying in the{" "}
-                <b>University of Wollongong, Computer Science </b>
-                and working on <b>Cloud Shuttle</b> as a Machine Learning
-                Engineer, a community-focused data cloud based consulting
-                company.
-              </p>
-              <div className="py-3 flex flex-row mt-3 text-sm font-semibold ">
-                <button
-                  className="border-emerald-500 border-2 rounded-full py-2 px-7 shadow-md hover:bg-emerald-500 hover:text-white "
-                  onClick={e => {
-                    e.preventDefault();
-                    router.push("/resume");
-                  }}
-                >
-                  Download CV
-                </button>
-                <button
-                  className="ml-2 border-zinc-200 border-2 rounded-full py-2 px-9 shadow-md hover:bg-zinc-200 "
-                  onClick={e => {
-                    e.preventDefault();
-                    router.push("/contact");
-                  }}
-                >
-                  Contact
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+
+      <AnimatedBackground
+        particleCount={100}
+        maxConnectionDistance={100}
+        particleColors={[
+          "rgba(137, 96, 223, 0.5)",
+          "rgba(108, 78, 187, 0.3)",
+          "rgba(79, 58, 138, 0.2)"
+        ]}
+        lineColor="rgba(90, 70, 150, 0.1)"
+      />
+
+      <NavBar />
+
+      <main>
+        <About />
+        <Education />
+        <Experience />
+        <Certifications />
+        <Skills />
+        <Blogs blogPosts={blogPosts} />
+        <Contact />
+      </main>
+
+      <Footer />
+    </div>
   );
+};
+
+// Server-side data fetching
+export const getStaticProps: GetStaticProps = async () => {
+  const allPosts = getAllPosts();
+
+  // Process each post to add required fields
+  const blogPosts = await Promise.all(
+    allPosts.map(async post => {
+      const summary = await markdownToHtml(post.summary || "");
+
+      return {
+        slug: post.slug,
+        title: post.title,
+        summary: summary,
+        date: post.date,
+        author: post.authors || "Aaditya Chapagain",
+        tags: post.tags ? post.tags.split(",").map(tag => tag.trim()) : [],
+        // @ts-ignore
+        coverImage: post.coverImage || getRandomTechImage()
+      };
+    })
+  );
+
+  // Sort by date (newest first)
+  blogPosts.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  return {
+    props: {
+      blogPosts: blogPosts.slice(0, 3) // Get the 3 most recent posts
+    },
+    // Re-generate the page at most once per day
+    revalidate: 86400
+  };
 };
 
 export default HomePage;
