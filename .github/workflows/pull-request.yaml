@@ -34,15 +34,15 @@ jobs:
           npm install -g pnpm
           pnpm install
           pnpm run build
-          touch out/.nojekyll
+          touch dist/.nojekyll
 
       - name: Write CNAME
         run: |
           touch out/CNAME
-          echo "testing.aadityachapagain.com" > out/CNAME
+          echo "testing.aadityachapagain.com" > dist/CNAME
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: main
-          folder: out
+          folder: dist
