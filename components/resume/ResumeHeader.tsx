@@ -1,5 +1,9 @@
-import React from 'react';
-import { faEnvelope, faGlobe, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
+import {
+  faEnvelope,
+  faGlobe,
+  faLocationDot
+} from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NewTabLink from "../newtabLink";
@@ -16,10 +20,13 @@ const ResumeHeader: React.FC = () => {
       <p className="text-gray-300 mt-1">
         Computer Science Student @ University of Wollongong
       </p>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         <div className="flex items-center text-gray-300">
-          <FontAwesomeIcon icon={faLocationDot} className="text-purple-400 mr-3" />
+          <FontAwesomeIcon
+            icon={faLocationDot}
+            className="text-purple-400 mr-3"
+          />
           Wollongong, NSW, 2500
         </div>
         <NewTabLink
@@ -40,7 +47,10 @@ const ResumeHeader: React.FC = () => {
           href="https://www.linkedin.com/in/aadityachapagain/"
           className="flex items-center text-gray-300 hover:text-purple-400 transition duration-300"
         >
-          <FontAwesomeIcon icon={faLinkedinIn} className="text-purple-400 mr-3" />
+          <FontAwesomeIcon
+            icon={faLinkedinIn}
+            className="text-purple-400 mr-3"
+          />
           linkedin.com/in/aadityachapagain
         </NewTabLink>
         <NewTabLink

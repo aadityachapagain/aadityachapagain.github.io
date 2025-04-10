@@ -17,19 +17,19 @@ export default function BlogListPage({
           content="Blog posts by Aaditya Chapagain on machine learning, web development, and technology"
         />
       </Head>
-      
+
       <div className="pt-32 pb-20 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-2xl text-purple-400 mb-2">MY WRITINGS</h2>
           <h1 className="text-5xl font-bold">Blog Posts</h1>
         </div>
-        
+
         <div className="max-w-4xl mx-auto">
           {allPosts.length ? (
             <div className="grid gap-10">
               {allPosts.map(post => (
-                <article 
-                  key={post.slug} 
+                <article
+                  key={post.slug}
                   className="bg-[#1a1a35] p-6 rounded-lg shadow-md border border-purple-900/30 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-purple-500/20"
                 >
                   <Link
@@ -38,7 +38,7 @@ export default function BlogListPage({
                   >
                     {post.title}
                   </Link>
-                  
+
                   <div className="flex items-center mt-3 text-sm space-x-4">
                     <time className="text-purple-300">
                       {distanceToNow(new Date(post.date), true)}
@@ -50,10 +50,11 @@ export default function BlogListPage({
                       </>
                     )}
                   </div>
-                  
+
                   {post.tags && (
                     <div className="flex flex-wrap mt-3">
-                      {post.tags.split(',')
+                      {post.tags
+                        .split(",")
                         .filter(tag => tag.trim() !== "")
                         .map((tag, idx) => (
                           <span
@@ -65,12 +66,12 @@ export default function BlogListPage({
                         ))}
                     </div>
                   )}
-                  
+
                   <div
                     className="mt-4 text-gray-300 prose prose-invert prose-purple max-w-none"
                     dangerouslySetInnerHTML={{ __html: post.summary }}
                   ></div>
-                  
+
                   <div className="mt-4">
                     <Link
                       href={`/posts/${post.slug}`}
@@ -84,7 +85,9 @@ export default function BlogListPage({
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-gray-400 text-xl">No blog posts published yet</p>
+              <p className="text-gray-400 text-xl">
+                No blog posts published yet
+              </p>
             </div>
           )}
         </div>

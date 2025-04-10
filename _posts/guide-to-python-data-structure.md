@@ -69,7 +69,7 @@ It has Time Complexity of **O(1)** for lookup, insert, update and delete operati
 If key order is important for your algorithm to work, then Its bet to use OrderDict class to create dictionary.
 
 ```py
->>> import collections 
+>>> import collections
 >>> d = collections.OrderedDict(one=1, two=2, three=3)
 >>> d
 OrderedDict([('one', 1), ('two', 2), ('three', 3)])
@@ -94,7 +94,7 @@ This can save you some typing and make your intentions clearer as compared to us
 >>> from collections import defaultdict
 # creating default values of list type for each key in dictionary
 >>> record = defaultdict(list)
-# accessing a missing key creates it and 
+# accessing a missing key creates it and
 # initializes it using the default factory,
 # i.e. list() empty list in our case
 >>> record['dogs'].append('Rufus')
@@ -108,7 +108,7 @@ This can save you some typing and make your intentions clearer as compared to us
 
 > **types.MappingProxyType**: A Wrapper for making Readonly Dict
 
-[MappingProxyType](https://docs.python.org/3/library/types.html#types.MappingProxyType)  is a wrapper around standard dictionary in python that provides read-only view into the wrapped dictionary's data. 
+[MappingProxyType](https://docs.python.org/3/library/types.html#types.MappingProxyType) is a wrapper around standard dictionary in python that provides read-only view into the wrapped dictionary's data.
 
 It can be helpful if , for example, you'd like to return a dictionary carrying internal state from a clas or module while discouraging write access to this object.
 
@@ -142,7 +142,6 @@ If you want to encapsulate your internal data, So, user can only view it but not
 
 If you want to have your dictionary ordered without worrying about order to insertion of items, use `collections.OrderedDict`.
 
-
 ## Array Data Structures
 
 An **array** is a fundamental data structure available in most programming languages, and it has a wide range of uses across different algorithms.
@@ -151,9 +150,9 @@ Performance-wise, it’s very fast to look up an element contained in an array g
 
 Python contains several array-like data structures in its standard library that each have slightly different characteristics. Let's take a look.
 
-> **List*: Mutable Dynamic Arrays
+> \*_List_: Mutable Dynamic Arrays
 
-Python's list are implemented as  **dynamic arrays** behind the scenes.
+Python's list are implemented as **dynamic arrays** behind the scenes.
 
 This means a list allows elements to be added or removed , and list will automatically adjust the backing store that holds these elements by allocating or releasing memory.
 
@@ -401,7 +400,6 @@ If you have textual data represented as Unicode characters, then use Python’s 
 
 If you want to store a contiguous block of bytes, then use the immutable bytes type or a bytearray if you need a mutable data structure.
 
-
 ## Records, Structs and Data Transfer Objects
 
 Compared to array, **record** data structures provide a fixed number of fields. Each field can have a name and may also have a different type.
@@ -454,14 +452,13 @@ Data Objects created using dictionaries are mutable.
 
 Classes allow you to define reusable blueprints for data objects to ensure each object provides the same set of fields.
 
-Using regular Python classes as record data types is feasible, but it also takes manual work to get the convenience features of other implementations. For example, adding new fields to the __init__ constructor is verbose and takes time.
+Using regular Python classes as record data types is feasible, but it also takes manual work to get the convenience features of other implementations. For example, adding new fields to the **init** constructor is verbose and takes time.
 
-Also, the default string representation for objects instantiated from custom classes isn’t very helpful. To fix that, you may have to add your own __repr__ method, which again is usually quite verbose and must be updated each time you add a new field.
+Also, the default string representation for objects instantiated from custom classes isn’t very helpful. To fix that, you may have to add your own **repr** method, which again is usually quite verbose and must be updated each time you add a new field.
 
 Fields stored on classes are mutable, and new fields can be added freely, which you may or may not like. It’s possible to provide more access control and to create read-only fields using the @property decorator, but once again, this requires writing more glue code.
 
 Writing a custom class is a great option whenever you’d like to add business logic and behavior to your record objects using methods. However, this means that these objects are technically no longer plain data objects:
-
 
 ```py
 >>> class Car:
@@ -494,10 +491,10 @@ Data classes are available in Python 3.7 and above. They provide an excellent al
 
 By writing a data class instead of a plain Python class, your object instances get a few useful features out of the box that will save you some typing and manual implementation work:
 
-* The syntax for defining instance variables is shorter, since you don’t need to implement the .__init__() method.
-* Instances of your data class automatically get nice-looking string representation via an auto-generated .__repr__() method.
-* Instance variables accept type annotations, making your data class self-documenting to a degree. Keep in mind that type annotations are just hints that are not enforced without a separate type-checking tool.
-* Data classes are typically created using the @dataclass decorator, as you’ll see in the code example below:
+- The syntax for defining instance variables is shorter, since you don’t need to implement the .**init**() method.
+- Instances of your data class automatically get nice-looking string representation via an auto-generated .**repr**() method.
+- Instance variables accept type annotations, making your data class self-documenting to a degree. Keep in mind that type annotations are just hints that are not enforced without a separate type-checking tool.
+- Data classes are typically created using the @dataclass decorator, as you’ll see in the code example below:
 
 ```py
 
@@ -532,7 +529,6 @@ Car(color='red', mileage='NOT_A_FLOAT', automatic=99)
 ### **typing.NamedTuple**: Improved Namedtuples
 
 Added in Python 3.6, [typing.NamedTuple](https://docs.python.org/3/library/typing.html#typing.NamedTuple) is the younger sibling of the namedtuple class in the collections module. It’s very similar to namedtuple, with the main difference being an updated syntax for defining new record types and added support for type hints.But type annotations are not enforced without a separate type-checking tool like mypy. But even without tool support, they can provide useful hints for other programmers (or be terribly confusing if the type hints become out of date):
-
 
 ```py
 
@@ -587,7 +583,7 @@ Car(color='red', mileage='NOT_A_FLOAT', automatic=99)
 
 - If you need to pack data tightly to serialize it to disk or to send it over the network, then it’s time to read up on struct.Struct because this is a great use case for it!
 
-## Sets and Multisets 
+## Sets and Multisets
 
 A **set** is an unordered collection of objects that doesn't allow duplicate elements. Typically, sets are used to quickly test a value for membership in the test, to insert or delete new values from set, and to compute the union or intersections of two sets.
 
@@ -605,7 +601,6 @@ squares = {x * x for x in range(10)}
 ```
 
 But be careful: To create an empty set you’ll need to call the set() constructor. Using empty curly-braces ({}) is ambiguous and will create an empty dictionary instead.
-
 
 ### **set** : Your native set
 
@@ -701,7 +696,7 @@ Performance-wise, a proper stack implementation is expected to take O(1) time fo
 
 A **queue** is a collection of objects that supports fast FIFO semantics for inserts and deletes. The insert and delete operations are sometimes called **enqueue** and **dequeue**. Unlike lists or arrays, queues typically don’t allow for random access to the objects they contain.
 
-A good real-world comparision would be Imagine a line of people waiting for thier coffee order at coffee shop infront of PyCon. As new people enter the back of the line (enqueue) to get the coffee, people at front will already be recieving the coffee an the other end , and once they get thier coffee they left the line (dequeue) at the front of the queue. 
+A good real-world comparision would be Imagine a line of people waiting for thier coffee order at coffee shop infront of PyCon. As new people enter the back of the line (enqueue) to get the coffee, people at front will already be recieving the coffee an the other end , and once they get thier coffee they left the line (dequeue) at the front of the queue.
 
 Queues are similar to stacks. The difference between them lies in how items are removed. With a **queue**, you remove the item least recently added (FIFO) but with a **stack**, you remove the item most recently added (LIFO).
 

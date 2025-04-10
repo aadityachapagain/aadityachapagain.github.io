@@ -20,11 +20,10 @@ export default function PostPage({
   return (
     <div className="bg-[#070717] text-white min-h-screen w-full">
       <Head>
-        <title>{post.title} | {"Aaditya's Blog"}</title>
-        <meta
-          name="description"
-          content={`This post is about ${post.tags}.`}
-        />
+        <title>
+          {post.title} | {"Aaditya's Blog"}
+        </title>
+        <meta name="description" content={`This post is about ${post.tags}.`} />
         <meta property="og:title" content={post.title} />
         <meta
           property="og:description"
@@ -60,16 +59,16 @@ export default function PostPage({
                 href="/posts"
                 className="inline-flex items-center text-purple-400 hover:text-white transition duration-300"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="20" 
-                  height="20" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   className="mr-2"
                 >
                   <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -77,11 +76,11 @@ export default function PostPage({
                 Back to all posts
               </Link>
             </div>
-            
+
             <article className="bg-[#1a1a35] p-8 rounded-lg shadow-md border border-purple-900/30">
               <header>
                 <h1 className="text-4xl font-bold">{post.title}</h1>
-                
+
                 <div className="flex mt-4 items-center">
                   <div className="flex items-center space-x-4">
                     <time className="text-purple-300">
@@ -95,7 +94,7 @@ export default function PostPage({
                     )}
                   </div>
                 </div>
-                
+
                 {post.tags && (
                   <div className="flex flex-wrap mt-4">
                     {post.tags
@@ -112,9 +111,9 @@ export default function PostPage({
                       ))}
                   </div>
                 )}
-                
+
                 <div className="w-full h-0.5 bg-purple-900/50 my-6"></div>
-                
+
                 {post.summary && (
                   <div
                     className="my-6 text-gray-300 text-lg italic"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SkillItem {
   name: string;
@@ -16,9 +16,7 @@ const ExactSkillsGrid: React.FC<ExactSkillsGridProps> = ({ skills }) => {
         <div key={`row-${rowIndex}`} className="hexagon-row">
           {row.map((skill, skillIndex) => (
             <div key={`skill-${rowIndex}-${skillIndex}`} className="hexagon">
-              <div className="hexagon-content">
-                {skill.icon}
-              </div>
+              <div className="hexagon-content">{skill.icon}</div>
               <div className="hexagon-label">{skill.name}</div>
             </div>
           ))}

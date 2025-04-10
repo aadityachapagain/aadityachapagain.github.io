@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface CustomAvatarProps {
   initials: string;
@@ -11,12 +11,12 @@ interface CustomAvatarProps {
 const CustomAvatar: React.FC<CustomAvatarProps> = ({
   initials,
   size = 300,
-  backgroundColor = '#5d3ab9',
-  textColor = '#ffffff',
-  className = '',
+  backgroundColor = "#5d3ab9",
+  textColor = "#ffffff",
+  className = ""
 }) => {
-  const sizeValue = typeof size === 'number' ? `${size}px` : size;
-  const fontSize = typeof size === 'number' ? `${size / 3}px` : '5rem';
+  const sizeValue = typeof size === "number" ? `${size}px` : size;
+  const fontSize = typeof size === "number" ? `${size / 3}px` : "5rem";
 
   return (
     <div
@@ -27,7 +27,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({
         backgroundColor,
         color: textColor,
         fontSize,
-        fontWeight: 'bold',
+        fontWeight: "bold"
       }}
       aria-label={`Avatar with initials ${initials}`}
     >

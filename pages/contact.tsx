@@ -53,7 +53,7 @@ const ContactUs: React.FC = () => {
   };
 
   //   Handling form submit
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     let isValidForm = handleValidation();
@@ -93,16 +93,19 @@ const ContactUs: React.FC = () => {
           <h2 className="text-2xl text-purple-400 mb-2">GET IN TOUCH</h2>
           <h3 className="text-5xl font-bold">Contact Me</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
           {/* Contact Info Section */}
           <div className="flex flex-col justify-center">
             <div className="mb-8">
               <h4 className="text-2xl font-semibold mb-4">{"Let's Connect"}</h4>
               <p className="text-gray-300 mb-6">
-                Have a project in mind or want to discuss potential opportunities? {"I'm"} always open to new ideas and collaborations. Fill out the form, and {"I'll"} get back to you as soon as possible.
+                Have a project in mind or want to discuss potential
+                opportunities? {"I'm"} always open to new ideas and
+                collaborations. Fill out the form, and {"I'll"} get back to you
+                as soon as possible.
               </p>
-              
+
               <div className="space-y-6 mt-10">
                 <div className="flex items-start space-x-4">
                   <div className="bg-[#1a1a35] p-3 rounded-lg">
@@ -123,7 +126,9 @@ const ContactUs: React.FC = () => {
                     </svg>
                   </div>
                   <div>
-                    <h5 className="text-lg font-medium text-purple-300">Email</h5>
+                    <h5 className="text-lg font-medium text-purple-300">
+                      Email
+                    </h5>
                     <NewTabLink
                       href={"mailto:connect@aadityachapagain.com"}
                       className="text-gray-300 hover:text-purple-400 transition duration-300"
@@ -132,16 +137,18 @@ const ContactUs: React.FC = () => {
                     </NewTabLink>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-4">
                   <div className="bg-[#1a1a35] p-3 rounded-lg">
-                    <FontAwesomeIcon 
-                      icon={faLinkedinIn} 
-                      className="text-purple-400 h-6 w-6" 
+                    <FontAwesomeIcon
+                      icon={faLinkedinIn}
+                      className="text-purple-400 h-6 w-6"
                     />
                   </div>
                   <div>
-                    <h5 className="text-lg font-medium text-purple-300">LinkedIn</h5>
+                    <h5 className="text-lg font-medium text-purple-300">
+                      LinkedIn
+                    </h5>
                     <NewTabLink
                       href={"https://www.linkedin.com/in/aadityachapagain/"}
                       className="text-gray-300 hover:text-purple-400 transition duration-300"
@@ -153,29 +160,34 @@ const ContactUs: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Contact Form */}
           <div className="bg-[#1a1a35] p-8 rounded-lg shadow-md border border-purple-900/30 transform transition-all duration-300 hover:shadow-purple-500/20">
             <h4 className="text-2xl font-semibold mb-6">Send a Message</h4>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label htmlFor="fullname" className="block text-purple-300 mb-2">
+                <label
+                  htmlFor="fullname"
+                  className="block text-purple-300 mb-2"
+                >
                   Full Name <span className="text-purple-500">*</span>
                 </label>
                 <input
                   type="text"
                   id="fullname"
                   value={fullname}
-                  onChange={(e) => setFullname(e.target.value)}
+                  onChange={e => setFullname(e.target.value)}
                   className="w-full bg-[#0d0d1a] border border-purple-900/50 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="Your name"
                 />
                 {errors?.fullname && (
-                  <p className="text-red-400 text-sm mt-1">Full name is required.</p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Full name is required.
+                  </p>
                 )}
               </div>
-              
+
               <div className="mb-4">
                 <label htmlFor="email" className="block text-purple-300 mb-2">
                   Email <span className="text-purple-500">*</span>
@@ -184,15 +196,17 @@ const ContactUs: React.FC = () => {
                   type="email"
                   id="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   className="w-full bg-[#0d0d1a] border border-purple-900/50 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="Your email address"
                 />
                 {errors?.email && (
-                  <p className="text-red-400 text-sm mt-1">Email is required.</p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Email is required.
+                  </p>
                 )}
               </div>
-              
+
               <div className="mb-4">
                 <label htmlFor="subject" className="block text-purple-300 mb-2">
                   Subject <span className="text-purple-500">*</span>
@@ -201,15 +215,17 @@ const ContactUs: React.FC = () => {
                   type="text"
                   id="subject"
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  onChange={e => setSubject(e.target.value)}
                   className="w-full bg-[#0d0d1a] border border-purple-900/50 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="Message subject"
                 />
                 {errors?.subject && (
-                  <p className="text-red-400 text-sm mt-1">Subject is required.</p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Subject is required.
+                  </p>
                 )}
               </div>
-              
+
               <div className="mb-6">
                 <label htmlFor="message" className="block text-purple-300 mb-2">
                   Message <span className="text-purple-500">*</span>
@@ -217,16 +233,18 @@ const ContactUs: React.FC = () => {
                 <textarea
                   id="message"
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={e => setMessage(e.target.value)}
                   rows={5}
                   className="w-full bg-[#0d0d1a] border border-purple-900/50 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="Your message"
                 ></textarea>
                 {errors?.message && (
-                  <p className="text-red-400 text-sm mt-1">Message is required.</p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Message is required.
+                  </p>
                 )}
               </div>
-              
+
               <button
                 type="submit"
                 className="inline-flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-md transition duration-300 w-full"
@@ -245,7 +263,7 @@ const ContactUs: React.FC = () => {
                   />
                 </svg>
               </button>
-              
+
               <div className="mt-4">
                 {showSuccessMessage && (
                   <div className="bg-green-900/20 border border-green-900/50 rounded-md p-3 text-green-400">

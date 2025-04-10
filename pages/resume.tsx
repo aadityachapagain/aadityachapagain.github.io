@@ -13,11 +13,11 @@ import CertificationSection from "../components/resume/CertificationSection";
 import PrintableResume from "../components/resume/PrintableResume";
 
 // Data
-import { 
-  experienceData, 
-  skillsData, 
-  educationData, 
-  certificationData 
+import {
+  experienceData,
+  skillsData,
+  educationData,
+  certificationData
 } from "../data/resumeData";
 
 const ResumePage: React.FC = () => {
@@ -60,26 +60,26 @@ const ResumePage: React.FC = () => {
       <div className="container mx-auto px-4 pt-32 pb-20">
         {/* Page Header */}
         <PageHeader title="Resume" subtitle="MY QUALIFICATIONS" />
-        
+
         {/* Print Button */}
         <div className="max-w-5xl mx-auto mb-10 flex justify-between items-center print-hidden">
-          <button 
-            onClick={handlePrint} 
+          <button
+            onClick={handlePrint}
             className="bg-transparent hover:bg-purple-600 text-purple-500 font-semibold hover:text-white py-2 px-6 border border-purple-500 hover:border-transparent rounded transition duration-300"
           >
             Print My Resume
           </button>
         </div>
-        
+
         {/* Screen View (Dark Theme) */}
         <div className="print-hidden">
           <div className="max-w-5xl mx-auto bg-[#1a1a35] p-8 rounded-lg shadow-md border border-purple-900/30">
             {/* Header Section */}
             <ResumeHeader />
-            
+
             {/* Summary Section */}
             <ResumeSummary />
-            
+
             {/* Two column layout for content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {/* Left Column */}
@@ -87,7 +87,7 @@ const ResumePage: React.FC = () => {
                 <ExperienceSection experiences={experienceData} />
                 <SkillsSection skills={skillsData} />
               </div>
-              
+
               {/* Right Column */}
               <div>
                 <EducationSection education={educationData} />
@@ -97,10 +97,10 @@ const ResumePage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Printable Version (White Background) */}
-      <PrintableResume 
-        ref={printContentRef} 
+      <PrintableResume
+        ref={printContentRef}
         experiences={experienceData}
         skills={skillsData}
         education={educationData}

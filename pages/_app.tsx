@@ -25,7 +25,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       setIsHomePage(router.pathname === "/");
       setIsLoading(false);
     }, 400);
-    
+
     // Clean up the timer
     return () => clearTimeout(initialLoadTimer);
   }, [router.pathname]);
@@ -41,14 +41,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       }, 300);
     };
 
-    router.events.on('routeChangeStart', handleStart);
-    router.events.on('routeChangeComplete', handleComplete);
-    router.events.on('routeChangeError', handleComplete);
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
 
     return () => {
-      router.events.off('routeChangeStart', handleStart);
-      router.events.off('routeChangeComplete', handleComplete);
-      router.events.off('routeChangeError', handleComplete);
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
     };
   }, [router]);
 
@@ -59,11 +59,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     >
       {/* Show loading screen while loading */}
       {isLoading && <FullscreenHexLoader />}
-      
+
       <div
         className={`flex flex-col h-screen relative overflow-x-hidden w-full ${
           isHomePage ? "bg-[#070717]" : "bg-white"
-        } ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        } ${isLoading ? "opacity-0" : "opacity-100"}`}
       >
         {/* Only show header and custom layout on non-homepage routes */}
         {!isHomePage && <Header />}

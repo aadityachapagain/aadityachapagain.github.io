@@ -1,13 +1,17 @@
-import React, { forwardRef } from 'react';
-import { faEnvelope, faGlobe, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import React, { forwardRef } from "react";
+import {
+  faEnvelope,
+  faGlobe,
+  faLocationDot
+} from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import distanceToNow from "../../lib/dateRelative";
 import NewTabLink from "../newtabLink";
-import { Experience } from './ExperienceSection';
-import { SkillCategory } from './SkillsSection';
-import { Education } from './EducationSection';
-import { Certification } from './CertificationSection';
+import { Experience } from "./ExperienceSection";
+import { SkillCategory } from "./SkillsSection";
+import { Education } from "./EducationSection";
+import { Certification } from "./CertificationSection";
 
 interface PrintableResumeProps {
   experiences: Experience[];
@@ -45,7 +49,7 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
             }
           `}
         </style>
-        
+
         <div className="print-container py-4 max-w-5xl m-auto px-6 font-serif">
           {/* Header - Compact Version */}
           <div className="flex justify-between items-start mb-2">
@@ -62,7 +66,10 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
             </div>
             <div className="text-right text-xs">
               <div className="flex items-center justify-end gap-1 mb-1">
-                <FontAwesomeIcon icon={faLocationDot} style={{ fontSize: 12 }} />
+                <FontAwesomeIcon
+                  icon={faLocationDot}
+                  style={{ fontSize: 12 }}
+                />
                 <span>Wollongong, NSW, 2500</span>
               </div>
               <div className="flex items-center justify-end gap-1 mb-1">
@@ -79,7 +86,9 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
               </div>
               <div className="flex items-center justify-end gap-1 mb-1">
                 <FontAwesomeIcon icon={faLinkedinIn} style={{ fontSize: 12 }} />
-                <NewTabLink href={"https://www.linkedin.com/in/aadityachapagain/"}>
+                <NewTabLink
+                  href={"https://www.linkedin.com/in/aadityachapagain/"}
+                >
                   linkedin.com/in/aadityachapagain
                 </NewTabLink>
               </div>
@@ -91,36 +100,47 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
               </div>
             </div>
           </div>
-          
+
           {/* Summary - More concise */}
           <div className="text-xs text-stone-700 border-t border-b border-gray-300 py-2 mb-3">
-            Machine Learning Engineer skilled in Natural Language Processing with {distanceToNow(new Date("2019-04-01 12:00"), false)} of
-            experience prototyping intelligent machine learning platforms and transforming startup ideas into production solutions.
-            Analytical, client-focused, detail-oriented professional with strong technical abilities and quick concept comprehension.
+            Machine Learning Engineer skilled in Natural Language Processing
+            with {distanceToNow(new Date("2019-04-01 12:00"), false)} of
+            experience prototyping intelligent machine learning platforms and
+            transforming startup ideas into production solutions. Analytical,
+            client-focused, detail-oriented professional with strong technical
+            abilities and quick concept comprehension.
           </div>
-          
+
           <div className="flex gap-4">
             {/* Left Column */}
             <div className="w-[58%]">
               {/* Experience - Most important section gets more space */}
               <div className="mb-3">
-                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">EXPERIENCE</div>
-                
+                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">
+                  EXPERIENCE
+                </div>
+
                 {experiences.map((exp, index) => (
                   <div key={index} className="mb-2">
                     <div className="flex justify-between">
-                      <div className="font-semibold text-sm">{exp.position} - {exp.company}</div>
+                      <div className="font-semibold text-sm">
+                        {exp.position} - {exp.company}
+                      </div>
                       <div className="text-xs italic">{exp.period}</div>
                     </div>
-                    <div className="text-xs mb-1 text-gray-600">{exp.location}</div>
+                    <div className="text-xs mb-1 text-gray-600">
+                      {exp.location}
+                    </div>
                   </div>
                 ))}
               </div>
-              
+
               {/* Education */}
               <div className="mb-3">
-                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">EDUCATION</div>
-                
+                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">
+                  EDUCATION
+                </div>
+
                 {education.map((edu, index) => (
                   <div key={index} className="mb-2">
                     <div className="flex justify-between">
@@ -133,36 +153,47 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
                 ))}
               </div>
             </div>
-            
+
             {/* Right Column */}
             <div className="w-[42%]">
               {/* Skills - ATS-friendly list format */}
               <div className="mb-3">
-                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">SKILLS</div>
-                
+                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">
+                  SKILLS
+                </div>
+
                 <div className="text-xs">
                   <ul className="pl-5 list-disc">
                     {skills.map((skill, index) => (
                       <li key={index} className="mb-1">
-                        <span className="font-semibold">{skill.category}:</span> {skill.skills}
+                        <span className="font-semibold">{skill.category}:</span>{" "}
+                        {skill.skills}
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
-              
+
               {/* Certifications - Compact format */}
               <div>
-                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">CERTIFICATIONS</div>
-                
+                <div className="font-bold text-base border-b border-gray-400 mb-1 pb-1">
+                  CERTIFICATIONS
+                </div>
+
                 {certifications.map((cert, index) => (
                   <div key={index} className="mb-2">
-                    <div className="font-semibold text-sm mb-1">{cert.name}</div>
+                    <div className="font-semibold text-sm mb-1">
+                      {cert.name}
+                    </div>
                     <ul className="text-xs pl-5 list-disc">
                       {cert.links.map((link, linkIndex) => (
                         <li key={linkIndex}>
                           <NewTabLink href={link.url}>
-                            {link.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                            {
+                              link.url
+                                .replace(/^https?:\/\/(www\.)?/, "")
+                                .split("/")[0]
+                            }
                           </NewTabLink>
                         </li>
                       ))}
@@ -178,6 +209,6 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
   }
 );
 
-PrintableResume.displayName = 'PrintableResume';
+PrintableResume.displayName = "PrintableResume";
 
 export default PrintableResume;

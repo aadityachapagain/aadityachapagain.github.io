@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   width: 100%;
   position: relative;
@@ -21,7 +22,8 @@ html, body {
 
 /* Loading Animation */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -58,7 +60,7 @@ html, body {
 }
 
 .hex-loader::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -149,7 +151,6 @@ html, body {
   }
 }
 
-
 /* for Hexagon */
 
 /* Improved hexagon styling without horizontal overlap */
@@ -187,7 +188,7 @@ html, body {
 
 /* Add before element for border effect */
 .hexagon::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -200,7 +201,7 @@ html, body {
 
 /* Create a border effect using a slightly larger background element */
 .hexagon::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -3px;
   left: -3px;
@@ -272,7 +273,7 @@ html, body {
 
 /* Text icons with specific colors */
 .icon-python {
-  color: #4B8BBE;
+  color: #4b8bbe;
 }
 
 .icon-java {
@@ -292,23 +293,23 @@ html, body {
 }
 
 .icon-mongo {
-  color: #4DB33D;
+  color: #4db33d;
 }
 
 .icon-cpp {
-  color: #00599C;
+  color: #00599c;
 }
 
 .icon-php {
-  color: #777BB4;
+  color: #777bb4;
 }
 
 .icon-aws {
-  color: #FF9900;
+  color: #ff9900;
 }
 
 .icon-docker {
-  color: #2496ED;
+  color: #2496ed;
 }
 
 /* Third row adjustments */
@@ -323,20 +324,19 @@ html, body {
     height: 104px;
     margin: 0 3px;
   }
-  
+
   .hexagon-row:nth-child(2) {
     margin-left: 65px;
   }
-  
+
   .text-icon {
     font-size: 2rem;
   }
 }
 
-
 /* Text icons with specific colors */
 .icon-python {
-  color: #4B8BBE;
+  color: #4b8bbe;
   font-size: 5rem;
 }
 
@@ -357,7 +357,7 @@ html, body {
 }
 
 .icon-mongo {
-  color: #4DB33D;
+  color: #4db33d;
 }
 
 @media (max-width: 768px) {
@@ -365,24 +365,24 @@ html, body {
   .timeline-container {
     padding-left: 20px;
   }
-  
+
   /* Adjust timeline line position */
   .timeline-container::before {
     left: 0;
   }
-  
+
   /* Stack content vertically */
   .timeline-item {
     flex-direction: column;
   }
-  
+
   /* Make all content cards full width */
   .timeline-content {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
   }
-  
+
   /* Position timeline dots on the left */
   .timeline-dot {
     left: 0;
@@ -394,7 +394,7 @@ html, body {
   .hex-grid {
     grid-template-columns: repeat(3, 90px);
   }
-  
+
   .hex-container {
     width: 80px;
     height: 92px;
@@ -412,7 +412,6 @@ html, body {
   background-color: #070717; /* Match your background color */
 }
 
-
 /* Blog specific styles to add to your CSS */
 
 /* Prose styling for blog content */
@@ -420,11 +419,11 @@ html, body {
   @apply text-purple-400 hover:text-purple-300;
 }
 
-.prose-purple h1, 
-.prose-purple h2, 
-.prose-purple h3, 
-.prose-purple h4, 
-.prose-purple h5, 
+.prose-purple h1,
+.prose-purple h2,
+.prose-purple h3,
+.prose-purple h4,
+.prose-purple h5,
 .prose-purple h6 {
   @apply text-white font-bold;
 }

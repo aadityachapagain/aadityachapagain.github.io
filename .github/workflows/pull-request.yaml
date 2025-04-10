@@ -34,7 +34,6 @@ jobs:
           npm install -g pnpm
           pnpm install
           pnpm run build
-          npm run export
           touch out/.nojekyll
 
       - name: Write CNAME

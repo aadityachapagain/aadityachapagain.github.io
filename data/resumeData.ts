@@ -46,7 +46,8 @@ export const skillsData: SkillCategory[] = [
   },
   {
     category: "Deep Learning Domain",
-    skills: "Natural Language Processing, Computer Vision, Semi-Supervised Learning"
+    skills:
+      "Natural Language Processing, Computer Vision, Semi-Supervised Learning"
   },
   {
     category: "Databases",
@@ -127,7 +128,8 @@ export const certificationData: Certification[] = [
     links: [
       {
         url: "https://credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70",
-        display: "credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70"
+        display:
+          "credentials.databricks.com/6bec6b0c-d965-4111-ad18-416b5fbcbb70"
       }
     ]
   },

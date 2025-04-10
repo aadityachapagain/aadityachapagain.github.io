@@ -3,7 +3,10 @@
 let assetPrefix = "";
 let basePath = "";
 
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   assetPrefix: assetPrefix,
   basePath: basePath,
   images: {
@@ -12,3 +15,5 @@ module.exports = {
   },
   reactStrictMode: true
 };
+
+module.exports = nextConfig;

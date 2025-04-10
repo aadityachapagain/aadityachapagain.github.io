@@ -26,9 +26,10 @@ const FocusedLink: React.FC<FLinkProps> = ({
     <Link
       href={href}
       className={
-        path === href 
-          ? "text-purple-400 font-semibold" 
-          : "text-gray-300 hover:text-purple-400 transition-colors " + (className ?? "")
+        path === href
+          ? "text-purple-400 font-semibold"
+          : "text-gray-300 hover:text-purple-400 transition-colors " +
+            (className ?? "")
       }
     >
       {children}
@@ -47,8 +48,8 @@ export default function Header() {
       setScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const LinkContents: Linktype[] = [
@@ -60,9 +61,11 @@ export default function Header() {
   ];
 
   return (
-    <header className={`py-6 lg:px-10 top-0 fixed w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-[#0a0a20]/90 backdrop-blur-sm shadow-lg' : 'bg-[#0a0a20]'
-    }`}>
+    <header
+      className={`py-6 lg:px-10 top-0 fixed w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-[#0a0a20]/90 backdrop-blur-sm shadow-lg" : "bg-[#0a0a20]"
+      }`}
+    >
       <div className="px-2 md:px-8 relative mx-auto max-w-6xl">
         <nav className="flex space-x-6 items-center justify-between">
           <Link href={"/"} className="text-xl ml-4">
@@ -72,9 +75,9 @@ export default function Header() {
               <span className="font-bold text-white">.</span>
             </div>
           </Link>
-          
+
           <div className="grow h-3"></div>
-          
+
           {/* for large screen views only display this */}
           <div className="hidden lg:flex space-x-8 tracking-wide items-center justify-between">
             {LinkContents.map((item: Linktype, idx: number) => {
@@ -85,7 +88,7 @@ export default function Header() {
               );
             })}
           </div>
-          
+
           {/* for small screens */}
           <div
             className="flex flex-row-reverse lg:hidden border border-purple-800 rounded-md p-2 mr-3 hover:bg-purple-900/30 w-full cursor-pointer"
@@ -100,7 +103,7 @@ export default function Header() {
           </div>
         </nav>
       </div>
-      
+
       {/* Mobile menu */}
       {showMenu && (
         <div className="w-full absolute lg:hidden bg-[#0a0a20] px-8 pb-4 shadow-2xl shadow-black border-t-0 z-50">
