@@ -1,0 +1,12 @@
+name = "aadityachapagain"
+compatibility_date = "2025-01-29"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run pages:build"
+
+[site]
+bucket = ".vercel/output/static"
+
+[observability]
+enabled = true
