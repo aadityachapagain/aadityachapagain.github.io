@@ -1,6 +1,6 @@
 name = "aadityachapagain"
-compatibility_date = "2025-01-29"
-# compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat_populate_process_env"]
 
 [build]
 command = "npm run pages:build"
