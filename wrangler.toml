@@ -1,12 +1,4 @@
-name = "aadityachapagain"
+name = "aadityachapagain-github-io"
 compatibility_date = "2025-04-01"
-compatibility_flags = ["nodejs_compat_populate_process_env"]
-
-[build]
-command = "npm run pages:build"
-
-[site]
-bucket = ".vercel/output/static"
-
-[observability]
-enabled = true
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
+pages_build_output_dir = ".vercel/output/static"

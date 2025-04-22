@@ -186,6 +186,9 @@ importers:
       vercel:
         specifier: ^41.6.1
         version: 41.6.1
+      wrangler:
+        specifier: ^4.12.0
+        version: 4.12.0
 
 packages:
 
