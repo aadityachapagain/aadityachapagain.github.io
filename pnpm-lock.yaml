@@ -183,6 +183,9 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
+      vercel:
+        specifier: ^41.6.1
+        version: 41.6.1
 
 packages:
 
