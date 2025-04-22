@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import sendEmail from "../../../../lib/sendEmail";
 
+export const runtime = "edge";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
