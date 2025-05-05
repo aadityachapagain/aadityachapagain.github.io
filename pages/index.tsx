@@ -14,6 +14,7 @@ import Experience from "../components/sections/Experience";
 import Certifications from "../components/sections/Certifications";
 import Skills from "../components/sections/Skills";
 import Blogs from "../components/sections/Blogs";
+import PersonalProjects from "../components/sections/Projects";
 import Contact from "../components/sections/Contact";
 
 // Import server-side data fetching functions
@@ -59,6 +60,7 @@ const HomePage: React.FC<HomePageProps> = ({ blogPosts }) => {
         <About />
         <Education />
         <Experience />
+        <PersonalProjects />
         <Certifications />
         <Skills />
         <Blogs blogPosts={blogPosts} />

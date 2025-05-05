@@ -55,7 +55,6 @@ export default function Header() {
   const LinkContents: Linktype[] = [
     { href: "/", content: "Home" },
     { href: "/posts", content: "Blogs" },
-    { href: "/projects", content: "Projects" },
     { href: "/resume", content: "Resume" },
     { href: "/contact", content: "Contact" }
   ];

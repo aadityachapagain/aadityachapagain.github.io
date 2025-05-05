@@ -25,6 +25,16 @@ export interface Certification {
   credentialUrl: string;
 }
 
+export interface PersonalProject {
+  title: string;
+  description: string;
+  technologies: string[];
+  image: string; // URL to project image
+  githubUrl?: string;
+  demoUrl?: string; // Optional demo URL
+  highlights: string[];
+}
+
 // Work experience data
 export const getWorkExperience = (): WorkExperience[] => {
   return [
@@ -157,9 +167,30 @@ export const getCertifications = (): Certification[] => {
     }
   ];
 };
-
-export default {
-  getWorkExperience,
-  getEducation,
-  getCertifications
+export const getPersonalProjects = (): PersonalProject[] => {
+  return [
+    {
+      title: "Markdown To PDF Generator",
+      description: "Online app to generate pdf from your markdown.",
+      technologies: ["Solidjs", "Frontend", "markdown", "pdf"],
+      image: "/project-ai.jpg",
+      demoUrl: "https://projects.aadityachapagain.com/md_to_pdf",
+      highlights: [
+        "Implemented custom markdown to pdf converter using remark",
+        "Several theme of pdf can be generated",
+        "can process markdown file"
+      ]
+    },
+    {
+      title: "Online Code Editor",
+      description: "Interactive Online code editor with autocomplete",
+      technologies: ["typesript", "solidjs", "Express"],
+      image: "/project-dashboard.jpg", // Replace with actual image path
+      demoUrl: "https://projects.aadityachapagain.com/code_editor",
+      highlights: [
+        "Responsive and draggable code editor",
+        "code autcomplete for js, python, rust"
+      ]
+    }
+  ];
 };
