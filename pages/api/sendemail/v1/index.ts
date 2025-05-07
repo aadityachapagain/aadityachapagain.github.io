@@ -42,42 +42,27 @@ export default async function handler(
 
     // Determine overall response
     if (emailSuccess || discordSuccess) {
-      return new Response(JSON.stringify({ 
+      return res.status(200).setHeader("Content-Type", "application/json").json({
         success: true, 
         message: "Notification sent successfully",
         emailSent: emailSuccess,
         discordSent: discordSuccess
-      }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
     } else {
       // Both operations failed
-      return new Response(JSON.stringify({ 
-        success: false, 
+      return res.status(500).setHeader("Content-Type", "application/json").json({
+        success: false,
         message: "Operation not successful. Could not send notifications.",
         emailError: emailError ? String(emailError) : null,
         discordError: discordError ? String(discordError) : null
-      }), {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
     }
   } catch (error) {
     // Handle any unexpected errors
     console.error("Unexpected error:", error);
-    return new Response(JSON.stringify({ 
-      success: false, 
-      message: "An unexpected error occurred."
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    return res.status(500).setHeader("Content-Type", "application/json").json({
+      success: false,
+      message: "An Unexpected error occurred!",
     });
   }
 }
