@@ -139,7 +139,7 @@ const ContactUs: React.FC = () => {
                       href={"mailto:connect@aadityachapagain.com"}
                       className="text-gray-300 hover:text-purple-400 transition duration-300"
                     >
-                      connect@aadityachapagain.com
+                      contact@aadityachapagain.com
                     </NewTabLink>
                   </div>
                 </div>
