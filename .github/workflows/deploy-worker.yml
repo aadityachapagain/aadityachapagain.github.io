@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install wrangler
         run: npm install -g wrangler
@@ -62,19 +62,66 @@ jobs:
           
           [build]
           command = "cargo install -q worker-build && worker-build --release"
+          
+          [build.upload]
+          format = "modules"
+          main = "./worker/shim.mjs"
+          
+          [miniflare]
+          modules = true
           EOF
 
-      - name: Build worker
+      # Create a modern JS shim file
+      - name: Create shim.mjs
         run: |
+          mkdir -p ./worker
+          cat > ./worker/shim.mjs << EOF
+          import { wasm } from './shim.wasm';
+
+          // Create a module that exports a fetch handler
+          export default {
+            async fetch(request, env, ctx) {
+              return await wasm.fetch(request, env, ctx);
+            }
+          };
+          EOF
+
+      - name: Create custom build script
+        run: |
+          cat > build-worker.sh << EOF
+          #!/bin/bash
+          set -e
+
+          # Install worker-build if not already installed
           cargo install -q worker-build
+          
+          # Build the Rust project
           worker-build --release
+          
+          # Create necessary directories
+          mkdir -p ./worker
+          
+          # Copy the WASM file
+          cp ./build/worker.wasm ./worker/shim.wasm
+          
+          # Show success message
+          echo "Build completed successfully"
+          EOF
+          
+          chmod +x build-worker.sh
+
+      - name: Build worker
+        run: ./build-worker.sh
 
       - name: Deploy with Wrangler
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: 'worker'
           command: publish
+          preCommands: |
+            echo "Using Node version: $(node -v)"
+            echo "Using Wrangler version: $(wrangler -v)"
           secrets: |
             DISCORD_EMAIL_WEBHOOK_URL
             SMTP_API_KEY
