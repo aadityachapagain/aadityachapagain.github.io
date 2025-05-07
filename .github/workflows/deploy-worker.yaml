@@ -1,0 +1,84 @@
+name: Deploy Cloudflare Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            worker/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install wrangler
+        run: npm install -g wrangler
+
+      - name: Create wrangler.toml
+        run: |
+          cat > wrangler.toml << EOF
+          name = "api-worker"
+          type = "rust"
+          workers_dev = false
+          route = "api.aadityachapagain.com/v1/*"
+          compatibility_date = "2023-05-07"
+          
+          # These values are set from GitHub secrets
+          account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"
+          
+          [vars]
+          CONTACT_EMAIL_ADDRESS = "${{ secrets.CONTACT_EMAIL_ADDRESS }}"
+          
+          [build]
+          command = "cargo install -q worker-build && worker-build --release"
+          EOF
+
+      - name: Build worker
+        run: |
+          cargo install -q worker-build
+          worker-build --release
+
+      - name: Deploy with Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: 'worker'
+          command: publish
+          secrets: |
+            DISCORD_EMAIL_WEBHOOK_URL
+            SMTP_API_KEY
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          DISCORD_EMAIL_WEBHOOK_URL: ${{ secrets.DISCORD_EMAIL_WEBHOOK_URL }}
+          SMTP_API_KEY: ${{ secrets.SMTP_API_KEY }}

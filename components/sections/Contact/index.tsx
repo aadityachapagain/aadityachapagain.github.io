@@ -5,16 +5,14 @@ import { faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import ContactForm from "./ContactForm";
 
 const Contact: React.FC = () => {
-  // const contactFormRef = useRef<HTMLFormElement>(null);
-
   const handleSubmit = async (formData: {
     fullname: string;
     email: string;
     subject: string;
     message: string;
   }) => {
-    // Make API call to your backend
-    const response = await fetch("/api/sendemail/v1", {
+    // Make API call to your Cloudflare Worker
+    const response = await fetch("https://api.aadityachapagain.com/v1/contact/email-notification", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -24,8 +22,8 @@ const Contact: React.FC = () => {
 
     const data = await response.json();
 
-    if (data.error) {
-      throw new Error(data.error);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send message");
     }
 
     return data;
