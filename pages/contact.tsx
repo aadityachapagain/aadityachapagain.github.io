@@ -60,29 +60,35 @@ const ContactUs: React.FC = () => {
 
     if (isValidForm) {
       setButtonText("Sending");
-      const res = await fetch("/api/sendemail/v1", {
-        body: JSON.stringify({
-          email: email,
-          fullname: fullname,
-          subject: subject,
-          message: message
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      });
-
-      const { error } = await res.json();
-      if (error) {
+      try {
+        // Make API call to your Cloudflare Worker
+        const response = await fetch("https://api.aadityachapagain.com/v1/contact/email-notification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Origin": window.location.origin // This will be your domain automatically
+          },
+          body: JSON.stringify({
+            fullname, email, subject, message
+          })
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          setShowSuccessMessage(false);
+          setShowFailureMessage(true);
+          setButtonText("Send");
+          return;
+        }
+    
+        return data;
+      } catch (error) {
         setShowSuccessMessage(false);
         setShowFailureMessage(true);
         setButtonText("Send");
         return;
       }
-      setShowSuccessMessage(true);
-      setShowFailureMessage(false);
-      setButtonText("Send");
     }
   };
 
