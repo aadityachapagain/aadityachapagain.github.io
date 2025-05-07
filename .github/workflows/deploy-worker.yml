@@ -31,7 +31,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            worker/target
+            api-worker/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -44,73 +44,74 @@ jobs:
       - name: Install wrangler
         run: npm install -g wrangler
 
+      - name: Create deployment directory
+        run: mkdir -p dist
+
       - name: Create wrangler.toml
         run: |
           cat > wrangler.toml << EOF
           name = "api-worker"
-          route = "api.aadityachapagain.com/v1/*"
-          compatibility_date = "2025-05-07"
+          main = "./dist/index.js"
+          compatibility_date = "2023-05-07"
+          
+          routes = [
+            { pattern = "api.aadityachapagain.com/v1/*", zone_name = "aadityachapagain.com" }
+          ]
           
           # These values are set from GitHub secrets
           account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
-          zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"
           
           [vars]
           CONTACT_EMAIL_ADDRESS = "contact@aadityachapagain.com"
           
           [build]
           command = "cargo install -q worker-build && worker-build --release"
-
+          
+          [build.upload]
+          format = "modules"
           EOF
 
-      # Create a modern JS shim file
-      - name: Create shim.mjs
+      - name: Build with worker-build
         run: |
-          mkdir -p ./worker
-          cat > ./worker/shim.mjs << EOF
-          import { wasm } from './shim.wasm';
-
-          // Create a module that exports a fetch handler
-          export default {
-            async fetch(request, env, ctx) {
-              return await wasm.fetch(request, env, ctx);
-            }
-          };
-          EOF
-
-      - name: Create custom build script
-        run: |
-          cat > build-worker.sh << EOF
-          #!/bin/bash
-          set -e
-
           # Install worker-build if not already installed
           cargo install -q worker-build
           
           # Build the Rust project
           worker-build --release
           
-          # Create necessary directories
-          mkdir -p ./worker
+          # List build directory contents for debugging
+          echo "Build directory contents:"
+          ls -la build/
           
-          # Copy the WASM file
-          cp ./build/worker.wasm ./worker/shim.wasm
+          # Find the wasm file - name might vary
+          WASM_FILE=$(find build -name "*.wasm" | head -1)
+          echo "Found WASM file: $WASM_FILE"
           
-          # Show success message
-          echo "Build completed successfully"
+          # Create dist directory and copy files
+          mkdir -p dist
+          cp $WASM_FILE dist/worker.wasm
+          
+          # Create the JavaScript wrapper
+          cat > dist/index.js << EOF
+          import worker from './worker.wasm';
+          
+          export default {
+            async fetch(request, env, ctx) {
+              return await worker.fetch(request, env, ctx);
+            }
+          };
           EOF
           
-          chmod +x build-worker.sh
-
-      - name: Build worker
-        run: ./build-worker.sh
+          # List dist directory contents for verification
+          echo "Dist directory contents:"
+          ls -la dist/
 
       - name: Deploy with Wrangler
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: 'worker'
-          command: publish
+          workingDirectory: 'api-worker'
+          command: publish --compatibility-date 2023-05-07
           preCommands: |
             echo "Using Node version: $(node -v)"
             echo "Using Wrangler version: $(wrangler -v)"
