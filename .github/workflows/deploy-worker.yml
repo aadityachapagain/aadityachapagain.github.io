@@ -48,42 +48,19 @@ jobs:
         run: |
           cat > wrangler.toml << EOF
           name = "api-worker"
-          type = "rust"
-          workers_dev = false
           route = "api.aadityachapagain.com/v1/*"
-          compatibility_date = "2023-05-07"
+          compatibility_date = "2025-05-07"
           
           # These values are set from GitHub secrets
           account_id = "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
           zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"
           
           [vars]
-          CONTACT_EMAIL_ADDRESS = "${{ secrets.CONTACT_EMAIL_ADDRESS }}"
+          CONTACT_EMAIL_ADDRESS = "contact@aadityachapagain.com"
           
           [build]
           command = "cargo install -q worker-build && worker-build --release"
-          
-          [build.upload]
-          format = "modules"
-          main = "./worker/shim.mjs"
-          
-          [miniflare]
-          modules = true
-          EOF
 
-      # Create a modern JS shim file
-      - name: Create shim.mjs
-        run: |
-          mkdir -p ./worker
-          cat > ./worker/shim.mjs << EOF
-          import { wasm } from './shim.wasm';
-
-          // Create a module that exports a fetch handler
-          export default {
-            async fetch(request, env, ctx) {
-              return await wasm.fetch(request, env, ctx);
-            }
-          };
           EOF
 
       - name: Create custom build script
@@ -99,10 +76,10 @@ jobs:
           worker-build --release
           
           # Create necessary directories
-          mkdir -p ./worker
+          mkdir -p ./api-worker
           
           # Copy the WASM file
-          cp ./build/worker.wasm ./worker/shim.wasm
+          cp ./build/worker.wasm ./api-worker/shim.wasm
           
           # Show success message
           echo "Build completed successfully"
@@ -117,7 +94,7 @@ jobs:
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: 'worker'
+          workingDirectory: 'api-worker'
           command: publish
           preCommands: |
             echo "Using Node version: $(node -v)"
