@@ -173,7 +173,7 @@ export const getPersonalProjects = (): PersonalProject[] => {
       title: "Markdown To PDF Generator",
       description: "Online app to generate pdf from your markdown.",
       technologies: ["Solidjs", "Frontend", "markdown", "pdf"],
-      image: "/project-ai.jpg",
+      image: "/projects/markdown_to_pdf_Project.png",
       demoUrl: "https://projects.aadityachapagain.com/md_to_pdf",
       highlights: [
         "Implemented custom markdown to pdf converter using remark",
@@ -185,11 +185,22 @@ export const getPersonalProjects = (): PersonalProject[] => {
       title: "Online Code Editor",
       description: "Interactive Online code editor with autocomplete",
       technologies: ["typesript", "solidjs", "Express"],
-      image: "/project-dashboard.jpg", // Replace with actual image path
+      image: "/projects/code_editor_Project.png", // Replace with actual image path
       demoUrl: "https://projects.aadityachapagain.com/code_editor",
       highlights: [
         "Responsive and draggable code editor",
         "code autcomplete for js, python, rust"
+      ]
+    },
+    {
+      title: "Financial Calculator",
+      description: "Visual tool to estimate your investment on various sectors and analyzing loans to better manage your financial",
+      technologies: ["typesript", "solidjs", "Express"],
+      image: "/projects/financial_calculator_Project.png", // Replace with actual image path
+      demoUrl: "https://projects.aadityachapagain.com/financial_calculator",
+      highlights: [
+        "Generate charts of of future Financial status on varoius Terms",
+        "Compare various Investments and Loans scheme with different variables"
       ]
     }
   ];
