@@ -4,35 +4,36 @@ import { faEnvelope, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import ContactForm from "./ContactForm";
 
-const handleSubmit = async (formData: {
-  fullname: string;
-  email: string;
-  subject: string;
-  message: string;
-}) => {
-  try {
-    // Make API call to your Cloudflare Worker
-    const response = await fetch("https://api.aadityachapagain.com/v1/contact/email-notification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Origin": window.location.origin // This will be your domain automatically
-      },
-      body: JSON.stringify(formData)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to send message");
+const Contact: React.FC = () => {
+  const handleSubmit = async (formData: {
+    fullname: string;
+    email: string;
+    subject: string;
+    message: string;
+  }) => {
+    try {
+      // Make API call to your Cloudflare Worker
+      const response = await fetch("https://api.aadityachapagain.com/v1/contact/email-notification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Origin": window.location.origin // This will be your domain automatically
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to send message");
+      }
+  
+      return data;
+    } catch (error) {
+      console.error("Error sending contact form:", error);
+      throw error;
     }
-
-    return data;
-  } catch (error) {
-    console.error("Error sending contact form:", error);
-    throw error;
-  }
-};
+  };
 
   return (
     <section id="contact" className="py-20 relative overflow-hidden">
