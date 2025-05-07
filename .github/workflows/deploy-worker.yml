@@ -41,8 +41,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install wrangler
-        run: npm install -g wrangler
+      - name: Install wrangler directly
+        run: npm install -g wrangler@latest --legacy-peer-deps
+
+      - name: Check wrangler version
+        run: wrangler --version
 
       - name: Create deployment directory
         run: mkdir -p dist
@@ -106,19 +109,14 @@ jobs:
           echo "Dist directory contents:"
           ls -la dist/
 
-      - name: Deploy with Wrangler
-        uses: cloudflare/wrangler-action@3.0.0
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: 'api-worker'
-          command: publish --compatibility-date 2023-05-07
-          preCommands: |
-            echo "Using Node version: $(node -v)"
-            echo "Using Wrangler version: $(wrangler -v)"
-          secrets: |
-            DISCORD_EMAIL_WEBHOOK_URL
-            SMTP_API_KEY
+      - name: Deploy to Cloudflare
+        run: |
+          # Set secrets as environment variables
+          echo "DISCORD_EMAIL_WEBHOOK_URL=${{ secrets.DISCORD_EMAIL_WEBHOOK_URL }}" > .env
+          echo "SMTP_API_KEY=${{ secrets.SMTP_API_KEY }}" >> .env
+          
+          # Deploy using wrangler directly
+          echo "Deploying with Wrangler..."
+          wrangler deploy --config wrangler.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          DISCORD_EMAIL_WEBHOOK_URL: ${{ secrets.DISCORD_EMAIL_WEBHOOK_URL }}
-          SMTP_API_KEY: ${{ secrets.SMTP_API_KEY }}
