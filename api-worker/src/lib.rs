@@ -5,12 +5,6 @@ mod services;
 mod models;
 mod utils;
 
-// Export modules for easier imports
-// pub use routes::*;
-// pub use services::*;
-// pub use models::*;
-// pub use utils::*;
-
 #[event(fetch)]
 pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Response> {
     console_error_panic_hook::set_once();
