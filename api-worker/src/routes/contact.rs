@@ -19,8 +19,8 @@ pub async fn handle_contact(mut req: Request, env: Env) -> Result<Response> {
         })),
     };
 
-    // Verify origin is from our domain
-    if origin != "https://aadityachapagain.com" {
+    // Verify origin is from our domain (check both with and without www)
+    if origin != "https://www.aadityachapagain.com" && origin != "https://aadityachapagain.com" {
         console_log!("Invalid origin: {}", origin);
         return json_response(403, &serde_json::json!({
             "success": false,
@@ -109,14 +109,9 @@ pub async fn handle_contact(mut req: Request, env: Env) -> Result<Response> {
         }));
     }
 
-    // Return success response with CORS headers
-    let mut response = json_response(200, &serde_json::json!({
+    // Return success response
+    json_response(200, &serde_json::json!({
         "success": true,
         "message": "Contact request processed successfully"
-    }))?;
-    
-    // Add CORS headers
-    response.headers_mut().set("Access-Control-Allow-Origin", "https://aadityachapagain.com")?;
-    
-    Ok(response)
+    }))
 }

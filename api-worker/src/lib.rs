@@ -12,9 +12,10 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     // Add CORS headers for preflight requests
     if req.method() == Method::Options {
         let mut headers = Headers::new();
-        headers.set("Access-Control-Allow-Origin", "https://aadityachapagain.com")?;
+        headers.set("Access-Control-Allow-Origin", "https://www.aadityachapagain.com")?;
         headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
-        headers.set("Access-Control-Allow-Headers", "Content-Type")?;
+        headers.set("Access-Control-Allow-Headers", "Content-Type, Origin, Accept")?;
+        headers.set("Access-Control-Max-Age", "86400")?; // 24 hours
         return Ok(Response::empty()?.with_headers(headers).with_status(204));
     }
 
@@ -22,7 +23,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     let path = req.path();
     
     // Basic router
-    match (req.method(), path.as_str()) {
+    let response = match (req.method(), path.as_str()) {
         // Health check endpoint
         (Method::Get, "/") | (Method::Get, "/v1") => {
             routes::health::health_check().await
@@ -37,5 +38,15 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
         _ => {
             Response::error("Not Found", 404)
         }
+    };
+
+    // Add CORS headers to all responses
+    match response {
+        Ok(mut res) => {
+            let headers = res.headers_mut();
+            headers.set("Access-Control-Allow-Origin", "https://www.aadityachapagain.com")?;
+            Ok(res)
+        },
+        Err(e) => Err(e),
     }
 }

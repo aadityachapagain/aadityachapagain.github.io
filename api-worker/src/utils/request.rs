@@ -9,7 +9,7 @@ pub fn is_valid_origin(req: &Request<axum::body::Body>) -> bool {
     match req.headers().get("Origin") {
         Some(origin) => {
             let origin_str = origin.to_str().unwrap_or_default();
-            origin_str == "https://aadityachapagain.com"
+            origin_str == "https://www.aadityachapagain.com"
         },
         None => false,
     }
