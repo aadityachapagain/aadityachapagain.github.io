@@ -4,7 +4,7 @@ on:
   push:
     branches: [source]
     paths:
-      - 'worker/**'
+      - 'api-worker/**'
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: worker
+        working-directory: api-worker
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
