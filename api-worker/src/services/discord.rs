@@ -5,41 +5,53 @@ pub async fn send_discord_notification(
     contact_req: &ContactRequest, 
     webhook_url: &str
 ) -> Result<()> {
-    let truncated_message = if contact_req.message.len() > 1000 {
-        format!("{}...", &contact_req.message[..1000])
+    // Truncate message if it's too long for Discord
+    let truncated_message = if contact_req.message.len() > 4000 {
+        format!("{}...\n\n*[Message truncated - see email for full content]*", &contact_req.message[..3900])
     } else {
         contact_req.message.clone()
     };
-
-    let payload = DiscordPayload {
-        embeds: vec![
-            DiscordEmbed {
-                title: "📧 New Email Notification".to_string(),
-                color: 0x5865F2,
-                fields: vec![
-                    DiscordField {
-                        name: "From".to_string(),
-                        value: format!("`{} <{}>`", contact_req.fullname, contact_req.email),
-                        inline: Some(true),
-                    },
-                    DiscordField {
-                        name: "Subject".to_string(),
-                        value: format!("```{}```", contact_req.subject),
-                        inline: Some(true),
-                    },
-                    DiscordField {
-                        name: "Message".to_string(),
-                        value: truncated_message,
-                        inline: None,
-                    },
-                ],
-                timestamp: chrono::Utc::now().to_rfc3339(),
-                footer: DiscordFooter {
-                    text: "Email Notification System".to_string(),
+    
+    // Format time for the footer
+    let timestamp = chrono::Utc::now().to_rfc3339();
+    
+    // Get current date and time in a more readable format
+    let dt = chrono::Utc::now();
+    let formatted_time = dt.format("%B %d, %Y at %H:%M UTC").to_string();
+    
+    // Create a cleaner Discord message
+    let payload = serde_json::json!({
+        "embeds": [{
+            "title": "📨 New Contact Form Submission",
+            "description": "A new message has been received via the website contact form.",
+            "color": 5793266, // Green-blue color
+            "fields": [
+                {
+                    "name": "👤 From",
+                    "value": format!("`{}` <{}>", contact_req.fullname, contact_req.email),
+                    "inline": false
                 },
+                {
+                    "name": "📝 Subject",
+                    "value": format!("**{}**", contact_req.subject),
+                    "inline": false
+                },
+                {
+                    "name": "💬 Message",
+                    "value": truncated_message,
+                    "inline": false
+                }
+            ],
+            "timestamp": timestamp,
+            "footer": {
+                "text": format!("Contact Form • {}", formatted_time),
+                "icon_url": "https://www.aadityachapagain.com/Profile.png" // Optional: Your website icon or avatar
             },
-        ],
-    };
+            "thumbnail": {
+                "url": "https://www.aadityachapagain.com/Profile.png" // Optional: Your website icon or avatar
+            }
+        }]
+    });
 
     let payload_json = match serde_json::to_string(&payload) {
         Ok(json) => json,
