@@ -63,6 +63,21 @@ jobs:
 
           EOF
 
+      # Create a modern JS shim file
+      - name: Create shim.mjs
+        run: |
+          mkdir -p ./worker
+          cat > ./worker/shim.mjs << EOF
+          import { wasm } from './shim.wasm';
+
+          // Create a module that exports a fetch handler
+          export default {
+            async fetch(request, env, ctx) {
+              return await wasm.fetch(request, env, ctx);
+            }
+          };
+          EOF
+
       - name: Create custom build script
         run: |
           cat > build-worker.sh << EOF
@@ -76,10 +91,10 @@ jobs:
           worker-build --release
           
           # Create necessary directories
-          mkdir -p ./api-worker
+          mkdir -p ./worker
           
           # Copy the WASM file
-          cp ./build/worker.wasm ./api-worker/shim.wasm
+          cp ./build/worker.wasm ./worker/shim.wasm
           
           # Show success message
           echo "Build completed successfully"
@@ -94,7 +109,7 @@ jobs:
         uses: cloudflare/wrangler-action@3.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: 'api-worker'
+          workingDirectory: 'worker'
           command: publish
           preCommands: |
             echo "Using Node version: $(node -v)"
