@@ -94,7 +94,7 @@ const About: React.FC = () => {
                 <FontAwesomeIcon icon={faLinkedinIn} className="w-5 h-5" />
               </a>
               <a
-                href="mailto:connect@aadityachapagain.com"
+                href="mailto:contact@aadityachapagain.com"
                 className="bg-[#1a1a35] hover:bg-purple-900/30 text-white p-3 rounded-full transition-colors"
                 aria-label="Email Me"
               >
@@ -112,7 +112,6 @@ const About: React.FC = () => {
                   width={400}
                   height={400}
                   className="w-full h-full object-cover"
-                  priority
                 />
               </div>
               <div className="absolute inset-0 animate-pulse bg-purple-600 blur-3xl opacity-20 rounded-full"></div>
