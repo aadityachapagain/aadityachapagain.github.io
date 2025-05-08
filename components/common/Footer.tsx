@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
               <FontAwesomeIcon icon={faLinkedinIn} className="w-5 h-5" />
             </a>
             <a
-              href="mailto:connect@aadityachapagain.com"
+              href="mailto:contact@aadityachapagain"
               className="bg-[#1a1a35] hover:bg-purple-900/30 text-white p-3 rounded-full transition-colors"
               aria-label="Email Me"
             >

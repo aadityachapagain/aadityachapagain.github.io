@@ -136,7 +136,7 @@ const ContactUs: React.FC = () => {
                       Email
                     </h5>
                     <NewTabLink
-                      href={"mailto:connect@aadityachapagain.com"}
+                      href={"mailto:contact@aadityachapagain"}
                       className="text-gray-300 hover:text-purple-400 transition duration-300"
                     >
                       contact@aadityachapagain.com

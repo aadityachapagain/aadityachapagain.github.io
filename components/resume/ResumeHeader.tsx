@@ -31,10 +31,10 @@ const ResumeHeader: React.FC = () => {
         </div>
         <NewTabLink
           className="flex items-center text-gray-300 hover:text-purple-400 transition duration-300"
-          href={"mailto:connect@aadityachapagain.com"}
+          href={"mailto:contact@aadityachapagain"}
         >
           <FontAwesomeIcon icon={faEnvelope} className="text-purple-400 mr-3" />
-          connect@aadityachapagain.com
+          contact@aadityachapagain
         </NewTabLink>
         <NewTabLink
           href={"https://aadityachapagain.com"}

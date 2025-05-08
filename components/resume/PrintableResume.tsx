@@ -74,8 +74,8 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
               </div>
               <div className="flex items-center justify-end gap-1 mb-1">
                 <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: 12 }} />
-                <NewTabLink href={"mailto:connect@aadityachapagain.com"}>
-                  connect@aadityachapagain.com
+                <NewTabLink href={"mailto:contact@aadityachapagain"}>
+                  contact@aadityachapagain
                 </NewTabLink>
               </div>
               <div className="flex items-center justify-end gap-1 mb-1">
