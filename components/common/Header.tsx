@@ -62,7 +62,7 @@ export default function Header() {
   return (
     <header
       className={`py-6 lg:px-10 top-0 fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-[#0a0a20]/90 backdrop-blur-sm shadow-lg" : "bg-[#0a0a20]"
+        scrolled ? "bg-[#0a0a20]/90 backdrop-blur-lg shadow-xl" : "bg-[#0a0a20]"
       }`}
     >
       <div className="px-2 md:px-8 relative mx-auto max-w-6xl">
