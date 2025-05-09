@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 
 const NavBar: React.FC = () => {
   const [activeSection, setActiveSection] = useState("home");
-  const [scrolled, setScrolled] = useState(false);
+  // @ts-ignore
+  const [, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
