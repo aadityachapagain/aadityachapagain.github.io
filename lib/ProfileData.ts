@@ -202,6 +202,16 @@ export const getPersonalProjects = (): PersonalProject[] => {
         "Generate charts of of future Financial status on varoius Terms",
         "Compare various Investments and Loans scheme with different variables"
       ]
+    },
+    {
+      title: "Loan Optimizer",
+      description: "Tool to help you decide how to optimize your loan structure to make your life easy",
+      technologies: ["typesript", "solidjs", "Express"],
+      image: "/projects/loan_optimizer_Project.png", // Replace with actual image path
+      demoUrl: "https://projects.aadityachapagain.com/loan_optimizer",
+      highlights: [
+        "Help you with your loans, if you have any to make impactful decisions"
+      ]
     }
   ];
 };
